@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="sedsb.png" type="image/png">
+  <title>Kumaraguru SEDS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --sidebar-bg: #132233;
+      --text: #fff;
+      --muted: #c9d1e6;
+      --card: rgba(255,255,255,0.08);
+      --accent: #4da6ff;
+      --section-title: #4da6ff;
+    }
+    *{box-sizing:border-box; margin:0; padding:0; scroll-behavior:smooth;}
+    body{
+      font-family:"Poppins", sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      position:relative;
+      z-index:0;
+    }
+
+    /* Background with dark overlay */
+    body::before {
+      content:"";
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background: url('background.jpg') no-repeat center center/cover fixed;
+      filter:brightness(70%); /* lower brightness */
+      z-index:-1;
+    }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 20px;
+      background:rgba(0,0,0,0.5);
+      position:sticky;
+      top:0;
+      z-index:1000;
+    }
+
+    .left-header {
+      display:flex;
+      align-items:center;
+      gap:15px;
+    }
+
+    header img{
+      height:60px;
+      transition:0.3s;
+    }
+
+    header .seds-logo {
+      height:70px;
+    }
+
+  .events-title {
+      margin-top:8px;
+      font-size:50px;
+      color: #FFFF;
+      text-align:center;
+    }
+  
+    /* Sidebar Navigation */
+  
+    .sidebar{
+      position:fixed;
+      top:0; left:-260px;
+      width:260px;
+      height:100%;
+      background:var(--sidebar-bg);
+      padding:30px 20px;
+      transition:0.3s;
+      z-index:2000;
+      overflow-y:auto;      /* ✅ make sidebar scrollable */
+      max-height:100vh;     /* ✅ keep it within viewport */
+    }
+    .sidebar.active{left:0;}
+    .sidebar a{
+      display:block;
+      padding:15px 0;
+      color:#fff;
+      font-size:20px;
+      text-decoration:none;
+      border-bottom:1px solid rgba(255,255,255,0.2);
+    }
+    .sidebar a:hover{color:var(--accent);}
+    .close-btn{
+      font-size:22px;
+      color:#fff;
+      cursor:pointer;
+      text-align:right;
+      margin-bottom:20px;
+      display:block;
+    }
+
+    .hamburger{
+      font-size:28px;
+      cursor:pointer;
+      color:white;
+    }
+
+    .main{
+      padding:20px;
+      background:rgba(0,0,0,0.45);
+    }
+
+    .section{
+      margin:40px auto;
+      padding:25px;
+      max-width:1100px;
+      background:var(--card);
+      border-radius:16px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      opacity:0;
+      transform:translateY(40px);
+      transition:all 0.8s ease-out;
+    }
+    .section.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .section h1,
+    .contact h2 {
+      font-size:28px;
+      margin-bottom:14px;
+      text-align:center;
+      color:var(--section-title);
+    }
+
+    .section p,
+    .team-card p,
+    .staff p,
+    .contact p {
+      font-size:14px;
+      color:var(--muted);
+      text-align:justify;
+    }
+
+    .staff{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:25px;
+      flex-wrap:wrap;
+    }
+    .staff img{
+      width:220px;
+      border-radius:12px;
+      border:2px solid var(--accent);
+    }
+
+    .teams{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr); /* 2 columns for desktop */
+      gap:20px;
+    }
+    .team-card{
+      background:var(--card);
+      border-radius:14px;
+      padding:18px;
+      text-align:center;
+      transition:transform 0.1s;
+    }
+    .team-card:hover{ transform:translateY(-6px); }
+    .team-card h2{
+      margin:10px 0;
+      font-size:22px;
+      color:var(--section-title);
+      text-align:center;
+    }
+
+    .more-info{
+      margin-top:12px;
+      display:inline-block;
+      padding:8px 16px;
+      background:var(--accent);
+      color:#000;
+      font-weight:600;
+      border-radius:8px;
+      text-decoration:none;
+      transition:0.3s;
+    }
+    .more-info:hover{
+      background:#fff;
+      color:#000;
+      transform:scale(1.05);
+      box-shadow:0 0 12px var(--accent);
+    }
+
+    .contact{
+      background:var(--sidebar-bg);
+      padding:40px 25px;
+      text-align:center;
+      border-radius:16px;
+      margin:40px auto;
+      max-width:1100px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .contact-items{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:40px;
+      margin-bottom:20px;
+    }
+    .contact-item{
+      text-align:center;
+      color:#fff;
+      max-width:250px;
+    }
+    .contact-item img{
+      height:28px;
+      margin-bottom:8px;
+      filter:invert(1);
+    }
+
+    .contact-form{
+      max-width:600px;
+      margin:20px auto;
+      text-align:left;
+    }
+    .contact-form input,
+    .contact-form textarea{
+      width:100%;
+      padding:12px;
+      margin-bottom:12px;
+      border:none;
+      border-radius:8px;
+      font-size:15px;
+    }
+    .contact-form button{
+      padding:12px 20px;
+      border:none;
+      border-radius:8px;
+      background:var(--accent);
+      color:#000;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.3s;
+    }
+    .contact-form button:hover{
+      background:#fff;
+      color:#000;
+    }
+
+    .socials{
+      margin-top:20px;
+      display:flex;
+      justify-content:center;
+      gap:25px;
+      align-items:center;
+      flex-direction:column; /* Icons on top, text below */
+    }
+    .socials-icons{
+      display:flex;
+      justify-content:center;
+      gap:25px;
+      margin-bottom:10px;
+    }
+    .socials img{
+      height:30px;
+      filter:invert(1);
+      transition:0.3s;
+    }
+    .socials img:hover{
+      transform:scale(1.2);
+    }
+
+    @media (max-width:1024px){
+      .teams{grid-template-columns:1fr;} /* Mobile: 1 per row */
+    }
+    @media (max-width:768px){
+      header img{height:50px;}
+      header .seds-logo{height:60px;}
+      .staff img{width:160px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" onclick="toggleSidebar()">Menu ×</span>
+    <a href="#home">Home</a>
+    <a href="#vision">Vision</a>
+    <a href="#mission">Mission</a>
+    <a href="#staff">Staff Coordinator</a>
+    <a href="#teams">Our Teams</a>
+    <a href="#contact">Contact Us</a>
+    <a href="Events.html">Events</a>
+    <a href="kosmorena'25.html">Kosmorena'25</a>
+    <a href="team_members_event.html">Events Team Members</a>
+    <a href="team_members_pr.html">PR Team Members</a>
+    <a href="team_members_admin.html">Admin Team Members</a>
+    <a href="team_members_impm.html">IM & PM Team Members</a>
+    <a href="team_members_media.html">Media Team Members</a>
+    <a href="team_members_finance.html">Finance Team Members</a>
+    <a href="astronomy_team_members.html">Astronomy Team Members</a>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="left-header">
+      <span class="hamburger" onclick="toggleSidebar()">&#9776;</span>
+      <img src="kumaraguru.png" alt="Kumaraguru Institutions">
+    </div>
+    <img src="SEDS.png" alt="SEDS Logo" class="seds-logo">
+  </header>
+  <h1 class="events-title">WELCOME!</h1>
+
+  <!-- Main -->
+  
+    <div class="section" id="vision">
+      <h1>VISION</h1>
+      <p>SEDS KCT is a student organization which promotes exploration and development of Space. We stalk on this mission by supporting a network of interested people and develop their Leadership and also involving them in Space related projects.</p>
+    </div>
+
+    <div class="section" id="mission">
+      <h1>MISSION</h1>
+      <p>Students for the Exploration and Development of Space at KCT aims to educate and promote space science and technology among students through various events and engineering projects. We nourish our members through constant encouragements, supporting in their endeavors and also create a platform to reach higher altitudes.</p>
+    </div>
+
+    <div class="section" id="staff">
+      <h1>Staff Coordinator</h1>
+      <div class="staff">
+        <img src="person.png" alt="Staff Coordinator">
+        <p><b>Dr. PS Prem Kumar</b><br>Department of Physics, KCT</p>
+      </div>
+    </div>
+      <div class="section" id="staff">
+      <h1>President</h1>
+      <div class="staff">
+        <img src="person1.jpg" alt="Staff Coordinator">
+        <b></b>
+        <p><b>Aadrika S P</b><br>Department of EEE, KCT</p>
+      </div>
+    </div>
+
+    <div class="section" id="teams">
+      <h1>Our Teams</h1>
+      <div class="teams">
+        <div class="team-card">
+          <h2>Events Team</h2>
+          <p>The Event Team brings creativity and organization together, ensuring every program runs smoothly and memorably. From planning and logistics to on-spot coordination, they manage every detail with precision. Their teamwork, energy, and dedication create engaging experiences that connect people, inspire participation, and make every event a lasting success.</p>
+          <a href="team_members_event.html" class="more-info">Team Members</a>
+        </div>
+        <div class="team-card">
+          <h2>PR Team</h2>
+          <p>The PR Team builds strong connections by sharing our work with the world through posters, astronomy calendars, space news, and registration forms. They craft clear, creative, and impactful communication that engages audiences, strengthens our presence, and ensures every initiative reaches people with the right message.</p>
+          <a href="team_members_pr.html" class="more-info">Team Members</a>
+        </div>
+        <div class="team-card">
+          <h2>Admin Team</h2>
+          <p>The Admin Team is the backbone of every initiative, handling coordination, permissions, and smooth execution of activities. From managing resources to maintaining records and communication, they ensure everything runs efficiently. Their dedication, discipline, and support keep the team organized, allowing every event and project to succeed seamlessly.</p>
+          <a href="team_members_admin.html" class="more-info">Team Members</a>
+        </div>
+        <div class="team-card">
+          <h2>IM and PM Team</h2>
+          <p>The Innovation & Project Management Team drives creativity and execution hand in hand. They transform ideas into impactful projects by planning, designing, and managing every stage with precision. Through research, innovation, and structured coordination, they ensure concepts grow into successful outcomes that inspire progress and strengthen the organization.</p>
+          <a href="team_members_impm.html" class="more-info">Team Members</a>
+        </div>
+        <div class="team-card">
+          <h2>Media Team</h2>
+          <p>The Media Team brings ideas to life through visuals, videos, and digital creativity. From posters and reels to social media campaigns, they showcase every event with impact. Their innovative designs, storytelling, and consistency build strong outreach, ensuring our activities inspire, engage, and reach a wider community effectively.</p>
+          <a href="team_members_media.html" class="more-info">Team Members</a>
+        </div>
+        <div class="team-card">
+          <h2>Finance Team</h2>
+          <p>The Financial Team manages budgets, funding, and resources with precision and transparency. They ensure every project is financially sustainable, from planning expenses to securing support. Their careful tracking, accountability, and dedication provide the backbone for smooth operations, empowering the team to focus on innovation and successful event execution.</p>
+          <a href="team_members_finance.html" class="more-info">Team Members</a>
+        </div>
+              <div class="team-card">
+          <h2>Astronomy Team</h2>
+          <p>The Financial Team manages budgets, funding, and resources with precision and transparency. They ensure every project is financially sustainable, from planning expenses to securing support. Their careful tracking, accountability, and dedication provide the backbone for smooth operations, empowering the team to focus on innovation and successful event execution.</p>
+          <a href="astronomy_team_members.html" class="more-info">Team Members</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div class="contact" id="contact">
+    <h2>Contact Us</h2>
+    <div class="contact-items">
+      <div class="contact-item">
+        <img src="location.png" alt="Location">
+        <p>Kumaraguru Campus, Saravanampatti,<br>Chinnavedampatti (Post),<br>Coimbatore- 641049, Tamilnadu.</p>
+      </div>
+      <div class="contact-item">
+        <img src="email.png" alt="Email">
+        <p>manilunar07@gmail.com<br>seds@kct.ac.in</p>
+      </div>
+      <div class="contact-item">
+        <img src="phone.png" alt="Phone">
+        <p>9344752075</p>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="email" id="email" placeholder="Your Email" required>
+      <textarea id="message" rows="4" placeholder="Your Message" required></textarea>
+      <button onclick="sendEmail()">Send Message</button>
+    </div>
+
+    <div class="socials">
+      <div class="socials-icons">
+        <a href="https://youtube.com/@kumaraguru_seds?si=onZxM2afy6LTK3iA"><img src="youtube.png" alt="YouTube"></a>
+        <a href="https://www.linkedin.com/company/seds-kct/"><img src="linkedin.png" alt="LinkedIn"></a>
+        <a href="https://www.instagram.com/seds_kumaraguru?igsh=MWZwcmQ5cWYwZWpreg=="><img src="instagram.png" alt="Instagram"></a>
+      </div>
+      <h2 style="color:white;">Follow Us</h2>
+      <h3>Created By </h3>
+  <h3>Manikandan N</h3>
+    </div>
+  </div>
+  
+  <script>
+    function toggleSidebar(){  
+      document.getElementById("sidebar").classList.toggle("active");  
+    }
+    document.addEventListener("click", function(e){  
+      const sidebar = document.getElementById("sidebar");  
+      const hamburger = document.querySelector(".hamburger");  
+      if(sidebar.classList.contains("active") && !sidebar.contains(e.target) && !hamburger.contains(e.target)){  
+        sidebar.classList.remove("active");  
+      }  
+    });  
+
+    const sections = document.querySelectorAll(".section");  
+    const observer = new IntersectionObserver(entries=>{  
+      entries.forEach(entry=>{  
+        if(entry.isIntersecting){  
+          entry.target.classList.add("show");  
+        }  
+      });  
+    },{threshold:0.2});  
+    sections.forEach(sec=>observer.observe(sec));  
+
+    function sendEmail() {  
+      let name = document.getElementById("name").value;  
+      let email = document.getElementById("email").value;  
+      let message = document.getElementById("message").value;  
+
+      let subject = "New Contact Form Submission";  
+      let body = `Name: ${name}%0D%0AEmail: ${email}%0D%0AMessage: ${message}`;  
+
+      window.location.href = `mailto:manilunar07@gmail.com?cc=seds@kct.ac.in&subject=${subject}&body=${body}`;  
+    }  
+  </script>
+</body>
+</html>

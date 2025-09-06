@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="sedsb.png" type="image/png">
+<title>IM & PM Team Members</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sidebar-bg:#132233;
+  --text:#fff;
+  --muted:#c9d1e6;
+  --card:rgba(255,255,255,0.08);
+  --accent:#4da6ff;
+  --section-title:#4da6ff;
+}
+*{box-sizing:border-box;margin:0;padding:0;scroll-behavior:smooth;}
+ body{
+      font-family:"Poppins", sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      position:relative;
+      z-index:0;
+    }
+
+    /* Background with dark overlay */
+    body::before {
+      content:"";
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background: url('background.jpg') no-repeat center center/cover fixed;
+      filter:brightness(70%); /* lower brightness */
+      z-index:-1;
+    }
+
+/* Header */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 20px;
+  background:rgba(0,0,0,0.5);
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+.left-header{display:flex;align-items:center;gap:15px;}
+header img{height:60px;transition:0.3s;}
+header .seds-logo{height:70px;}
+  .events-title {
+      margin-top:8px;
+      font-size:50px;
+      color: #FFFF;
+      text-align:center;
+    }
+
+/* Sidebar Navigation */
+ .sidebar{
+      position:fixed;
+      top:0; left:-260px;
+      width:260px;
+      height:100%;
+      background:var(--sidebar-bg);
+      padding:30px 20px;
+      transition:0.3s;
+      z-index:2000;
+      overflow-y:auto;      /* ✅ make sidebar scrollable */
+      max-height:100vh;     /* ✅ keep it within viewport */
+    }
+.sidebar.active{left:0;}
+.sidebar a{
+  display:block;
+  padding:15px 0;
+  color:#fff;
+  font-size:20px;
+  text-decoration:none;
+  border-bottom:1px solid rgba(255,255,255,0.2);
+}
+.sidebar a:hover{color:var(--accent);}
+.close-btn{
+  font-size:22px;
+  color:#fff;
+  cursor:pointer;
+  text-align:right;
+  margin-bottom:20px;
+  display:block;
+}
+.hamburger{font-size:28px;cursor:pointer;color:white;}
+
+/* Main Content */
+.main{flex:1;padding:20px;}
+
+/* Team Section */
+.team-container{
+  max-width:1100px;
+  margin:50px auto;
+  padding:40px;
+  background:var(--card);
+  border-radius:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+.team-container h1{
+  text-align:center;
+  font-size:32px;
+  margin-bottom:40px;
+  color:var(--section-title);
+}
+/* Lead & Co-Lead */
+.lead-container{
+  display:flex;
+  justify-content:center;
+  gap:60px;
+  flex-wrap:wrap;
+  margin-bottom:40px;
+}
+.lead-container .team-member img{
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  border:4px solid var(--accent);
+  object-fit:cover;
+  margin-bottom:12px;
+  box-shadow:0 8px 15px rgba(0,0,0,0.3);
+  transition:0.5s;
+}
+.lead-container .team-member img:hover{
+  transform:scale(1.1) rotate(3deg);
+  box-shadow:0 15px 25px rgba(0,0,0,0.5);
+}
+
+/* Members Grid */
+.grid-container{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:40px;
+  justify-items:center;
+}
+.grid-container .team-member img{
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  border:3px solid #c3ff7a;
+  object-fit:cover;
+  margin-bottom:12px;
+  transition:0.5s;
+  box-shadow:0 6px 12px rgba(0,0,0,0.3);
+}
+.grid-container .team-member img:hover{
+  transform:scale(1.1) rotate(-3deg);
+  box-shadow:0 12px 20px rgba(0,0,0,0.5);
+}
+
+/* Titles & Names */
+.member-title{ 
+  font-weight:300; 
+  font-size:15px; /* default for Members */
+  text-align:center; 
+}
+.member-name{ 
+  font-weight:300; 
+  text-align:center; 
+  font-size:20px; 
+}
+.lead-name {
+  font-weight:500; 
+  text-align:center; 
+  font-size:25px;
+}
+  .lead-title {
+    font-weight:500; 
+  text-align:center; 
+  font-size:25px;
+    color: var(--accent);
+  }
+  
+/* Animation */
+.team-member{
+  opacity:0;
+  transform:translateY(40px);
+  transition:all 0.8s ease-out;
+}
+.team-member.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Contact Section */
+.contact{
+  background:var(--sidebar-bg);
+  padding:40px 25px;
+  text-align:center;
+  border-radius:16px;
+  margin:40px auto;
+  max-width:1100px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+.contact h2{
+  font-size:28px;
+  margin-bottom:14px;
+  text-align:center;
+  color:var(--section-title);
+}
+.contact-items{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:40px;
+  margin-bottom:20px;
+}
+.contact-item{
+  text-align:center;
+  color:#fff;
+  max-width:250px;
+}
+.contact-item img{
+  height:28px;
+  margin-bottom:8px;
+  filter:invert(1);
+}
+.contact-form{
+  max-width:600px;
+  margin:20px auto;
+  text-align:left;
+}
+.contact-form input,
+.contact-form textarea{
+  width:100%;
+  padding:12px;
+  margin-bottom:12px;
+  border:none;
+  border-radius:8px;
+  font-size:15px;
+}
+.contact-form button{
+  padding:12px 20px;
+  border:none;
+  border-radius:8px;
+  background:var(--accent);
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+.contact-form button:hover{
+  background:#fff;
+  color:#000;
+}
+.socials{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  gap:25px;
+  align-items:center;
+  flex-direction:column;
+}
+.socials-icons{
+  display:flex;
+  justify-content:center;
+  gap:25px;
+  margin-bottom:10px;
+}
+.socials img{
+  height:30px;
+  filter:invert(1);
+  transition:0.3s;
+}
+.socials img:hover{transform:scale(1.2);}
+
+/* Responsive */
+@media(max-width:1024px){.grid-container{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:768px){.grid-container{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.lead-container{flex-wrap:wrap;justify-content:center;gap:30px;}}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <span class="close-btn" onclick="toggleSidebar()">Menu ×</span>
+  <a href="main_page.html#home">Home</a>
+  <a href="main_page.html#vision">Vision</a>
+  <a href="main_page.html#mission">Mission</a>
+  <a href="main_page.html#staff">Staff Coordinator</a>
+  <a href="main_page.html#teams">Our Teams</a>
+  <a href="#contact">Contact Us</a>
+  <a href="Events.html">Events</a>
+  <a href="kosmorena'25.html">Kosmorena'25</a>
+  <a href="#Batch 25 - 26">Batch 25 - 26</a>
+   <a href="#Batch 24 - 25">Batch 24 - 25</a>
+  <a href="#Batch 23 - 24">Batch 23 - 24</a>
+  <a href="team_members_event.html">Events Team Members</a>
+    <a href="team_members_pr.html">PR Team Members</a>
+    <a href="team_members_admin.html">Admin Team Members</a>
+    <a href="team_members_media.html">Media Team Members</a>
+    <a href="team_members_finance.html">Finance Team Members</a>
+   <a href="astronomy_team_members.html">Astronomy Team Members</a>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="left-header">
+    <span class="hamburger" onclick="toggleSidebar()">&#9776;</span>
+    <img src="kumaraguru.png" alt="Kumaraguru Institutions">
+  </div>
+  <img src="SEDS.png" alt="SEDS Logo" class="seds-logo">
+</header>
+    <h1 class="events-title">IM & PM Team</h1>
+
+<!-- Team Section -->
+<div class="team-container" id="Batch 25 - 26">
+  <h1>Batch 25 - 26</h1>
+  <div class="lead-container">
+    <div class="team-member">
+      <img src="harishchander.jpeg" alt="Lead">
+      <div class="lead-title">Lead</div>
+      <div class="lead-name">Harish Chander</div>
+    </div>
+    <div class="team-member">
+      <div class="member-title"></div>
+      <img src="manoj.jpeg" alt="Lead">
+          <div class="lead-title">Lead</div>
+      <div class="lead-name">Manoj</div>
+    </div>
+  </div>
+  
+  <!-- Members Grid -->
+  <div class="grid-container">
+ <div class="team-member">
+      <img src="aiswarya.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Aiswarya</div>
+    </div>
+     <div class="team-member">
+      <img src="subinsha.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Subinsha</div>
+    </div>
+     <div class="team-member">
+      <img src="shubiksha.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Shubiksha</div>
+    </div>
+     <div class="team-member">
+      <img src="prasanna.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Prasanna Vengatesh</div>
+    </div>
+     <div class="team-member">
+      <img src="mathishyam.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Mathishyam</div>
+    </div>
+    <div class="team-member">
+      <img src="pranav.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Pranav Varshan</div>
+    </div>
+    <div class="team-member">
+      <img src="ilamathi.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Ilamathi</div>
+    </div>
+    <div class="team-member">
+      <img src="sajjeevan.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Sajjeevan</div>
+    </div>
+    <div class="team-member">
+      <img src="kabilan.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Kabilan</div>
+    </div>
+  </div>
+</div>
+  <div class="team-container" id="Batch 24 - 25">
+  <h1>Batch 24 - 25</h1>
+
+  <!-- Lead & Co-Lead -->
+  <div class="lead-container">
+    <div class="team-member">
+      <img src="farhathrakshana.jpeg" alt="Lead">
+      <div class="member-title">Lead</div>
+      <div class="member-name">Farhath Rakshana</div>
+    </div>
+    <div class="team-member">
+      <div class="member-title"></div>
+      <div class="member-name"></div>
+    </div>
+  </div>
+
+  <!-- Members Grid -->
+  <div class="grid-container">
+ <div class="team-member">
+      <img src="manoj.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Manoj</div>
+    </div>
+     <div class="team-member">
+      <img src="prasanna.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Prasanna Vengatesh</div>
+    </div>
+     <div class="team-member">
+      <img src="shubiksha.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Shubiksha</div>
+    </div>
+     <div class="team-member">
+      <img src="harishchander.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Harish Chander</div>
+    </div>
+     <div class="team-member">
+      <img src="vinoth.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Vinoth R</div>
+    </div>
+  </div>
+</div>
+
+  <!-- Members Grid -->
+<div class="team-container" id="Batch 23 - 24">
+  <h1>Batch 23 - 24</h1>
+
+  <!-- Lead & Co-Lead -->
+  <div class="lead-container">
+    <div class="team-member">
+      <img src="nyruthi.jpeg" alt="Lead">
+      <div class="lead-title">Lead</div>
+      <div class="lead-name">Nyruthi</div>
+    </div>
+    <div class="team-member">
+      <img src="yuhendran.jpeg" alt="Co-Lead">
+      <div class="lead-title">Co-Lead</div>
+      <div class="lead-name">Yuhendran</div>
+    </div>
+  </div>
+
+  <!-- Members Grid -->
+  <div class="grid-container">
+    <div class="team-member">
+      <img src="jayasri.jpeg" alt="Member 1">
+      <div class="member-title">Member</div>
+      <div class="member-name">Jayasri</div>
+    </div>
+    <div class="team-member">
+      <img src="manikandana.jpeg" alt="Member 2">
+      <div class="member-title">Member</div>
+      <div class="member-name">Manikandan</div>
+    </div>
+    <div class="team-member">
+      <img src="farhathrakshana.jpeg" alt="Member 3">
+      <div class="member-title">Member</div>
+      <div class="member-name">Farhath Rakshana</div>
+    </div>
+    <div class="team-member">
+      <img src="shubiksha.jpeg" alt="Member 4">
+      <div class="member-title">Member</div>
+      <div class="member-name">Shubiksha</div>
+    </div>
+    <div class="team-member">
+      <img src="manoj.jpeg" alt="Member 5">
+      <div class="member-title">Member</div>
+      <div class="member-name">Manoj</div>
+    </div>
+    <div class="team-member">
+      <img src="prasanna.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Prasanna Vengatesh</div>
+    </div>
+     <div class="team-member">
+      <img src="harishchander.jpeg" alt="Member 6">
+      <div class="member-title">Member</div>
+      <div class="member-name">Harish Chander</div>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Section -->
+<div class="contact" id="contact">
+  <h2>Contact Us</h2>
+  <div class="contact-items">
+    <div class="contact-item">
+      <img src="location.png" alt="Location">
+      <p>Kumaraguru Campus, Saravanampatti,<br>Chinnavedampatti (Post),<br>Coimbatore-641049, Tamilnadu.</p>
+    </div>
+    <div class="contact-item">
+      <img src="email.png" alt="Email">
+      <p>manilunar07@gmail.com<br>seds@kct.ac.in</p>
+    </div>
+    <div class="contact-item">
+      <img src="phone.png" alt="Phone">
+      <p>9344752075</p>
+    </div>
+  </div>
+
+  <div class="contact-form">
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required>
+    <textarea id="message" rows="4" placeholder="Your Message" required></textarea>
+    <button onclick="sendEmail()">Send Message</button>
+  </div>
+
+  <div class="socials">
+    <div class="socials-icons">
+      <a href="https://youtube.com/@kumaraguru_seds?si=onZxM2afy6LTK3iA"><img src="youtube.png" alt="YouTube"></a>
+      <a href="https://www.linkedin.com/company/seds-kct/"><img src="linkedin.png" alt="LinkedIn"></a>
+      <a href="https://www.instagram.com/seds_kumaraguru/"><img src="instagram.png" alt="Instagram"></a>
+    </div>
+    <h2 style="color:white;">Follow Us</h2>
+    <h3>Created By</h3>
+    <h3>Manikandan N</h3>
+  </div>
+</div>
+
+<script>
+// Sidebar toggle
+function toggleSidebar(){  
+  document.getElementById("sidebar").classList.toggle("active");  
+}
+document.addEventListener("click", function(e){  
+  const sidebar = document.getElementById("sidebar");  
+  const hamburger = document.querySelector(".hamburger");  
+  if(sidebar.classList.contains("active") && !sidebar.contains(e.target) && !hamburger.contains(e.target)){  
+    sidebar.classList.remove("active");  
+  }  
+});  
+  const sections = document.querySelectorAll(".section");  
+    const observer = new IntersectionObserver(entries=>{  
+      entries.forEach(entry=>{  
+        if(entry.isIntersecting){  
+          entry.target.classList.add("show");  
+        }  
+      });  
+    },{threshold:0.2});  
+    sections.forEach(sec=>observer.observe(sec)); 
+
+// Send email from contact form
+function sendEmail() {  
+  let name = document.getElementById("name").value;  
+  let email = document.getElementById("email").value;  
+  let message = document.getElementById("message").value;  
+
+  let subject = "New Contact Form Submission";  
+  let body = `Name: ${name}%0D%0AEmail: ${email}%0D%0AMessage: ${message}`;  
+
+  window.location.href = `mailto:manilunar07@gmail.com?cc=seds@kct.ac.in&subject=${subject}&body=${body}`;  
+}  
+
+// Staggered animation for team members
+const members = document.querySelectorAll(".team-member");
+members.forEach((member, index) => {
+  setTimeout(() => { member.classList.add("show"); }, index * 200);
+});
+</script>
+
+</body>
+</html>
