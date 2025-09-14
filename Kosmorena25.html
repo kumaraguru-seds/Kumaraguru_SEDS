@@ -17,7 +17,7 @@
   --text:#ffffff;
   --muted:#c9d1e6;
   --accent:#4da6ff;
-  --card:#1e2a38;
+  --card: rgba(255,255,255,0.08);
 }
 *{box-sizing:border-box;margin:0;padding:0;scroll-behavior:smooth;}
 body{
@@ -33,7 +33,7 @@ body::before {
   top:0; left:0;
   width:100%; height:100%;
   background: url('background.jpg') no-repeat center center/cover fixed;
-  filter:brightness(100%);
+  filter:brightness(50%);
   z-index:-1;
 }
 header{
@@ -44,6 +44,12 @@ header{
 .left-header{display:flex;align-items:center;gap:15px;}
 header img{height:60px;}
 header .seds-logo{height:70px;}
+.events-title {
+      margin-top:8px;
+      font-size:50px;
+      color: #FFFF;
+      text-align:center;
+    }
 
 /* Sidebar */
 .sidebar{
@@ -65,8 +71,8 @@ header .seds-logo{height:70px;}
 .hamburger{font-size:28px;cursor:pointer;color:white;}
 
 /* Main */
-.main{text-align:center;padding:40px 20px;background:rgba(0,0,0,0.5);}
-.main h1{font-size:50px;margin:20px 0;}
+.main{text-align:center;padding:40px 20px;}
+.main h1{font-size:50px;}
 .main h2{margin:20px 0;color:var(--accent);font-size:28px;}
 .main p{max-width:900px;margin:10px auto;font-size:15px;line-height:1.6;color:var(--muted);}
 
@@ -104,67 +110,174 @@ header .seds-logo{height:70px;}
   from{opacity:0;transform:translateY(30px);}
   to{opacity:1;transform:translateY(0);}
 }
-
-/* Event Card */
-.event-card {
+/* Generic Content Card */
+.content-card {
   background: var(--card);
   border-radius: 16px;
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 800px;
+  padding: 30px 25px;
+  margin: 25px auto;
+  width: 100%;
+  max-width: 1000px;
   text-align: center;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  animation: fadeSlide 0.7s ease forwards;
 }
-.event-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.7);
-}
-.event-card img {
-  width: 250px;
-  height: 250px;
-  object-fit: cover;
-  border-radius: 12px;
+
+.content-card h2 {
+  color: var(--accent);
   margin-bottom: 15px;
+  font-size: 28px;
+}
+
+.content-card h3, 
+.content-card p, 
+.content-card li {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+
+/* 🎟️ Event Card */
+.event-card {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 20px;
+  margin: 25px auto;
+  width: 100%;
+  max-width: 1000px;   /* keeps it centered and neat */
+  display: center;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeSlide 0.7s ease forwards;
+}
+
+.event-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.8);
+}
+
+/* 🔹 Top Section: Poster LEFT + Text RIGHT */
+.event-top {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* ensures content is centered inside */
+  gap: 24px;
+}
+
+.event-card img {
+  width: 320px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 14px;
+  flex-shrink: 0;
   animation: float 3s ease-in-out infinite;
 }
-.event-card h3 {
-  color: var(--accent);
-  margin-bottom: 10px;
+
+.event-content {
+  flex: 1;
+  text-align: left;
 }
-.event-card p {
-  color: var(--muted);
-  margin-bottom: 15px;
+
+.event-content h3 {
+  color: var(--accent, #f39c12);
+  margin-bottom: 12px;
+  font-size: 26px;
 }
+
+.event-content p {
+  color: var(--muted, #d3d3d3);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* 🔹 Bottom Info */
+.event-bottom {
+  margin-top: 10px;
+  text-align: center;
+}
+
 .event-card .info-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
   justify-content: center;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
 }
+
 .event-card .info-box {
-  background: #34495e;
-  padding: 8px 14px;
-  border-radius: 8px;
+  background: #2c3e50;
+  padding: 10px 16px;
+  border-radius: 10px;
   font-size: 14px;
   color: #fff;
-  min-width: 120px;
+  min-width: 140px;
   text-align: center;
-}
-.event-card .register-btn {
-  padding: 12px 20px;
-  background: var(--accent);
-  color: #000;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
   transition: 0.3s;
 }
-.event-card .register-btn:hover {
+
+.event-card .info-box:hover {
+  background: #34495e;
+}
+
+/* 🔹 Register Button */
+.register-btn {
+  padding: 14px 26px;
+  background: var(--accent, #f39c12);
+  color: #000;
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 0 12px rgba(243, 156, 18, 0.7);
+}
+
+.register-btn:hover {
   background: #fff;
   color: #000;
+  transform: scale(1.06);
+  box-shadow: 0 0 18px rgba(243, 156, 18, 0.9);
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .event-top {
+    flex-direction: column;
+    text-align: center;
+  }
+  .event-card img {
+    width: 100%;
+    height: auto;
+  }
+  .event-content {
+    text-align: center;
+  }
+  .event-card .info-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .event-card .info-box {
+    width: 100%;
+  }
+  .register-btn {
+    width: 100%;
+  }
+}
+
+/* ✨ Animations */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
 }
 
 /* Floating Image Animation */
@@ -181,6 +294,12 @@ header .seds-logo{height:70px;}
   background:var(--accent);color:#000;font-size:16px;font-weight:600;
   cursor:pointer;transition:0.3s;
 }
+.day-btns button.active {
+  background: #fff;
+  color: #000;
+  transform: scale(1.05);
+}
+
 .day-btns button:hover{background:#fff;color:#000;transform:scale(1.05);}
 
 /* Contact */
@@ -243,27 +362,41 @@ header .seds-logo{height:70px;}
 </header>
 
 <div class="main">
-  <h1>KOSMORENA 2025</h1>
-  <h2>What is Kosmorena'25</h2>
-  <h3>Kosmorena is our annual space festival, and this year’s edition—Kosmorena’25—falls right in the week of National Space Day...</h3>
+  <h1 class="events-title">KOSMORENA 2025</h1>
+  <!-- What is Kosmorena -->
+  <div class="content-card">
+    <h2>What is Kosmorena'25</h2>
+    <h3>
+      Kosmorena is our annual space festival, and this year’s edition—Kosmorena’25—
+      falls right in the week of National Space Day...
+    </h3>
+  </div>
 
-  <h2>Why Kosmorena’25?</h2>
-  <h3>
-    <li>To celebrate National Space Week with engaging activities</li>
-    <li>To inspire young minds to pursue aerospace and STEM fields</li>
-    <li>To encourage creativity, problem-solving, and innovation in space exploration</li>
-    <li>To create a platform where students learn by doing</li>
-  </h3>
+  <!-- Why Kosmorena -->
+  <div class="content-card">
+    <h2>Why Kosmorena’25?</h2>
+    <ul>
+      To celebrate National Space Week with engaging activities
+      <br> young minds to pursue aerospace and STEM fields
+      <br> To encourage creativity, problem-solving, and innovation in space exploration<br>
+      To create a platform where students learn by doing
+    </ul>
+  </div>
 
   <!-- Countdown -->
-  <div id="countdown-box"><div id="countdown"></div></div>
+  <div class="content-card">
+    <h2>Countdown to Launch 🚀</h2>
+    <div id="countdown-box"><div id="countdown"></div></div>
+  </div>
 
   <!-- Day Buttons -->
-  <div class="day-btns">
-    <button onclick="toggleDay(1)">Day 1</button>
-    <button onclick="toggleDay(2)">Day 2</button>
-    <button onclick="toggleDay(3)">Day 3</button>
-  </div>
+  <div class="content-card">
+    <h2>Event Schedule</h2>
+    <div class="day-btns">
+      <button onclick="toggleDay(1)">Day 1</button>
+      <button onclick="toggleDay(2)">Day 2</button>
+      <button onclick="toggleDay(3)">Day 3</button>
+    </div>
 
   <!-- ✅ Day 1 Events -->
   <div id="day1" class="day-event">
@@ -376,17 +509,33 @@ function startCountdown(){
   },1000);
 }
 
-// Toggle Day Events
+// Toggle Day Events + Active Button
 function toggleDay(day){
-  ["day1","day2","day3"].forEach(id=>{
+  ["day1","day2","day3"].forEach((id, index) => {
     const el = document.getElementById(id);
+    const btn = document.querySelectorAll(".day-btns button")[index];
     if(id==="day"+day){
       el.style.display = "block";
+      btn.classList.add("active");
+      // Animate cards
+      setTimeout(() => {
+        el.querySelectorAll(".event-card").forEach((card,i) => {
+          setTimeout(() => card.classList.add("show"), i*200);
+        });
+      },100);
     } else {
       el.style.display = "none";
+      btn.classList.remove("active");
     }
   });
 }
+
+// Show Day 1 by default
+window.onload=function(){
+  toggleDay(1);
+  startCountdown();
+}
+
 
 // Scroll smoothly to Contact Section
 document.querySelectorAll('.sidebar a[href="#contact"]').forEach(link => {
