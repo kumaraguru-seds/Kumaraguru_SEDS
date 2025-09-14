@@ -576,6 +576,10 @@ members.forEach((member, index) => {
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
 });
+// Disable right-click
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
 
 // Disable common developer shortcuts
 document.addEventListener('keydown', function(e) {
@@ -603,6 +607,9 @@ document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
         e.preventDefault();
     }
+});
+document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
 });
 </script>
 
