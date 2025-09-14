@@ -200,6 +200,70 @@
       transform:scale(1.05);
       box-shadow:0 0 12px var(--accent);
     }
+    
+.event-gallery {
+  background: var(--card);   /* same light transparent card look */
+  border-radius: 16px;
+  padding: 25px;
+  margin: 40px auto;
+  max-width: 1100px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease-out;
+}
+.event-gallery.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.gallery-track img,
+.gallery-track video {
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  border-radius: 12px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.gallery-track img.active,
+.gallery-track video.active {
+  opacity: 1;
+  position: relative;
+}
+/* Navigation Buttons */
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 50%;
+  font-size: 28px;     /* bigger arrow size */
+  cursor: pointer;
+  padding: 14px 20px;  /* bigger button */
+  box-shadow: 0 4px 8px rgba(96, 93, 93, 0.3);
+  transition: 0.3s;
+}
+
+.nav:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Positioning */
+.prev {
+  left: 20px;   /* move slightly inside the left side */
+}
+.next {
+  right: 20px;  /* move slightly inside the right side */
+}
+
 
     .contact{
       background:var(--sidebar-bg);
@@ -392,7 +456,19 @@
         </div>
       </div>
     </div>
+         <div class="event-gallery">
+      <button class="nav prev">&#8249;</button>
+      <div class="gallery-track">
+        <img src="group.jpg" alt="Photo 1">
+        <video src="video.mp4" controls></video>
+        <img src="group.jpg" alt="Photo 2">
+      </div>
+      <button class="nav next">&#8250;</button>
+    </div>
   </div>
+    </div>
+  </div>
+
 
   <!-- Contact -->
   <div class="contact" id="contact">
@@ -444,7 +520,7 @@
       }  
     });  
 
-    const sections = document.querySelectorAll(".section");  
+   const sections = document.querySelectorAll(".section, .event-gallery"); 
     const observer = new IntersectionObserver(entries=>{  
       entries.forEach(entry=>{  
         if(entry.isIntersecting){  
@@ -453,7 +529,31 @@
       });  
     },{threshold:0.2});  
     sections.forEach(sec=>observer.observe(sec));  
-
+    
+  // Gallery Controls
+    document.querySelectorAll(".event-gallery").forEach(gallery=>{
+      const track = gallery.querySelector(".gallery-track");
+      const items = track.querySelectorAll("img,video");
+      let index = 0;
+      function show(i){
+        items.forEach((it,k)=>it.classList.remove("active"));
+        items[i].classList.add("active");
+      }
+      gallery.querySelector(".prev").addEventListener("click",()=>{
+        index=(index-1+items.length)%items.length;
+        show(index);
+      });
+      gallery.querySelector(".next").addEventListener("click",()=>{
+        index=(index+1)%items.length;
+        show(index);
+      });
+      setInterval(()=>{
+        index=(index+1)%items.length;
+        show(index);
+      },15000); // auto slide every 15s
+      show(index);
+    });
+    
     function sendEmail() {  
       let name = document.getElementById("name").value;  
       let email = document.getElementById("email").value;  
