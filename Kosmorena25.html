@@ -551,6 +551,38 @@ window.onload=function(){
   toggleDay(1);
   startCountdown();
 }
+  // Disable right-click
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+// Disable common developer shortcuts
+document.addEventListener('keydown', function(e) {
+    // F12
+    if (e.key === 'F12') {
+        e.preventDefault();
+    }
+
+    // Ctrl+Shift+I
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+        e.preventDefault();
+    }
+
+    // Ctrl+Shift+C
+    if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+    }
+
+    // Ctrl+Shift+J
+    if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
+        e.preventDefault();
+    }
+
+    // Ctrl+U
+    if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+        e.preventDefault();
+    }
+});
 </script>
 
 </body>
