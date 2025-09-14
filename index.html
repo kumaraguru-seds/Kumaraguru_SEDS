@@ -235,6 +235,7 @@
   opacity: 1;
   position: relative;
 }
+
 /* Navigation Buttons */
 .nav {
   position: absolute;
@@ -244,11 +245,12 @@
   color: #000;
   border: none;
   border-radius: 50%;
-  font-size: 28px;     /* bigger arrow size */
+  font-size: 20px;
   cursor: pointer;
-  padding: 14px 20px;  /* bigger button */
+  padding: 14px 20px;
   box-shadow: 0 4px 8px rgba(96, 93, 93, 0.3);
   transition: 0.3s;
+  z-index: 10;
 }
 
 .nav:hover {
@@ -256,14 +258,21 @@
   transform: translateY(-50%) scale(1.1);
 }
 
-/* Positioning */
-.prev {
-  left: 20px;   /* move slightly inside the left side */
-}
-.next {
-  right: 20px;  /* move slightly inside the right side */
-}
+.prev { left: 20px; }
+.next { right: 20px; }
 
+/* ✅ Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .nav {
+    font-size: 16px;       /* smaller buttons */
+    padding: 10px 14px;    /* smaller padding */
+    top: 50%;              /* stay vertically centered */
+    transform: translateY(-50%);
+  }
+
+  .prev { left: 10px; }   /* bring closer to edges */
+  .next { right: 10px; }
+}
 
     .contact{
       background:var(--sidebar-bg);
@@ -560,9 +569,9 @@
       let message = document.getElementById("message").value;  
 
       let subject = "New Contact Form Submission";  
-      let body = Name: ${name}%0D%0AEmail: ${email}%0D%0AMessage: ${message};  
+      let body = `Name: ${name}%0D%0AEmail: ${email}%0D%0AMessage: ${message}`;  
 
-      window.location.href = mailto:manilunar07@gmail.com?cc=seds@kct.ac.in&subject=${subject}&body=${body};  
+      window.location.href = `mailto:manilunar07@gmail.com?cc=seds@kct.ac.in&subject=${subject}&body=${body}`;  
     }  
     // Disable right-click
 document.addEventListener('contextmenu', function(e) {
@@ -601,5 +610,4 @@ document.addEventListener('keydown', function(e) {
 });
   </script>
 </body>
-</html>
-
+        </html>
