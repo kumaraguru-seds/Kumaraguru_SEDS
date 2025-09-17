@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kumaraguru-seds.github.io/Kumaraguru_SEDS/sitemap.xml 
+Sitemap: https://kumaraguruseds.space/sitemap.xml
