@@ -1,67 +1,57 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>1.00</priority>
+<loc>https://kumaraguruseds.space/</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>1.00</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/Events.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://kumaraguruseds.space/Events.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/Kosmorena25.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://kumaraguruseds.space/Kosmorena25.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/team_members_event.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://kumaraguruseds.space/team_members_event.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/team_members_pr.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://kumaraguruseds.space/team_members_pr.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/team_members_admin.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://kumaraguruseds.space/team_members_admin.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/team_members_impm.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://kumaraguruseds.space/team_members_impm.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/team_members_media.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://kumaraguruseds.space/team_members_media.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/team_members_finance.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://kumaraguruseds.space/team_members_finance.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/astronomy_team_members.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://kumaraguruseds.space/astronomy_team_members.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kumaraguru-seds.github.io/Kumaraguru_SEDS/index.html</loc>
-  <lastmod>2025-09-07T14:24:20+00:00</lastmod>
-  <priority>0.64</priority>
+<loc>https://kumaraguruseds.space/Application_Form.html</loc>
+<lastmod>2025-09-17T11:13:54+00:00</lastmod>
+<priority>0.64</priority>
 </url>
-
-
 </urlset>
