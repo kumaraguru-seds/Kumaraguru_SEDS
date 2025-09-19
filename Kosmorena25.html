@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-  <meta name="description" content="Kumaraguru SEDS is a student-led organization at Kumaraguru Institutions dedicated to space exploration, astronomy, and aerospace engineering through projects, workshops, and events.">
-  <meta name="keywords" content="Kumaraguru SEDS,Kumaraguru seds, KCT SEDS, space exploration, astronomy club, aerospace engineering, student space projects, satellite design, rocketry, astrophysics, Kumaraguru Institutions">
-  
+<meta name="description" content="Kumaraguru SEDS is a student-led organization at Kumaraguru Institutions dedicated to space exploration, astronomy, and aerospace engineering through projects, workshops, and events.">
+<meta name="keywords" content="Kumaraguru SEDS,Kumaraguru seds, KCT SEDS, space exploration, astronomy club, aerospace engineering, student space projects, satellite design, rocketry, astrophysics, Kumaraguru Institutions">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="sedsb.png" type="image/png">
 <title>Kumaraguru SEDS Kosmorena 2025</title>
@@ -17,6 +16,7 @@
   --muted:#c9d1e6;
   --accent:#4da6ff;
   --card: rgba(255,255,255,0.08);
+  --hi:rgba(77,166,255,0.2);
 }
 *{box-sizing:border-box;margin:0;padding:0;scroll-behavior:smooth;}
 body{
@@ -233,14 +233,14 @@ header .seds-logo{height:70px;}
   border-radius: 12px;
   cursor: pointer;
   transition: 0.3s ease;
-  box-shadow: 0 0 12px rgba(243, 156, 18, 0.7);
+  box-shadow: 0 0 12px rgba(77, 166, 255, 0.7);
 }
 
 .register-btn:hover {
   background: #fff;
   color: #000;
   transform: scale(1.06);
-  box-shadow: 0 0 18px rgba(243, 156, 18, 0.9);
+  box-shadow: 0 0 18px rgba(77, 166, 255, 0.9);
 }
 
 /* 📱 Responsive */
@@ -344,17 +344,135 @@ header .seds-logo{height:70px;}
 .contact-item{text-align:center; max-width:220px;}
 .contact-item img{width:30px; margin-bottom:8px;}
 .contact-item p{color:var(--muted); font-size:12px; line-height:1.4;}
-.contact-form{max-width:500px;margin:0 auto;display:flex;flex-direction:column;gap:10px;}
-.contact-form input,
-.contact-form textarea{padding:10px;border-radius:8px;border:none;font-size:0.9rem;}
-.contact-form button{
-  padding:12px;font-size:1rem;border:none;border-radius:8px;
-  background:var(--accent);color:#000;cursor:pointer;transition:0.3s;font-weight:600;
+
+/* NEW FORM STYLING */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
 }
-.contact-form button:hover{background:#fff;color:#000;transform:scale(1.05);}
-.socials{margin-top:15px;text-align:center;}
-.socials img{width:30px;margin:0 8px;}
-.socials p{margin-bottom:8px;color:white;}
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+    background-color: #fff;
+    color: #333;
+}
+.contact-form textarea {
+    height: 100px; /* Adjust height for textarea */
+}
+.contact-form button {
+    background-color: var(--accent);
+    color: #000;
+    padding: 8px 16px; /* Smaller padding */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem; /* Smaller font size */
+    font-weight: 600;
+    transition: 0.3s;
+    align-self: flex-start; /* Align button to the left */
+}
+.contact-form button:hover {
+    background: #fff;
+    color: #000;
+    transform: scale(1.05);
+}
+.contact-form button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+}
+.status-box {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 16px;
+}
+.status-success {
+    background-color:#28a745;
+    color: #fff;
+    font-weight: bold;
+}
+.submitting{
+  background-color: #ffc107;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 16px;
+  padding: 20px 25px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  animation: fadeSlide 0.7s ease forwards;
+  max-width: 500px; /* Constrain width to match form */
+  margin: 15px auto;
+}
+.status-error {
+ background: rgba(255,0,0,0.2);
+  color: #ff0000; 
+    font-weight: bold;
+    border-radius: 16px;
+  padding: 20px 25px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  animation: fadeSlide 0.7s ease forwards;
+  max-width: 500px; /* Constrain width to match form */
+  margin: 15px auto;
+}
+.error-input {
+    border-color: red !important;
+}
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    display: none;
+    text-align: left;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* New class for the submission status box to match the card style */
+.content-card-like {
+  color:rgba(0,200,0,0.2);
+   color: #ffffff; 
+  border-radius: 16px;
+  padding: 20px 25px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  animation: fadeSlide 0.7s ease forwards;
+  max-width: 500px; /* Constrain width to match form */
+  margin: 15px auto;
+}
+
+ .socials {
+    margin-top: 15px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px; /* Adjust gap between icons */
+  }
+  .social-item {
+    text-align: center;
+  }
+  .social-item img {
+    width: 40px; /* Make icons slightly larger */
+    margin: 0 auto 5px; /* Adjust margin */
+  }
+  .social-item p {
+    color: white;
+    font-size: 14px; /* Adjust font size */
+    margin: 0;
+  }
 </style>
 </head>
 
@@ -368,8 +486,8 @@ header .seds-logo{height:70px;}
   <a href="index.html#teams">Our Teams</a>
   <a href="#contact">Contact Us</a>
   <a href="Events.html">Events</a>
-   <a href="Kosmorena25.html">Kosmorena'24</a>
-     <a href="https://sedsalpha.wordpress.com/kosmorena-2021/">Kosmorena'21</a>
+    <a href="Kosmorena25.html">Kosmorena'24</a>
+      <a href="https://sedsalpha.wordpress.com/kosmorena-2021/">Kosmorena'21</a>
   <a href="team_members_event.html">Events Team Members</a>
   <a href="team_members_pr.html">PR Team Members</a>
   <a href="team_members_admin.html">Admin Team Members</a>
@@ -483,12 +601,13 @@ header .seds-logo{height:70px;}
   </div>
 </div>
 
+ <!-- Contact Us -->
 <div class="contact" id="contact">
   <h2>Contact Us</h2>
   <div class="contact-items">
     <div class="contact-item">
       <img src="location.png" alt="Location">
-      <p>Kumaraguru Campus, Coimbatore-641049</p>
+        <p>Kumaraguru Campus, Saravanampatti,<br>Chinnavedampatti (Post),<br>Coimbatore- 641049, Tamilnadu.</p>
     </div>
     <div class="contact-item">
       <img src="email.png" alt="Email">
@@ -499,20 +618,51 @@ header .seds-logo{height:70px;}
       <p>9344752075</p>
     </div>
   </div>
-  <form class="contact-form" action="mailto:manilunar07@gmail.com?cc=seds@kct.ac.in" method="post" enctype="text/plain">
-    <input type="text" name="name" placeholder="Your Name" required>
-    <input type="email" name="email" placeholder="Your Email" required>
-    <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+  <form class="contact-form" id="contactForm" novalidate action="https://script.google.com/macros/s/AKfycbyF14yLaSEw6M0f-6118aBSBfirK6CP2lanZ0wIfiPjE0ZES8iInnGb4HNOP9ZRZ7Yv/exec" method="post">
+    <div class="form-group">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <span class="error-message"></span>
+    </div>
+    <div class="form-group">
+        <input type="email" name="email" placeholder="Your Email" required>
+        <span class="error-message"></span>
+    </div>
+    <div class="form-group">
+        <input type="tel" name="phone" placeholder="Phone Number" required>
+        <span class="error-message"></span>
+    </div>
+    <div class="form-group">
+        <textarea name="message" placeholder="Your Message" required></textarea>
+        <span class="error-message"></span>
+    </div>
     <button type="submit">Send Message</button>
+    <!-- The status box is now hidden by default and will be shown by JS -->
+    <div id="status" class="status-box content-card-like" style="display: none;"></div>
   </form>
-  <div class="socials">
-    <a href="https://youtube.com/@kumaraguru_seds"><img src="youtube.png" alt="YouTube"></a>
-    <a href="https://www.linkedin.com/company/seds-kct/"><img src="linkedin.png" alt="LinkedIn"></a>
-    <a href="https://www.instagram.com/seds_kumaraguru"><img src="instagram.png" alt="Instagram"></a>
-    <p>Follow Us</p>
-    <h3>Created By </h3>
-    <h3>Manikandan N</h3>
+  <br>
+ <div class="socials">
+  <div class="social-item">
+    <a href="https://www.instagram.com/seds_kumaraguru">
+      <img src="instagram.png" alt="Instagram">
+      <p>seds_kumaraguru</p>
+    </a>
   </div>
+  <div class="social-item">
+    <a href="https://www.linkedin.com/company/seds-kct/">
+      <img src="linkedin.png" alt="LinkedIn">
+      <p>Kumaraguru SEDS</p>
+    </a>
+  </div>
+  <div class="social-item">
+    <a href="mailto:seds@kct.ac.in">
+      <img src="email.png" alt="Email">
+      <p>seds@kct.ac.in</p>
+    </a>
+  </div>
+  
+  </div>
+  <br>
+  <h2>Follow Us</h2>
 </div>
 
 <script>
@@ -599,11 +749,6 @@ document.addEventListener('keydown', function(e) {
         e.preventDefault();
     }
 
-    // Ctrl+Shift+J
-    if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
-        e.preventDefault();
-    }
-
     // Ctrl+U
     if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
         e.preventDefault();
@@ -611,6 +756,105 @@ document.addEventListener('keydown', function(e) {
 });
   document.addEventListener('dragstart', function(e) {
     e.preventDefault();
+});
+
+const form = document.getElementById('contactForm');
+const statusDiv = document.getElementById('status');
+const submitButton = form.querySelector('button[type="submit"]');
+
+function validateField(input) {
+    const errorSpan = input.closest('.form-group').querySelector('.error-message');
+    let errorMessage = '';
+
+    if (input.name === 'name') {
+        if (!input.value.trim()) {
+            errorMessage = 'Enter your Name.';
+        } else if (!/^[a-zA-Z\s]+$/.test(input.value.trim())) {
+            errorMessage = 'Please enter a valid name (letters and spaces only).';
+        }
+    } else if (input.name === 'email') {
+        if (!input.value.trim()) {
+            errorMessage = 'Enter your Email ID.';
+        } else if (!/^\S+@\S+\.\S+$/.test(input.value.trim())) {
+            errorMessage = 'Please enter a valid email address.';
+        }
+    } else if (input.name === 'phone') {
+        if (!input.value.trim()) {
+            errorMessage = 'Enter your Phone number.';
+        } else if (input.value.length !== 10 || isNaN(input.value)) {
+            errorMessage = 'Please enter a valid 10-digit mobile number.';
+        }
+    } else if (input.name === 'message' && !input.value.trim()) {
+        errorMessage = 'Enter your Message here.';
+    }
+
+    if (errorMessage) {
+        input.classList.add('error-input');
+        errorSpan.textContent = errorMessage;
+        errorSpan.style.display = 'block';
+        return false;
+    } else {
+        input.classList.remove('error-input');
+        errorSpan.style.display = 'none';
+        return true;
+    }
+}
+
+form.querySelectorAll('input, textarea').forEach(input => {
+    input.addEventListener('input', () => validateField(input));
+    input.addEventListener('blur', () => validateField(input));
+});
+
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+  
+  let allValid = true;
+  form.querySelectorAll('input, textarea').forEach(input => {
+      if (!validateField(input)) {
+          allValid = false;
+      }
+  });
+
+  if (!allValid) {
+      statusDiv.innerHTML = "Please fix the errors above.";
+      statusDiv.className = 'status-error';
+      statusDiv.style.display = 'block';
+      return;
+  }
+
+  statusDiv.innerHTML = "Submitting...";
+  statusDiv.className = 'submitting';
+  statusDiv.style.display = 'block';
+  submitButton.disabled = true;
+
+  const formData = new FormData(form);
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', form.action);
+  xhr.setRequestHeader('Accept', 'application/json');
+
+  xhr.onload = function() {
+    submitButton.disabled = false;
+    if (xhr.status === 200) {
+      try {
+        const response = JSON.parse(xhr.responseText);
+        if (response.result === 'success') {
+          statusDiv.innerHTML = "Message sent successfully!";
+          statusDiv.className = 'status-box content-card-like status-success';
+          form.reset();
+        } else {
+          statusDiv.innerHTML = "Error: " + response.message;
+          statusDiv.className = 'status-error';
+        }
+      } catch (e) {
+        statusDiv.innerHTML = "An unexpected error occurred.";
+        statusDiv.className = 'status-error';
+      }
+    } else {
+      statusDiv.innerHTML = "Error: Could not send message.";
+      statusDiv.className = 'status-error';
+    }
+  };
+  xhr.send(formData);
 });
 </script>
 
