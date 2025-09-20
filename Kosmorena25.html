@@ -314,6 +314,92 @@ header .seds-logo{height:70px;}
   box-shadow: 0 0 18px rgba(77, 166, 255, 0.9);
 }
 
+.event-flow {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.event-flow h2 {
+  color: var(--accent);
+  margin-bottom: 40px;
+  font-size: 2rem;
+}
+
+.timeline {
+  position: relative;
+  max-width: 800px;
+  margin: auto;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 40px; /* shift line to left */
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--accent);
+}
+
+.timeline-item {
+  position: relative;
+  margin: 40px 0;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateX(50px);
+  animation: slideIn 0.8s forwards;
+}
+
+.timeline-item:nth-child(1) { animation-delay: 0.2s; }
+.timeline-item:nth-child(2) { animation-delay: 0.4s; }
+.timeline-item:nth-child(3) { animation-delay: 0.6s; }
+.timeline-item:nth-child(4) { animation-delay: 0.8s; }
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 32px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.timeline-content {
+  margin-left: 80px; /* keep content away from line */
+  background: var(--card);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 600px;
+  text-align: left;
+  min-height: 140px; /* ensures all cards same size */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.timeline-content h3 {
+  color: var(--accent);
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.timeline-content p {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* Day buttons */
 .day-btns{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:20px;}
 .day-btns button{
@@ -389,6 +475,16 @@ header .seds-logo{height:70px;}
     background-color: #cccccc;
     cursor: not-allowed;
     transform: none;
+}
+.contact a {
+    text-decoration: none; /* Remove underline */
+    color: inherit;        /* Use the color of the parent element */
+}
+
+/* Optional: on hover, keep it the same */
+.contact a:hover {
+    text-decoration: none;
+    color: inherit;
 }
 .status-box {
     margin-top: 15px;
@@ -545,8 +641,42 @@ header .seds-logo{height:70px;}
   </div>
 </div>
 
+<!-- EVENT FLOW -->
+ <div class="content-card">
+<section class="event-flow">
+  <h2>🚀 Event Flow</h2>
+  <div class="timeline">
+    <div class="timeline-line"></div>
+
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <h3>Day 1 - OCT 06</h3>
+        <h4>Project Expo</h4>
+        <h4>Block And Tackle</h4>
+        <h4>Plantopia</h4>
+        <h4>Astro Survival</h4>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <h3>Day 2 - OCT 07</h3>
+       <h4>Ideathon</h4>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <h3>Day 3 - OCT 08</h3>
+     <h4>Workshop</h4>
+     <h4>Telescope Parade</h4>
+      </div>
+    </div>
+</section>
+</div>
+
   <div class="content-card">
-    <h2>Event Schedule</h2>
+    <h2>Event Registeration</h2>
     <div class="day-btns">
       <button onclick="toggleDay(1)">Day 1</button>
       <button onclick="toggleDay(2)">Day 2</button>
@@ -556,56 +686,115 @@ header .seds-logo{height:70px;}
   <div id="day1" class="day-event">
     <div class="event-card">
       <img src="day1_event1.jpg" alt="Opening Ceremony">
-      <h3>Opening Ceremony</h3>
+      <h2>CONCLAVE</h2>
       <p>Join us for inspiring talks and engaging sessions.</p>
       <div class="info-row">
         <div class="info-box"><strong>Time:</strong> 12:00 PM – 7:00 PM</div>
         <div class="info-box"><strong>Venue:</strong> Kumaraguru Auditorium</div>
         <div class="info-box"><strong>Amount:</strong> Free</div>
       </div>
-    <a class="register-btn" href="Application_Form.html" style="text-decoration: none;">Register Now</a>
     </div>
 
     <div class="event-card">
       <img src="day1_event2.jpg" alt="Project Expo">
-      <h3>Project Expo</h3>
-      <p>Exciting student projects in aerospace, robotics, and innovation.</p>
+      <h2>PROJECT EXPO</h2>
+      <h3>Spark curiosity and excitement about space, science, and technology among school students.</h3>
+        <p> This event is a group event, where each group will present the model they have created. The staff will provide scores for this presentation. The event will be held in two sections at the same venue, namely 6 to 8 and 9 to 12 separately.</p>
       <div class="info-row">
-        <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:00 PM</div>
+       <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:00 PM</div>
         <div class="info-box"><strong>Venue:</strong> Innovation Lab</div>
-        <div class="info-box"><strong>Amount:</strong> ₹100</div>
+        <div class="info-box"><strong>Contact:</strong> Pranav Varshan R S [ +91 73059 73235]</div>
+        <div class="info-box"><strong>Only for school students</strong></div>
       </div>
-        <a class="register-btn" href="Application_Form.html" style="text-decoration: none;">Register Now</a>
+    </div>
+     <div class="event-card">
+      <img src="day1_event2.jpg" alt="Project Expo">
+      <h2>BLOCK AND TACKLE</h2>
+      <h3>To understand the two sides of the topic/theme.</h3>
+        <p> Teams of 2 will be given topics to choose from. The team will prepare points for and against the same topic. When the moderator says “block” the team will speak for the motion. When the moderator says “Tackle” the team will have to speak against the motion. Only one round is conducted. The team will have to put forth at least 3 points for and against the topic. The time per team will be 5-10 mins. At a time 2 teams will be conducted. The judgement will be based on the spontaneity, seamless transitions, points they speak about.</p>
+      <div class="info-row">
+       <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:00 PM</div>
+        <div class="info-box"><strong>Venue:</strong> Innovation Lab</div>
+        <div class="info-box"><strong>Contact:</strong> Pranav Varshan R S [ +91 73059 73235]</div>
+        <div class="info-box"><strong>Only for school students</strong></div>
+      </div>
+    </div>
+     <div class="event-card">
+      <img src="day1_event2.jpg" alt="Project Expo">
+      <h2>PLANETOPIA</h2>
+      <h3>.</h3>
+        <p> </p>
+      <div class="info-row">
+       <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:00 PM</div>
+        <div class="info-box"><strong>Venue:</strong> Innovation Lab</div>
+        <div class="info-box"><strong>Contact:</strong> Pranav Varshan R S [ +91 73059 73235]</div>
+        <div class="info-box"><strong>Only for school students</strong></div>
+      </div>
+    </div>
+     <div class="event-card">
+      <img src="day1_event2.jpg" alt="Project Expo">
+      <h2>ASTRO SURVIVAL</h2>
+      <h3> .</h3>
+        <p> </p>
+      <div class="info-row">
+       <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:00 PM</div>
+        <div class="info-box"><strong>Venue:</strong> Innovation Lab</div>
+        <div class="info-box"><strong>Contact:</strong> Pranav Varshan R S [ +91 73059 73235]</div>
+        <div class="info-box"><strong>Only for school students</strong></div>
+      </div>
     </div>
   </div>
 
   <div id="day2" class="day-event">
     <div class="event-card">
       <img src="aadrika.jpeg" alt="Workshop">
-      <h3>Hands-on Workshop</h3>
-      <p>Learn astronomy, space science, and engineering challenges in depth.</p>
+      <h2>IDEATHON</h2>
+      <h3>Team up, innovate for space solutions, and win exciting prizes!</h3>
+      <p>The Ideathon is a creative challenge where participants brainstorm and pitch innovative solutions to real-world problems in space technology. It emphasizes ideas over execution, focusing on originality, feasibility, and impact.</p>
+     <br>
       <div class="info-row">
+        <div class="info-box"><strong>Date:</strong> Oct 07, 2025</div>
         <div class="info-box"><strong>Time:</strong> 9:00 AM – 5:00 PM</div>
-        <div class="info-box"><strong>Venue:</strong> Innovation Lab, KCT</div>
-        <div class="info-box"><strong>Amount:</strong> ₹200</div>
+        <div class="info-box"><strong>Venue:</strong> Amuse Lab, MGCL Kumaraguru Campus</div>
+        <div class="info-box"><strong>Prize Worth:</strong> ₹200</div>
+        <div class="info-box"><strong>Registeration Amount:</strong> ₹200</div>
+        <div class="info-box"><strong>Contact:</strong> Kishore N M [ +91 63806 36621 ]</div>
       </div>
-        <a class="register-btn" href="Application_Form.html" style="text-decoration: none;">Register Now</a>
-    </div>
+      <br>
+        <a class="register-btn" href="Ideathon.html" style="text-decoration: none;">Register Now</a>
+    <br>
+      </div>
   </div>
 
   <div id="day3" class="day-event">
-    <div class="event-card">
-      <img src="day3_event1.jpg" alt="Competition">
-      <h3>Competitions & Closing</h3>
-      <p>Exciting competitions followed by valedictory and prize distribution.</p>
-      <div class="info-row">
-        <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:30 PM</div>
-        <div class="info-box"><strong>Venue:</strong> Main Seminar Hall</div>
-        <div class="info-box"><strong>Amount:</strong> ₹150</div>
-      </div>
-      <a class="register-btn" href="Application_Form.html" style="text-decoration: none;">Register Now</a>
+  <div class="event-card">
+    <img src="day3_event1.jpg" alt="Workshop">
+    <h2>WORKSHOP</h2>
+    <h3>.</h3>
+    <p>.</p>
+    <div class="info-row">
+      <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:30 PM</div>
+      <div class="info-box"><strong>Venue:</strong> Main Seminar Hall</div>
+      <div class="info-box"><strong>Amount:</strong> ₹150</div>
     </div>
+    <a class="register-btn" href="Application_Form.html" style="text-decoration: none;">Register Now</a>
   </div>
+  <div class="event-card">
+    <img src="day3_event1.jpg" alt="Competition">
+    <h2>TELESCOPE PARADE</h2>
+    <h3>.</h3>
+    <p>.</p>
+    <div class="info-row">
+      <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:30 PM</div>
+      <div class="info-box"><strong>Venue:</strong> Main Seminar Hall</div>
+      <div class="info-box"><strong>Amount:</strong> ₹150</div>
+    </div>
+    <a class="register-btn" href="Application_Form.html" style="text-decoration: none;">Register Now</a>
+  </div>
+</div>
+  </div>
+  </div>
+  
 </div>
 
 <!-- Contact Us -->
@@ -633,7 +822,7 @@ header .seds-logo{height:70px;}
     </a>
   </div>
 </div>
-  <form class="contact-form" id="contactForm" novalidate action="https://script.google.com/macros/s/AKfycbyF14yLaSEw6M0f-6118aBSBfirK6CP2lanZ0wIfiPjE0ZES8iInnGb4HNOP9ZRZ7Yv/exec" method="post">
+  <form class="contact-form" id="contactForm" novalidate action="https://script.google.com/macros/s/AKfycbxhImxBPw9TXIidTf2Ve1Kz-C-j5mf3UNLeNFQkHMVjHfH3p5tRH4RzrKtcDIVB7Icr/exec" method="post">
     <div class="form-group">
         <input type="text" name="name" placeholder="Your Name" required>
         <span class="error-message"></span>
