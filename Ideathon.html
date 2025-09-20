@@ -6,7 +6,7 @@
     <meta name="description" content="Kumaraguru SEDS is a student-led organization at Kumaraguru Institutions dedicated to space exploration, astronomy, and aerospace engineering through projects, workshops, and events, seds, kumaraguru, KCT SEDS">
     <meta name="keywords" content="Kumaraguru SEDS, KCT SEDS, space exploration, astronomy club, aerospace engineering, student space projects, satellite design, rocketry, astrophysics, Kumaraguru Institutions">
     <link rel="icon" href="sedsb.png" type="image/png">
-    <title>Kumaraguru SEDS</title>
+    <title>Kumaraguru SEDS Ideathon Registration Form</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -116,6 +116,72 @@
             color:var(--muted);
             text-align:justify;
         }
+
+.content-card-like {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: var(--card-bg-color); /* A variable for your card's background color */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+/* Style to align the rules list to the left */
+.rules-container {
+    text-align: left;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.rules-list {
+    margin-bottom: 20px;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.rules-list ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.rules-list li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+    text-align: left;
+    transform: translateX(-20px);
+    opacity: 0;
+    animation: slideIn 0.5s ease-out forwards;
+}
+
+.rules-list li:nth-child(1) { animation-delay: 0.2s; }
+.rules-list li:nth-child(2) { animation-delay: 0.4s; }
+.rules-list li:nth-child(3) { animation-delay: 0.6s; }
+.rules-list li:nth-child(4) { animation-delay: 0.8s; }
+.rules-list li:nth-child(5) { animation-delay: 1.0s; }
+.rules-list li:nth-child(6) { animation-delay: 1.2s; }
+
+/* Keyframe animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+        
         .contact{
             background:var(--sidebar-bg);
             padding:40px 25px;
@@ -370,6 +436,27 @@
             border-color:var(--accent);
             box-shadow:0 0 5px rgba(0,195,126,0.5);
         }
+        
+.registerationamount {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fbfbfb; /* A bright, vibrant blue */
+    text-shadow: 0 0 12px rgba(77, 166, 255, 1); /* Sharper, brighter text glow */
+    background: rgba(255, 255, 255, 0.2); /* Slightly less transparent background */
+    padding: 15px 25px;
+    border-radius: 12px;
+    margin: 20px auto;
+    width: fit-content;
+    box-shadow: 0 0 20px 8px rgba(77, 166, 255, 0.6); /* Brighter, more intense box shadow */
+    animation: glowPulse 2s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 15px 5px rgba(77, 166, 255, 0.4); }
+    50% { box-shadow: 0 0 25px 10px rgba(77, 166, 255, 0.8); } /* Brighter middle of the animation */
+    100% { box-shadow: 0 0 15px 5px rgba(77, 166, 255, 0.4); }
+}
+
         .qr-section-container {
             display: grid;
             grid-template-columns: 1fr;
@@ -582,11 +669,11 @@
             background-color: #c82333;
         }
         .register-btn {
-            padding: 14px 26px;
+            padding: 16px 30px;
             background: var(--accent);
             color: #000;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 18px;
             border: none;
             border-radius: 12px;
             cursor: pointer;
@@ -648,7 +735,7 @@
             text-align: center;
         }
         .whatsapp-container h3 {
-            color: #fff;
+            color: #4da6ff;
             font-size: 24px;
             margin-bottom: 20px;
         }
@@ -756,15 +843,29 @@
         <form id="applicationForm">
             <div class="form-header">
                 <div class="icon">📝</div>
-                <h2>Application Form</h2>
-                <p>Join our team - Fill out all required fields to submit your application</p>
-            </div>
+                <h2>IDEATHON REGISTRATION FORM</h2>
+                <p>To spark innovation, teamwork, and problem-solving among students while encouraging them to think beyond boundaries in the field of space exploration and technology.</p>
             
+                <div class="content-card-like rules-container">
+            <h3 class="section-title">Rules and Regulations</h3>
+            <div class="rules-list">
+                <ul>
+                    <li><strong>Team Size:</strong> The event requires a team of 2 to 4 members.</li>
+                    <li><strong>Originality:</strong> All submitted ideas must be original and not previously published or used in any other competition.</li>
+                    <li><strong>Presentation:</strong> Teams must prepare a brief presentation (5-7 minutes) to pitch their idea to the judges.</li>
+                    <li><strong>Property:</strong> All intellectual property rights for the ideas generated remain with the respective teams.</li>
+                    <li><strong>Code of Conduct:</strong> All participants must adhere to the official code of conduct of the event. Any form of plagiarism or misconduct will lead to immediate disqualification.</li>
+                    <li><strong>Decision:</strong> The decision of the judges is final and binding.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
             <div class="content-card-like">
                 <h3 class="section-title">👤 Team Lead Information</h3>
                 <div class="app-form-group">
                     <div class="input-box">
-                        <label for="teamLeadName">Team Lead Name *</label>
+                        <label for="teamLeadName">Full Name *</label>
                         <input type="text" id="teamLeadName" name="teamLeadName" placeholder="Enter full name" required>
                         <small></small>
                     </div>
@@ -814,13 +915,15 @@
                 <h3 class="section-title">💰 Payment Information</h3>
                 <div class="qr-section-container">
                     <div class="qr">
+                        <h3  class="registerationamount">Registration Amount : ₹200</h3><br>
                         <img src="gpay.jpg" alt="QR Code">
                         <h3>Google Pay QR Code</h3>
                     </div>
                     <div class="qr-upload" id="qrUploadBox">
-                        <h3>Upload Your Payment Proof</h3>
+                        <h3>Upload Your Payment Proof (Screenshot)</h3>
                         <div class="drop-zone" id="dropZone">
-                            <p>Drag & Drop up to 2 files here</p>
+                            <p>Drag & Drop up to max (2 files here)</p>
+                            <p>File Size should be within 2MB</p>
                             <span>OR</span>
                             <button class="upload-btn" type="button" onclick="document.getElementById('qrFile').click()">Add File</button>
                             <input type="file" id="qrFile" accept="image/*, .pdf" hidden multiple>
@@ -829,8 +932,8 @@
                     </div>
                 </div>
             </div>
-            
-            <button type="submit" class="register-btn" style="justify-content: center;">Submit Application</button>
+            <br>
+            <button type="submit" class="register-btn" style="justify-content: center;">Submit Registration Form</button>
             <div id="appStatusBox" class="status-box"></div>
         </form>
     </div>
@@ -1381,7 +1484,43 @@
             });
         }, { threshold: 0.2 });
         sections.forEach(sec => secObserver.observe(sec));
+
+        // Disable right-click
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+// Disable common developer shortcuts
+document.addEventListener('keydown', function(e) {
+    // F12
+    if (e.key === 'F12') {
+        e.preventDefault();
+    }
+
+    // Ctrl+Shift+I
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+        e.preventDefault();
+    }
+
+    // Ctrl+Shift+C
+    if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+    }
+
+    // Ctrl+Shift+J
+    if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
+        e.preventDefault();
+    }
+
+    // Ctrl+U
+    if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+        e.preventDefault();
+    }
+});
+    document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+});
+
     </script>
 </body>
-
 </html>
