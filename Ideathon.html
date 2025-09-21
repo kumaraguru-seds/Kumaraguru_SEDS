@@ -1393,7 +1393,7 @@
         memberInstitution3: formData.get('memberInstitution3'),
     };
 
-    showStatus(appStatusBox, "🚀 Submitting your application... Please wait!", "processing");
+    showStatus(appStatusBox, "🚀 Submitting your Registration... Please wait!", "processing");
 
     try {
         const response = await fetch(APPLICATION_SCRIPT_URL, {
@@ -1403,7 +1403,7 @@
         const data = await response.json();
         
         if (response.ok && data.status === "SUCCESS") {
-            showStatus(appStatusBox, "✅ Application submitted successfully!", "success");
+            showStatus(appStatusBox, "✅ Registration submitted successfully!, Check your confirmation email", "success");
             applicationForm.reset();
             membersContainer.innerHTML = '';
             teamSizeSelect.dispatchEvent(new Event('change'));
@@ -1524,5 +1524,6 @@ document.addEventListener('keydown', function(e) {
     </script>
 </body>
 </html>
+
 
 
