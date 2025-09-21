@@ -192,6 +192,71 @@
       color:var(--section-title);
       text-align:center;
     }
+    .team-card h3 {
+  color: var(--accent, #00bcd4);
+  margin-bottom: 10px;
+  text-align: left;
+    }
+  .activity-card {
+  background: var(--card, #1a1a1a);
+  border-radius: 14px;
+  padding: 28px 24px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  max-width: 600px;
+  margin: 30px auto;
+  text-align: left;
+}
+.activity-card h3 {
+  color: var(--accent, #4da6ff);
+  margin-bottom: 18px;
+  font-size: 1.3rem;
+  text-align: left;
+}
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.activity-list li {
+  margin: 18px 0;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+   opacity: 0;
+  transform: translateX(40px) scale(0.95) rotateY(10deg);
+}
+.activity-card.animate .activity-list li {
+  animation: dynamicSlideIn 0.7s cubic-bezier(.68,-0.55,.27,1.55) forwards;
+}
+
+.activity-card.animate .activity-list li:nth-child(1) { animation-delay: 0.2s; }
+.activity-card.animate .activity-list li:nth-child(2) { animation-delay: 0.4s; }
+.activity-card.animate .activity-list li:nth-child(3) { animation-delay: 0.6s; }
+.activity-card.animate .activity-list li:nth-child(4) { animation-delay: 0.8s; }
+.activity-card.animate .activity-list li:nth-child(5) { animation-delay: 1s; }
+
+@keyframes dynamicSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(40px) scale(0.95) rotateY(10deg);
+    filter: blur(2px);
+  }
+  60% {
+    opacity: 0.7;
+    transform: translateX(-10px) scale(1.03) rotateY(-2deg);
+    filter: blur(0.5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1) rotateY(0deg);
+    filter: blur(0);
+  }
+}
+
 
     .more-info{
       margin-top:12px;
@@ -524,45 +589,194 @@
         <img src="prasanna.jpeg" alt="Staff Coordinator">
         <b></b>
         <h4><b>Prasanna Vengatesh V</b><br>Department of Aero, KCT</h4>
+         <p class="section"> Aeronautical Engineering student with a passion for astronomy,  As Vice President, he inspires peers and bridges aeronautics with space exploration through innovative ideas and teamwork.</p>
       </div>
   </div>
 
-    <div class="section" id="teams">
-      <h1>Our Teams</h1>
-      <div class="teams">
+<div class="section" id="teams">
+  <h1>Our Teams</h1>
+  <div class="teams">
         <div class="team-card">
-          <h2>Events Team</h2>
-          <p>The Event Team brings creativity and organization together, ensuring every program runs smoothly and memorably. From planning and logistics to on-spot coordination, they manage every detail with precision. Their teamwork, energy, and dedication create engaging experiences that connect people, inspire participation, and make every event a lasting success.</p>
-          <a href="team_members_event.html" class="more-info">Team Members</a>
+          <h2>Events And Management Team</h2>
+          <p>The Events and Management team is responsible for planning, organizing, and successfully conducting all the events of the club. It ensures smooth execution by coordinating with different teams.</p>
+           
+       <div class="activity-card">
+  <h3>Work of the team</h3>
+  <ul class="activity-list">
+    <li>
+      <span class="activity-title">Plans and organizes club events, workshops, and competitions.</span>
+    </li>
+    <li>
+      <span class="activity-title">Handles event logistics, scheduling, and coordination with other teams.</span>
+    </li>
+    <li>
+      <span class="activity-title">Ensures the smooth flow of activities during events.</span>
+    </li>
+    <li>
+      <span class="activity-title">Engages participants and creates an interactive environment.</span>
+    </li>
+    <li>
+      <span class="activity-title">Collaborates with the Media and PRO teams for event promotion and coverage.</span>
+    </li>
+  </ul>
+</div>
+             <a href="team_members_event.html" class="more-info">Team Members</a>
         </div>
         <div class="team-card">
           <h2>PR Team</h2>
-          <p>The PR Team builds strong connections by sharing our work with the world through posters, astronomy calendars, space news, and registration forms. They craft clear, creative, and impactful communication that engages audiences, strengthens our presence, and ensures every initiative reaches people with the right message.</p>
-          <a href="team_members_pr.html" class="more-info">Team Members</a>
+          <p>The Public Relations (PRO) team is responsible for creating and managing the communication and outreach content of the club.It Enhances the public image of the club by producing creative, informative, and attractive content.</p>
+          
+          <div class="activity-card">
+  <h3>Work of the team</h3>
+  <ul class="activity-list">
+    <li>
+      <span class="activity-title">Prepares engaging write ups for posters, events, and activities.</span>
+    </li>
+    <li>
+      <span class="activity-title">Invites guest speakers and coordinates external communications.</span>
+    </li>
+    <li>
+      <span class="activity-title"> Manages the club’s LinkedIn presence professionally.</span>
+    </li>
+    <li>
+      <span class="activity-title">Involves in the preparation of daily space facts and monthly space news updates.</span>
+    </li>
+    <li>
+      <span class="activity-title">Prepares and updates monthly astronomy calendars with celestial events.</span>
+    </li>
+  </ul>
+</div>
+        <a href="team_members_pr.html" class="more-info">Team Members</a>
         </div>
+
         <div class="team-card">
           <h2>Admin Team</h2>
-          <p>The Admin Team is the backbone of every initiative, handling coordination, permissions, and smooth execution of activities. From managing resources to maintaining records and communication, they ensure everything runs efficiently. Their dedication, discipline, and support keep the team organized, allowing every event and project to succeed seamlessly.</p>
+          <p>This team takes care of the club’s internal operations and financial matters. They ensure the club runs smoothly and responsibly.</p>
+          
+          <div class="activity-card">
+  <h3>Work of the team</h3>
+  <ul class="activity-list">
+    <li>
+      <span class="activity-title"> Manage club communications, schedules, and records.</span>
+    </li>
+    <li>
+      <span class="activity-title">Keep track of members, meetings, and documentation.</span>
+    </li>
+    <li>
+      <span class="activity-title">Prepare budgets for projects, events, and workshops.</span>
+    </li>
+    <li>
+      <span class="activity-title">Track expenses, income, sponsorships, and donations.</span>
+    </li>
+    <li>
+      <span class="activity-title">Maintain transparency in all financial and administrative matters.</span>
+    </li>
+  </ul>
+</div>
           <a href="team_members_admin.html" class="more-info">Team Members</a>
         </div>
         <div class="team-card">
           <h2>IM and PM Team</h2>
-          <p>The Innovation & Project Management Team drives creativity and execution hand in hand. They transform ideas into impactful projects by planning, designing, and managing every stage with precision. Through research, innovation, and structured coordination, they ensure concepts grow into successful outcomes that inspire progress and strengthen the organization.</p>
+          <p>Oversees the planning, execution, and completion of club projects. They make sure projects run on time and meet their goals.</p>
+
+          <div class="activity-card">
+  <h3>Work of the team</h3>
+  <ul class="activity-list">
+    <li>
+      <span class="activity-title">Plan and schedule projects from start to finish.</span>
+    </li>
+    <li>
+      <span class="activity-title">Allocate tasks to team members and monitor progress.</span>
+    </li>
+    <li>
+      <span class="activity-title">Coordinate between different teams to ensure smooth workflow.</span>
+    </li>
+    <li>
+      <span class="activity-title">Solve problems or challenges during project execution.</span>
+    </li>
+    <li>
+      <span class="activity-title">Evaluate project outcomes and suggest improvements.</span>
+    </li>
+  </ul>
+</div>
           <a href="team_members_impm.html" class="more-info">Team Members</a>
         </div>
         <div class="team-card">
           <h2>Media Team</h2>
-          <p>The Media Team brings ideas to life through visuals, videos, and digital creativity. From posters and reels to social media campaigns, they showcase every event with impact. Their innovative designs, storytelling, and consistency build strong outreach, ensuring our activities inspire, engage, and reach a wider community effectively.</p>
+          <p>The Media team is the creative wing that manages the club’s social media presence. It plays a vital role in visually representing the club’s activities, events, and achievements to a wider audience.</p>
+
+          <div class="activity-card">
+  <h3>Work of the team</h3>
+  <ul class="activity-list">
+    <li>
+      <span class="activity-title">Handles and maintains the club’s official social media pages.</span>
+    </li>
+    <li>
+      <span class="activity-title">Designs posters, banners, and creative digital content.</span>
+    </li>
+    <li>
+      <span class="activity-title">Promotes events, workshops, and outreach activities online.</span>
+    </li>
+    <li>
+      <span class="activity-title">Ensures branding and visual consistency across platforms.</span>
+    </li>
+    <li>
+      <span class="activity-title">Collaborates with the PRO team for engaging and informative posts.</span>
+    </li>
+  </ul>
+</div>
           <a href="team_members_media.html" class="more-info">Team Members</a>
         </div>
         <div class="team-card">
           <h2>Finance Team</h2>
-          <p>The Financial Team manages budgets, funding, and resources with precision and transparency. They ensure every project is financially sustainable, from planning expenses to securing support. Their careful tracking, accountability, and dedication provide the backbone for smooth operations, empowering the team to focus on innovation and successful event execution.</p>
+          <p>The Financial Team ensures budgets, funding, and resources are managed with precision and transparency, enabling sustainable projects, smooth operations, and empowering the club to innovate and execute events successfully.</p>
+          
+          <div class="activity-card">
+  <h3>Work of the team</h3>
+  <ul class="activity-list">
+    <li>
+      <span class="activity-title"> Manage club communications, schedules, and records.</span>
+    </li>
+    <li>
+      <span class="activity-title">Keep track of members, meetings, and documentation.</span>
+    </li>
+    <li>
+      <span class="activity-title">Prepare budgets for projects, events, and workshops.</span>
+    </li>
+    <li>
+      <span class="activity-title">Track expenses, income, sponsorships, and donations.</span>
+    </li>
+    <li>
+      <span class="activity-title">Maintain transparency in all financial and administrative matters.</span>
+    </li>
+  </ul>
+</div>
           <a href="team_members_finance.html" class="more-info">Team Members</a>
         </div>
               <div class="team-card">
           <h2>Astronomy Team</h2>
-          <p>The Financial Team manages budgets, funding, and resources with precision and transparency. They ensure every project is financially sustainable, from planning expenses to securing support. Their careful tracking, accountability, and dedication provide the backbone for smooth operations, empowering the team to focus on innovation and successful event execution.</p>
+          <p>The Observational Astronomy Team at Kumaraguru SEDS is a student-led group that brings the cosmos closer to campus. They focus on sky observation, celestial studies, and hands-on astronomy practices like stargazing, astrophotography, and telescope calibration. Their vision is to inspire curiosity and foster innovation in space sciences.</p>
+          
+          <div class="activity-card">
+  <h3>Work of the team</h3>
+  <ul class="activity-list">
+    <li>
+      <span class="activity-title">Conducts telescope calibration, stargazing sessions, and astrophotography.</span>
+    </li>
+    <li>
+      <span class="activity-title">Organizes interactive sessions, student-led seminars, and astronomy workshops.</span>
+    </li>
+    <li>
+      <span class="activity-title">Explores celestial phenomena and evolution of the universe.</span>
+    </li>
+    <li>
+      <span class="activity-title">Connects observational astronomy with real-world space research.</span>
+    </li>
+    <li>
+      <span class="activity-title">Promotes scientific curiosity and collaborative space projects.</span>
+    </li>
+  </ul>
+</div>
           <a href="astronomy_team_members.html" class="more-info">Team Members</a>
         </div>
       </div>
@@ -671,7 +885,7 @@
           entry.target.classList.add("show");  
         }  
       });  
-    },{threshold:0.2});  
+    },{threshold:0.05});  
     sections.forEach(sec=>observer.observe(sec));  
     
   // Gallery Controls
@@ -698,6 +912,18 @@
       show(index);
     });
     
+document.querySelectorAll('.activity-card').forEach(card => {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate');
+      } else {
+        entry.target.classList.remove('animate');
+      }
+    });
+  }, { threshold: 0.3 });
+  observer.observe(card);
+});
     // Disable right-click
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
