@@ -38,7 +38,80 @@
             filter: brightness(65%);
             z-index: -1;
         }
+/* Sidebar Navigation */
 
+    .sidebar{
+      position:fixed;
+      top:0; left:-260px;
+      width:260px;
+      height:100%;
+      background:var(--sidebar-bg);
+      padding:30px 20px;
+      transition:0.3s;
+      z-index:2000;
+      overflow-y:auto;      /* ✅ make sidebar scrollable */
+      max-height:100vh;     /* ✅ keep it within viewport */
+    }
+    .sidebar.active{left:0;}
+    .sidebar a{
+      display:block;
+      padding:15px 0;
+      color:#fff;
+      font-size:20px;
+      text-decoration:none;
+      border-bottom:1px solid rgba(255,255,255,0.2);
+    }
+    .sidebar a:hover{color:var(--accent);}
+    .close-btn{
+      font-size:22px;
+      color:#fff;
+      cursor:pointer;
+      text-align:right;
+      margin-bottom:20px;
+      display:block;
+    }
+
+    .hamburger{
+      font-size:28px;
+      cursor:pointer;
+      color:white;
+    }
+
+    .main{
+      padding:20px;
+      background:rgba(0,0,0,0.45);
+    }
+
+    .section{
+      margin:40px auto;
+      padding:25px;
+      max-width:1100px;
+      background:var(--card);
+      border-radius:16px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      opacity:0;
+      transform:translateY(40px);
+      transition:all 0.8s ease-out;
+    }
+    .section.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .section h1,
+    .contact h2 {
+      font-size:28px;
+      margin-bottom:14px;
+      text-align:center;
+      color:var(--section-title);
+    }
+
+    .section p,
+    .team-card p,
+    .contact p {
+      font-size:14px;
+      color:var(--muted);
+      text-align:justify;
+    }
         .main-container {
             display: flex;
             flex-direction: column;
@@ -207,6 +280,12 @@
     </style>
 </head>
 <body>
+        <!-- Sidebar Navigation -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" onclick="toggleSidebar()">Menu ×</span>
+    <a href="current_birthday.html">Current Birthday</a>
+     <a href="alumni_birthday.html">Alumni Birthday</a>
+    </div>
 
 <div class="main-container">
     <div class="search-container">
@@ -353,4 +432,24 @@
     document.addEventListener('dragstart', function(e) {
         e.preventDefault();
     });
+     function toggleSidebar(){  
+      document.getElementById("sidebar").classList.toggle("active");  
+    }
+    document.addEventListener("click", function(e){  
+      const sidebar = document.getElementById("sidebar");  
+      const hamburger = document.querySelector(".hamburger");  
+      if(sidebar.classList.contains("active") && !sidebar.contains(e.target) && !hamburger.contains(e.target)){  
+        sidebar.classList.remove("active");  
+      }  
+    });  
+
+   const sections = document.querySelectorAll(".section, .event-gallery"); 
+    const observer = new IntersectionObserver(entries=>{  
+      entries.forEach(entry=>{  
+        if(entry.isIntersecting){  
+          entry.target.classList.add("show");  
+        }  
+      });  
+    },{threshold:0.05});  
+    sections.forEach(sec=>observer.observe(sec)); 
 </script>
