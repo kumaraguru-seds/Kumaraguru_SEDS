@@ -17,7 +17,6 @@
   --muted:#c9d1e6;
   --accent:#4da6ff;
   --card: rgba(255,255,255,0.08);
-  --hi:rgba(77,166,255,0.2);
 }
 *{box-sizing:border-box;margin:0;padding:0;scroll-behavior:smooth;}
 body{
@@ -26,6 +25,7 @@ body{
   min-height:100vh;
   position:relative;
   z-index:0;
+  background-color: #000; /* Fallback for when image is loading */
 }
 body::before {
   content:"";
@@ -44,377 +44,94 @@ header{
 .left-header{display:flex;align-items:center;gap:15px;}
 header img{height:60px;}
 header .seds-logo{height:70px;}
-.events-title {
-      margin-top:8px;
-      font-size:50px;
-      color: #FFFF;
-      text-align:center;
-    }
-
-/* Sidebar */
+.events-title { margin-top:8px; font-size:50px; color: #FFFF; text-align:center; }
 .sidebar{
-  position:fixed;
-  top:0; left:-260px;
-  width:260px;
-  height:100%;
-  background:var(--sidebar-bg);
-  padding:30px 20px;
-  transition:0.3s;
-  z-index:2000;
-  overflow-y:auto;
-  max-height:100vh;
+  position:fixed;top:0; left:-260px;width:260px;height:100%;
+  background:var(--sidebar-bg);padding:30px 20px;transition:0.3s;
+  z-index:2000;overflow-y:auto;max-height:100vh;
 }
 .sidebar.active{left:0;}
 .sidebar a{display:block;padding:15px 0;color:#fff;font-size:20px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.2);}
 .sidebar a:hover{color:var(--accent);}
 .close-btn{font-size:22px;color:#fff;cursor:pointer;text-align:right;margin-bottom:20px;display:block;}
 .hamburger{font-size:28px;cursor:pointer;color:white;}
-
-/* Main */
 .main{text-align:center;padding:40px 20px;}
-.main h1{font-size:50px;}
-.main h2{margin:20px 0;color:var(--accent);font-size:28px;}
-.main p{max-width:900px;margin:10px auto;font-size:15px;line-height:1.6;color:var(--muted);}
-
-/* Countdown */
 #countdown-box{
-  background:var(--card);
-  padding:25px;
-  margin:30px auto;
-  border-radius:12px;
-  max-width:500px;
-  text-align:center;
-  font-size:28px;
-  font-weight:700;
-  color:var(--accent);
-  box-shadow:0 4px 20px rgba(0,0,0,0.6);
-  animation:pulse 2s infinite;
+  background:var(--card); padding:25px; margin:30px auto; border-radius:12px;
+  max-width:500px; text-align:center; font-size:28px; font-weight:700;
+  color:var(--accent); box-shadow:0 4px 20px rgba(0,0,0,0.6); animation:pulse 2s infinite;
 }
-@keyframes pulse{
-  0%{box-shadow:0 0 10px var(--accent);}
-  50%{box-shadow:0 0 30px var(--accent);}
-  100%{box-shadow:0 0 10px var(--accent);}
-}
-
-/* Day Event Container */
-.day-event{
-  display:none;
-  max-width:1000px;
-  margin:15px auto;
-  padding:10px;
-  border-radius:16px;
-  text-align:center;
-  animation:fadeSlide 0.6s ease forwards;
-}
-@keyframes fadeSlide{
-  from{opacity:0;transform:translateY(30px);}
-  to{opacity:1;transform:translateY(0);}
-}
-/* Generic Content Card */
+@keyframes pulse{ 0%{box-shadow:0 0 10px var(--accent);} 50%{box-shadow:0 0 30px var(--accent);} 100%{box-shadow:0 0 10px var(--accent);} }
+.day-event{ display:none; }
 .content-card {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 30px 25px;
-  margin: 25px auto;
-  width: 100%;
-  max-width: 1000px;
-  text-align: center;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-  animation: fadeSlide 0.7s ease forwards;
+  background: var(--card); border-radius: 16px; padding: 30px 25px;
+  margin: 25px auto; width: 100%; max-width: 1000px;
+  text-align: center; box-shadow: 0 6px 18px rgba(0,0,0,0.4);
 }
-
-.content-card h2 {
-  color: var(--accent);
-  margin-bottom: 15px;
-  font-size: 28px;
-}
-
-.content-card h3, 
-.content-card p, 
-.content-card li {
-  color: var(--muted);
-  line-height: 1.7;
-  font-size: 16px;
-  margin: 8px 0;
-}
-
-
-/* 🎟️ Event Card */
+.content-card h2 { color: var(--accent); margin-bottom: 15px; font-size: 28px; }
+.content-card h3, .content-card p, .content-card li { color: var(--muted); line-height: 1.7; font-size: 16px; margin: 8px 0; }
 .event-card {
-  background: var(--card);
-  border-radius: 18px;
-  padding: 20px;
-  margin: 25px auto;
-  width: 100%;
-  max-width: 1000px;     /* keeps it centered and neat */
-  display: center;
-  flex-direction: column;
-  gap: 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  background: var(--card); border-radius: 18px; padding: 20px; margin: 25px auto;
+  max-width: 1000px; box-shadow: 0 8px 24px rgba(0,0,0,0.7);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
-  animation: fadeSlide 0.7s ease forwards;
 }
-
-.event-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 14px 32px rgba(0,0,0,0.8);
-}
-
-/* 🔹 Top Section: Poster LEFT + Text RIGHT */
-.event-top {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* ensures content is centered inside */
-  gap: 24px;
-}
-
+.event-card:hover { transform: translateY(-10px); box-shadow: 0 14px 32px rgba(0,0,0,0.8); }
+.event-top { display: flex; align-items: center; justify-content: center; gap: 24px; }
 .event-card img {
-  width: 320px;
-  height: 320px;
-  object-fit: cover;
-  border-radius: 14px;
-  flex-shrink: 0;
-  animation: float 3s ease-in-out infinite;
+  width: 320px; height: 320px; object-fit: cover;
+  border-radius: 14px; flex-shrink: 0; animation: float 3s ease-in-out infinite;
 }
-
-.event-content {
-  flex: 1;
-  text-align: left;
-}
-
-.event-content h3 {
-  color: var(--accent, #f39c12);
-  margin-bottom: 12px;
-  font-size: 26px;
-}
-
-.event-content p {
-  color: var(--muted, #d3d3d3);
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-/* 🔹 Bottom Info */
-.event-bottom {
-  margin-top: 10px;
-  text-align: center;
-}
-
-.event-card .info-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  justify-content: center;
-  margin-bottom: 18px;
-}
-
-.event-card .info-box {
-  background: #2c3e50;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: 14px;
-  color: #fff;
-  min-width: 140px;
-  text-align: center;
-  transition: 0.3s;
-}
-
-.event-card .info-box:hover {
-  background: #34495e;
-}
-
-/* 🔹 Register Button */
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+.event-content { flex: 1; text-align: left; }
+.event-content h3 { color: var(--accent); margin-bottom: 12px; font-size: 26px; }
+.event-content p { color: var(--muted); font-size: 16px; line-height: 1.7; }
+.event-card .info-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 18px; }
+.event-card .info-box { background: #2c3e50; padding: 10px 16px; border-radius: 10px; font-size: 14px; color: #fff; min-width: 140px; text-align: center; }
 .register-btn {
-  padding: 14px 26px;
-  background: var(--accent, #f39c12);
-  color: #000;
-  font-weight: 700;
-  font-size: 16px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: 0.3s ease;
-  box-shadow: 0 0 12px rgba(77, 166, 255, 0.7);
+  padding: 14px 26px; background: var(--accent); color: #000; font-weight: 700;
+  font-size: 16px; border: none; border-radius: 12px; cursor: pointer;
+  transition: 0.3s ease; box-shadow: 0 0 12px rgba(77, 166, 255, 0.7); text-decoration: none;
 }
+.register-btn:hover { background: #fff; transform: scale(1.06); box-shadow: 0 0 18px rgba(77, 166, 255, 0.9); }
 
-.register-btn:hover {
-  background: #fff;
-  color: #000;
-  transform: scale(1.06);
-  box-shadow: 0 0 18px rgba(77, 166, 255, 0.9);
-}
+/* --- DYNAMIC SCROLL & TIMELINE ANIMATIONS --- */
+.animate-on-scroll { opacity: 0; transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+.animate-slide-up { transform: translateY(50px); }
+.animate-slide-left { transform: translateX(-50px); }
+.animate-slide-right { transform: translateX(50px); }
+.animate-zoom-in { transform: scale(0.9); }
+.is-visible { opacity: 1; transform: none; }
 
-/* 📱 Responsive */
-@media (max-width: 768px) {
-  .event-top {
-    flex-direction: column;
-    text-align: center;
-  }
-  .event-card img {
-    width: 100%;
-    height: auto;
-  }
-  .event-content {
-    text-align: center;
-  }
-  .event-card .info-row {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .event-card .info-box {
-    width: 100%;
-  }
-  .register-btn {
-    width: 100%;
-  }
-}
-
-/* ✨ Animations */
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-/* Floating Image Animation */
-@keyframes float {
-  0%     { transform: translateY(0px); }
-  50%  { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-/* Download and View Buttons */
-.brochure-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.btn {
-  padding: 14px 26px;
-  background: var(--accent);
-  color: #000;
-  font-weight: 700;
-  font-size: 16px;
-  text-decoration: none;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: 0.3s ease;
-  box-shadow: 0 0 12px rgba(77, 166, 255, 0.7);
-}
-
-.btn:hover {
-  background: #fff;
-  color: #000;
-  transform: scale(1.06);
-  box-shadow: 0 0 18px rgba(77, 166, 255, 0.9);
-}
-
-.event-flow {
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.event-flow h2 {
-  color: var(--accent);
-  margin-bottom: 40px;
-  font-size: 2rem;
-}
-
-.timeline {
-  position: relative;
-  max-width: 800px;
-  margin: auto;
-}
-
-.timeline-line {
-  position: absolute;
-  left: 40px; /* shift line to left */
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--accent);
-}
-
-.timeline-item {
-  position: relative;
-  margin: 40px 0;
-  display: flex;
-  align-items: center;
-  opacity: 0;
-  transform: translateX(50px);
-  animation: slideIn 0.8s forwards;
-}
-
-.timeline-item:nth-child(1) { animation-delay: 0.2s; }
-.timeline-item:nth-child(2) { animation-delay: 0.4s; }
-.timeline-item:nth-child(3) { animation-delay: 0.6s; }
-.timeline-item:nth-child(4) { animation-delay: 0.8s; }
-
+.timeline { position: relative; max-width: 800px; margin: auto; }
+.timeline-line { position: absolute; left: 40px; top: 0; bottom: 0; width: 4px; background: rgba(77,166,255,0.3); }
+.timeline-line-progress { position: absolute; left: 40px; top: 0; width: 4px; background: var(--accent); height: 0; }
+.timeline-item { position: relative; margin: 40px 0; display: flex; align-items: center; }
 .timeline-item::before {
-  content: "";
-  position: absolute;
-  left: 32px;
-  width: 16px;
-  height: 16px;
-  background: #fff;
-  border: 3px solid var(--accent);
-  border-radius: 50%;
-  z-index: 1;
+  content: ""; position: absolute; left: 32px; width: 16px; height: 16px;
+  background: #fff; border: 3px solid var(--accent); border-radius: 50%; z-index: 1;
 }
-
 .timeline-content {
-  margin-left: 80px; /* keep content away from line */
-  background: var(--card);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
-  width: 100%;
-  max-width: 600px;
-  text-align: left;
-  min-height: 140px; /* ensures all cards same size */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  margin-left: 80px; background: var(--card); padding: 20px; border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5); width: 100%; max-width: 600px;
+  text-align: left; min-height: 140px; display: flex; flex-direction: column; justify-content: center;
 }
+.timeline-content h3 { color: var(--accent); margin-bottom: 10px; font-size: 1.2rem; }
+.timeline-content h4 { color: var(--muted); margin-top: 5px; font-weight: normal; }
+/* ------------------------------------------- */
 
-.timeline-content h3 {
-  color: var(--accent);
-  margin-bottom: 10px;
-  font-size: 1.2rem;
-}
-
-.timeline-content p {
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-@keyframes slideIn {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Day buttons */
 .day-btns{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:20px;}
 .day-btns button{
-  padding:20px 35px;border:none;border-radius:10px;
-  background:var(--accent);color:#000;font-size:16px;font-weight:600;
-  cursor:pointer;transition:0.3s;
+  padding:20px 35px;border:none;border-radius:10px; background:var(--accent);
+  color:#000;font-size:16px;font-weight:600; cursor:pointer;transition:0.3s;
 }
-.day-btns button.active {
-  background: #fff;
-  color: #000;
-  transform: scale(1.05);
+.day-btns button.active, .day-btns button:hover{background:#fff;color:#000;transform:scale(1.05);}
+.brochure-buttons { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
+.btn {
+  padding: 14px 26px; background: var(--accent); color: #000; font-weight: 700;
+  font-size: 16px; text-decoration: none; border: none; border-radius: 12px;
+  cursor: pointer; transition: 0.3s ease; box-shadow: 0 0 12px rgba(77, 166, 255, 0.7);
 }
-
-.day-btns button:hover{background:#fff;color:#000;transform:scale(1.05);}
+.btn:hover { background: #fff; transform: scale(1.06); box-shadow: 0 0 18px rgba(77, 166, 255, 0.9); }
 
 /* Contact */
 .contact{
@@ -477,15 +194,12 @@ header .seds-logo{height:70px;}
     cursor: not-allowed;
     transform: none;
 }
-.contact a {
-    text-decoration: none; /* Remove underline */
-    color: inherit;        /* Use the color of the parent element */
+.contact, .contact-form {
+  position: relative;
+  z-index: 10;
 }
-
-/* Optional: on hover, keep it the same */
-.contact a:hover {
-    text-decoration: none;
-    color: inherit;
+.sidebar {
+  z-index: 2000;
 }
 .status-box {
     margin-top: 15px;
@@ -561,6 +275,14 @@ header .seds-logo{height:70px;}
   .social-item {
     text-align: center;
   }
+  .contact-item a {
+    text-decoration: none; /* Removes the underline */
+    color: inherit; /* Inherits the text color from the parent element (the white body text) */
+}
+.social-item a {
+    text-decoration: none; /* Removes the underline */
+    color: inherit; /* Inherits the text color from the parent element (the white body text) */
+}
   .social-item img {
     width: 40px; /* Make icons slightly larger */
     margin: 0 auto 5px; /* Adjust margin */
@@ -570,13 +292,28 @@ header .seds-logo{height:70px;}
     font-size: 14px; /* Adjust font size */
     margin: 0;
   }
-  .socials img:hover{
-      transform:scale(1.2);
-    }
- .contact img:hover{
+.socials img:hover{
       transform:scale(1.3);
     }
-    
+    .contact img:hover{
+      transform:scale(1.3);
+    }
+
+    @media (max-width:1024px){
+      .teams{grid-template-columns:1fr;} /* Mobile: 1 per row */
+    }
+    @media (max-width:768px){
+      header img{height:50px;}
+      header .seds-logo{height:60px;}
+      .staff img{width:160px;}
+    }
+@media (max-width: 768px) {
+  .event-top { flex-direction: column; text-align: center; }
+  .event-card img { width: 100%; height: auto; }
+  .event-content { text-align: center; }
+  .event-card .info-row { flex-direction: column; gap: 10px; }
+  .event-card .info-box, .register-btn { width: 100%; }
+}
 </style>
 </head>
 
@@ -590,8 +327,8 @@ header .seds-logo{height:70px;}
   <a href="index.html#teams">Our Teams</a>
   <a href="#contact">Contact Us</a>
   <a href="Events.html">Events</a>
-    <a href="Kosmorena25.html">Kosmorena'24</a>
-      <a href="https://sedsalpha.wordpress.com/kosmorena-2021/">Kosmorena'21</a>
+  <a href="Kosmorena25.html">Kosmorena'24</a>
+  <a href="https://sedsalpha.wordpress.com/kosmorena-2021/">Kosmorena'21</a>
   <a href="team_members_event.html">Events Team Members</a>
   <a href="team_members_pr.html">PR Team Members</a>
   <a href="team_members_admin.html">Admin Team Members</a>
@@ -611,193 +348,219 @@ header .seds-logo{height:70px;}
 
 <div class="main">
   <h1 class="events-title">KOSMORENA 2025</h1>
-  <div class="content-card">
+  
+  <div class="content-card animate-on-scroll animate-slide-up">
     <h2>What is Kosmorena'25</h2>
-    <h3>
-      Kosmorena is our annual space festival, and this year’s edition—Kosmorena’25—
-      falls right in the week of National Space Day...
-    </h3>
+    <h3> We are excited to have you at our annual space festival!
+ Each year is especially remarkable as it coincides with
+ International Space Week. Over the next three days,
+ get ready to experience a journey filled with curiosity,
+ creativity, and innovation. With project expos,
+ ideathons, inspiring talks, and creative challenges,
+ Kosmorena 2025 will ignite your imagination and
+ encourage you to dream beyond the stars.</h3>
   </div>
 
-  <div class="content-card">
+  <div class="content-card animate-on-scroll animate-slide-left">
     <h2>Why Kosmorena’25?</h2>
-    <ul>
-      To celebrate National Space Week with engaging activities
-      <br> young minds to pursue aerospace and STEM fields
-      <br> To encourage creativity, problem-solving, and innovation in space exploration<br>
-      To create a platform where students learn by doing
+    <ul style="list-style: none; padding: 0;">
+      <li>To celebrate National Space Week with engaging activities</li>
+      <li>To inspire young minds to pursue aerospace and STEM fields</li>
+      <li>To encourage creativity, problem-solving, and innovation in space exploration</li>
+      <li>To create a platform where students learn by doing</li>
     </ul>
   </div>
 
-  <div class="content-card">
+  <div class="content-card animate-on-scroll animate-zoom-in">
     <h2>Countdown to Launch 🚀</h2>
     <div id="countdown-box"><div id="countdown"></div></div>
   </div>
 
-<div class="content-card">
-  <h2>Event Brochure</h2>
-  <div class="brochure-buttons">
-    <a href="brochure.pdf" class="btn" target="_blank">View Brochure</a>
-    <a href="brochure.pdf" class="btn" download="Kosmorena25_Brochure.pdf">Download Brochure</a>
+  <div class="content-card animate-on-scroll animate-slide-right">
+    <h2>Event Brochure</h2>
+    <div class="brochure-buttons">
+      <a href="brouchure.pdf" class="btn" target="_blank">View Brochure</a>
+      <a href="brouchure.pdf" class="btn" download="Kosmorena25_Brochure.pdf">Download Brochure</a>
+    </div>
   </div>
-</div>
 
-<!-- EVENT FLOW -->
- <div class="content-card">
-<section class="event-flow">
-  <h2>🚀 Event Flow</h2>
-  <div class="timeline">
-    <div class="timeline-line"></div>
-
-    <div class="timeline-item">
-      <div class="timeline-content">
-        <h3>Day 1 - OCT 06</h3>
-        <h4>Project Expo</h4>
-        <h4>Block And Tackle</h4>
-        <h4>Plantopia</h4>
-        <h4>Astro Survival</h4>
+  <div class="content-card animate-on-scroll animate-slide-up" id="event-timeline">
+    <section class="event-flow">
+      <h2>🚀 Event Flow</h2>
+      <div class="timeline">
+        <div class="timeline-line"></div>
+        <div class="timeline-line-progress"></div>
+        
+        <div class="timeline-item animate-on-scroll animate-slide-right">
+          <div class="timeline-content">
+            <h2>Day 1 - OCT 06</h2>
+            <h3>Project Expo</h3>
+            <h3>Black And Tackle</h3>
+            <h3>Planetopia</h3>
+            <h3>Astro Survival</h3>
+          </div>
+        </div>
+        <div class="timeline-item animate-on-scroll animate-slide-right">
+          <div class="timeline-content">
+            <h2>Day 2 - OCT 07</h2>
+             <h3>Ideathon</h3>
+          </div>
+        </div>
+        <!--<div class="timeline-item animate-on-scroll animate-slide-right">
+          <div class="timeline-content">
+            <h3>Day 3 - OCT 08</h3>
+            <h4>Workshop & Telescope Parade</h4>
+          </div>-->
+        </div>
       </div>
-    </div>
+    </section>
+  </div>
 
-    <div class="timeline-item">
-      <div class="timeline-content">
-        <h3>Day 2 - OCT 07</h3>
-       <h4>Ideathon</h4>
-      </div>
-    </div>
-
-    <div class="timeline-item">
-      <div class="timeline-content">
-        <h3>Day 3 - OCT 08</h3>
-     <h4>Workshop</h4>
-     <h4>Telescope Parade</h4>
-      </div>
-    </div>
-</section>
-</div>
-
-  <div class="content-card">
-    <h2>Event Registeration</h2>
+  <div class="content-card animate-on-scroll animate-slide-up">
+    <h2>Event Registration</h2>
     <div class="day-btns">
-      <button onclick="toggleDay(1)">Day 1</button>
+      <button onclick="toggleDay(1)" class="active">Day 1</button>
       <button onclick="toggleDay(2)">Day 2</button>
       <button onclick="toggleDay(3)">Day 3</button>
     </div>
 
-  <div id="day1" class="day-event">
-    <div class="event-card">
-      <img src="day1_event1.jpg" alt="Opening Ceremony">
-      <h2>CONCLAVE</h2>
-      <p>Join us for inspiring talks and engaging sessions.</p>
-      <div class="info-row">
-        <div class="info-box"><strong>Time:</strong> 12:00 PM – 7:00 PM</div>
-        <div class="info-box"><strong>Venue:</strong> Kumaraguru Auditorium</div>
-        <div class="info-box"><strong>Amount:</strong> Free</div>
+    <div id="day1" class="day-event">
+      
+      <div class="event-card">
+        <div class="event-top">
+          <img src="projectexpo.jpg" alt="Project Expo">
+          <div class="event-content">
+            <h2>PROJECT EXPO</h2>
+            
+            <p> Explore the Space Week Project Expo, where school students show
+ their working models and projects about space, science, and
+ technology. See hands-on ideas, learn from others, and enjoy
+ curiosity, imagination, and new discoveries about the universe.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-box"><strong>Time:</strong> 10:30 AM – 12:00 PM</div>
+         <div class="info-box"><strong>Venue:</strong>  Kumaraguru Campus</div>
+          <div class="info-box"><strong>Contact:</strong> Pranav Varshan R S [ +91 73059 73235]</div>
+          <div class="info-box"><strong>Team Size:</strong> 2 to 4 members</div>
+          <div class="info-box"><strong>Only for school students</strong></div>
+        </div>
       </div>
-    </div>
+      <div class="event-card">
+         <div class="event-top">
+        <img src="blockandtackle.jpg" alt="Project Expo">
+        <div class="event-content">
+        <h2>BLOCK AND TACKLE</h2>
+        
+        <p>Block and Tackle is a debate where teams of two get a topic on the spot and argue both for (block) and against (tackle) as directed. They get 5 minutes to prepare, and both members must present equal points on each side. Judging is based on fluency, spontaneity, and depth of ideas. English is mandatory.</p>
+      </div>
+      </div>
+       <div class="info-row">
+           <div class="info-box"><strong>Time:</strong> 10:30 AM – 12:00 PM</div>
+         <div class="info-box"><strong>Venue:</strong>  Kumaraguru Campus</div>
+          <div class="info-box"><strong>Contact:</strong> +91 96008 33650</div>
+          <div class="info-box"><strong>Team Size:</strong> 2 members</div>
+          <div class="info-box"><strong>Only for school students</strong></div>
+        </div>
+      </div>
 
-    <div class="event-card">
-      <img src="day1_event2.jpg" alt="Project Expo">
-      <h2>PROJECT EXPO</h2>
-      <h3>Spark curiosity and excitement about space, science, and technology among school students.</h3>
-        <p> This event is a group event, where each group will present the model they have created. The staff will provide scores for this presentation. The event will be held in two sections at the same venue, namely 6 to 8 and 9 to 12 separately.</p>
-      <div class="info-row">
-       <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:00 PM</div>
-        <div class="info-box"><strong>Venue:</strong> Innovation Lab</div>
-        <div class="info-box"><strong>Contact:</strong> Pranav Varshan R S [ +91 73059 73235]</div>
-        <div class="info-box"><strong>Only for school students</strong></div>
+       <div class="event-card">
+         <div class="event-top">
+        <img src="planetopia.jpg" alt="Project Expo">
+        <div class="event-content">
+        <h2>PLANETOPIA</h2>
+       
+        <p> Planetopia is a creative event where teams of two design their own planet model and life forms using provided materials. Scientific accuracy isn’t required. Teams get 1 hour to build and must present their model with a clear explanation to the jury. Judging is based on creativity, model presentation, and clarity of explanation.</p>
       </div>
-    </div>
-     <div class="event-card">
-      <img src="day1_event2.jpg" alt="Project Expo">
-      <h2>BLOCK AND TACKLE</h2>
-      <h3>To understand the two sides of the topic/theme.</h3>
-        <p> Teams of 2 will be given topics to choose from. The team will prepare points for and against the same topic. When the moderator says “block” the team will speak for the motion. When the moderator says “Tackle” the team will have to speak against the motion. Only one round is conducted. The team will have to put forth at least 3 points for and against the topic. The time per team will be 5-10 mins. At a time 2 teams will be conducted. The judgement will be based on the spontaneity, seamless transitions, points they speak about.</p>
-      <div class="info-row">
-       <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:00 PM</div>
-        <div class="info-box"><strong>Venue:</strong> Innovation Lab</div>
-        <div class="info-box"><strong>Contact:</strong> Pranav Varshan R S [ +91 73059 73235]</div>
-        <div class="info-box"><strong>Only for school students</strong></div>
       </div>
-    </div>
-     <div class="event-card">
-      <img src="day1_event2.jpg" alt="Project Expo">
-      <h2>PLANETOPIA</h2>
-      <h3>.</h3>
-        <p> </p>
-      <div class="info-row">
-       <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:00 PM</div>
-        <div class="info-box"><strong>Venue:</strong> Innovation Lab</div>
-        <div class="info-box"><strong>Contact:</strong> Pranav Varshan R S [ +91 73059 73235]</div>
-        <div class="info-box"><strong>Only for school students</strong></div>
+       <div class="info-row">
+          <div class="info-box"><strong>Time:</strong> 01.00 PM - 02.30 PM</div>
+         <div class="info-box"><strong>Venue:</strong>  Kumaraguru Campus</div>
+          <div class="info-box"><strong>Contact:</strong> +91 93457 81132</div>
+          <div class="info-box"><strong>Team Size:</strong> 2 members</div>
+          <div class="info-box"><strong>Only for school students</strong></div>
+        </div>
       </div>
-    </div>
-     <div class="event-card">
-      <img src="day1_event2.jpg" alt="Project Expo">
-      <h2>ASTRO SURVIVAL</h2>
-      <h3> .</h3>
-        <p> </p>
-      <div class="info-row">
-       <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:00 PM</div>
-        <div class="info-box"><strong>Venue:</strong> Innovation Lab</div>
-        <div class="info-box"><strong>Contact:</strong> Pranav Varshan R S [ +91 73059 73235]</div>
-        <div class="info-box"><strong>Only for school students</strong></div>
+        <!--<div class="event-card">
+        <div class="event-top">
+          <img src="conclave.jpg" alt="Conclave">
+          <div class="event-content">
+            <h2>CONCLAVE</h2>
+            <p>Join us for inspiring talks and engaging sessions.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-box"><strong>Time:</strong> 12:00 PM – 7:00 PM</div>
+          <div class="info-box"><strong>Venue:</strong> Kumaraguru Auditorium</div>
+          <div class="info-box"><strong>Amount:</strong> Free</div>
+        </div>
+      </div>-->
+    
+      <div class="event-card">
+         <div class="event-top">
+        <img src="astrosurvival.jpg" alt="Project Expo">
+        <div class="event-content">
+        <h2>ASTRO SURVIVAL</h2>
+       
+        <p> A space-themed survival game where teams of two astronauts protect their O₂ balloons while collecting keys (fuel & antenna) to save their rocket. Volunteers play as alien attackers trying to pop the balloons. Teams must rely on teamwork, strategy, and quick thinking to survive and win the challenge.</p>
       </div>
-    </div>
-  </div>
-
-  <div id="day2" class="day-event">
-    <div class="event-card">
-      <img src="ideathon.jpg" alt="Workshop">
-      <h2>IDEATHON</h2>
-      <h3>Team up, innovate for space solutions, and win exciting prizes!</h3>
-      <p>The Ideathon is a creative challenge where participants brainstorm and pitch innovative solutions to real-world problems in space technology. It emphasizes ideas over execution, focusing on originality, feasibility, and impact.</p>
-     <br>
-      <div class="info-row">
-        <div class="info-box"><strong>Date:</strong> Oct 07, 2025</div>
-        <div class="info-box"><strong>Time:</strong> 9:00 AM – 5:00 PM</div>
-        <div class="info-box"><strong>Venue:</strong> Amuse Lab, MGCL Kumaraguru Campus</div>
-        <div class="info-box"><strong>Prize Worth:</strong> ₹8.5k</div>
-        <div class="info-box"><strong>Registeration Amount:</strong> ₹200</div>
-        <div class="info-box"><strong>Contact:</strong> Kishore N M [ +91 63806 36621 ]</div>
       </div>
-      <br>
-        <a class="register-btn" href="Ideathon.html" style="text-decoration: none;">Register Now</a>
-    <br>
+       <div class="info-row">
+       <div class="info-box"><strong>Time:</strong> 01.00 PM - 02.30 PM</div>
+         <div class="info-box"><strong>Venue:</strong>  Kumaraguru Campus</div>
+          <div class="info-box"><strong>Contact:</strong>  +91 93448 90940</div>
+          <div class="info-box"><strong>Team Size:</strong> 2 members</div>
+          <div class="info-box"><strong>Only for school students</strong></div>
+        </div>
       </div>
-  </div>
-
-  <div id="day3" class="day-event">
-  <div class="event-card">
-    <img src="day3_event1.jpg" alt="Workshop">
-    <h2>WORKSHOP</h2>
-    <h3>.</h3>
-    <p>.</p>
-    <div class="info-row">
-      <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:30 PM</div>
-      <div class="info-box"><strong>Venue:</strong> Main Seminar Hall</div>
-      <div class="info-box"><strong>Amount:</strong> ₹150</div>
-    </div>
-    <a class="register-btn" href="Application_Form.html" style="text-decoration: none;">Register Now</a>
-  </div>
-  <div class="event-card">
-    <img src="day3_event1.jpg" alt="Competition">
-    <h2>TELESCOPE PARADE</h2>
-    <h3>.</h3>
-    <p>.</p>
-    <div class="info-row">
-      <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:30 PM</div>
-      <div class="info-box"><strong>Venue:</strong> Main Seminar Hall</div>
-      <div class="info-box"><strong>Amount:</strong> ₹150</div>
-    </div>
-    <a class="register-btn" href="Application_Form.html" style="text-decoration: none;">Register Now</a>
-  </div>
-</div>
-  </div>
-  </div>
+   </div>
   
-</div>
+   
 
+
+    <div id="day2" class="day-event">
+      <div class="event-card">
+        <div class="event-top">
+          <img src="ideathon1.jpg" alt="Ideathon">
+          <div class="event-content">
+            <h2>IDEATHON</h2>
+            <h3>Team up, innovate for space solutions, and win exciting prizes!</h3>
+            <p>The Ideathon is a creative challenge where participants brainstorm and pitch innovative solutions to real-world problems in space technology.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-box"><strong>Date:</strong> Oct 07, 2025</div>
+          <div class="info-box"><strong>Time:</strong> 9:30 AM – 4:30 PM</div>
+          <div class="info-box"><strong>Prize Worth:</strong> ₹8.5k</div>
+          <div class="info-box"><strong>Registration:</strong> ₹200</div>
+          <div class="info-box"><strong>Contact:</strong> Kishore N M [ +91 63806 36621 ]</div>
+        </div>
+        <br>
+                <a class="register-btn" href="Ideathon.html">Register Now</a>
+      </div>
+    </div>
+
+   <!-- <div id="day3" class="day-event">
+      <div class="event-card">
+        <h2>WORKSHOP</h2>
+        <div class="info-row">
+          <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:30 PM</div>
+          <div class="info-box"><strong>Amount:</strong> ₹150</div>
+        </div>
+        <a class="register-btn" href="Application_Form.html">Register Now</a>
+      </div>
+      <div class="event-card">
+        <h2>TELESCOPE PARADE</h2>
+        <div class="info-row">
+          <div class="info-box"><strong>Time:</strong> 9:00 AM – 12:30 PM</div>
+          <div class="info-box"><strong>Amount:</strong> ₹150</div>
+        </div>
+        <a class="register-btn" href="Application_Form.html">Register Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+-->
 <!-- Contact Us -->
 <div class="contact" id="contact">
   <h2>Contact Us</h2>
@@ -871,100 +634,94 @@ header .seds-logo{height:70px;}
 </div>
 
 <script>
-// Sidebar toggle
-function toggleSidebar(){document.getElementById("sidebar").classList.toggle("active");}
+document.addEventListener('DOMContentLoaded', function() {
 
-// Countdown Timer
-function startCountdown(){
-  const countdownEl=document.getElementById("countdown");
-  const targetDate=new Date("Oct 07, 2025 12:00:00 GMT+0530").getTime();
-  setInterval(()=>{
-    const now=new Date().getTime();
-    const diff=targetDate-now;
-    if(diff<=0){countdownEl.innerHTML="🚀 The Event Has Started!"; return;}
-    const days=Math.floor(diff/(1000*60*60*24));
-    const hours=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
-    const minutes=Math.floor((diff%(1000*60*60))/(1000*60));
-    const seconds=Math.floor((diff%(1000*60))/1000);
-    countdownEl.innerHTML= `${days}d ${hours}h ${minutes}m ${seconds}s`;
-  },1000);
-}
+    // --- Sidebar Controls ---
+    const sidebar = document.getElementById("sidebar");
+    const hamburger = document.querySelector(".hamburger");
+    window.toggleSidebar = function() {
+        sidebar.classList.toggle("active");
+    };
+    document.addEventListener("click", function(e) {
+        if (sidebar.classList.contains("active") && !sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+            sidebar.classList.remove("active");
+        }
+    });
 
-// Toggle Day Events + Active Button
-function toggleDay(day){
-  ["day1","day2","day3"].forEach((id, index) => {
-    const el = document.getElementById(id);
-    const btn = document.querySelectorAll(".day-btns button")[index];
-    if(id==="day"+day){
-      el.style.display = "block";
-      btn.classList.add("active");
-      // Animate cards
-      setTimeout(() => {
-        el.querySelectorAll(".event-card").forEach((card,i) => {
-          setTimeout(() => card.classList.add("show"), i*200);
+    // --- Countdown Timer ---
+    const countdownEl = document.getElementById("countdown");
+    if (countdownEl) {
+        const targetDate = new Date("Oct 6, 2025 00:00:00").getTime();
+        const interval = setInterval(() => {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+            if (diff <= 0) {
+                countdownEl.innerHTML = "🚀 The Event Has Started!";
+                clearInterval(interval);
+                return;
+            }
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            countdownEl.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }, 1000);
+    }
+
+    // --- Day Toggler ---
+    const dayButtons = document.querySelectorAll(".day-btns button");
+    const dayEvents = document.querySelectorAll(".day-event");
+    window.toggleDay = function(dayIndex) {
+        dayEvents.forEach((eventEl, index) => {
+            eventEl.style.display = (index + 1 === dayIndex) ? 'block' : 'none';
         });
-      },100);
-    } else {
-      el.style.display = "none";
-      btn.classList.remove("active");
-    }
-  });
-}
+        dayButtons.forEach((btn, index) => {
+            btn.classList.toggle('active', index + 1 === dayIndex);
+        });
+    };
+    toggleDay(1); // Show day 1 by default
 
-// Show Day 1 by default
-window.onload=function(){
-  toggleDay(1);
-  startCountdown();
-}
-
-
-// Scroll smoothly to Contact Section
-document.querySelectorAll('.sidebar a[href="#contact"]').forEach(link => {
-  link.addEventListener('click', function(e){
-    e.preventDefault();
-    toggleSidebar();
-    document.getElementById("contact").scrollIntoView({behavior: "smooth"});
-  });
-});
-
-// Show Day 1 by default
-window.onload=function(){
-  toggleDay(1);
-  startCountdown();
-}
-  // Disable right-click
-document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-});
-
-// Disable common developer shortcuts
-document.addEventListener('keydown', function(e) {
-    // F12
-    if (e.key === 'F12') {
-        e.preventDefault();
+    // --- DYNAMIC SCROLL & TIMELINE ANIMATION SCRIPT ---
+    const animatedElements = document.querySelectorAll(".animate-on-scroll");
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+            }
+        });
+    }, { threshold: 0.1 });
+    animatedElements.forEach(el => observer.observe(el));
+    
+    // Timeline "drawing" animation
+    const timeline = document.getElementById('event-timeline');
+    const lineProgress = document.querySelector('.timeline-line-progress');
+    if (timeline && lineProgress) {
+        const updateTimeline = () => {
+            const timelineRect = timeline.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            if (timelineRect.top < windowHeight && timelineRect.bottom > 0) {
+                const visibleHeight = Math.max(0, Math.min(timelineRect.height, windowHeight - timelineRect.top));
+                const progress = (visibleHeight / timelineRect.height) * 100;
+                lineProgress.style.height = `${progress}%`;
+            }
+        };
+        window.addEventListener('scroll', updateTimeline);
+        window.addEventListener('resize', updateTimeline);
+        updateTimeline(); // Initial check
     }
 
-    // Ctrl+Shift+I
-    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
-        e.preventDefault();
-    }
+    // --- Security: Disable Right-click & Dev Tools ---
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase() === 'U')) {
+            e.preventDefault();
+        }
+    });
+    document.addEventListener('dragstart', e => e.preventDefault());
 
-    // Ctrl+Shift+C
-    if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
-        e.preventDefault();
-    }
-
-    // Ctrl+U
-    if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
-        e.preventDefault();
-    }
-});
-  document.addEventListener('dragstart', function(e) {
-    e.preventDefault();
-});
-
-<!-- Contact Us -->
-const form = document.getElementById('contactForm');
+    // --- Contact Form ---
+   
+  const form = document.getElementById('contactForm');
 const statusDiv = document.getElementById('status');
 const submitButton = form.querySelector('button[type="submit"]');
 
@@ -1062,7 +819,7 @@ form.addEventListener('submit', function(event) {
   };
   xhr.send(formData);
 });
+});
 </script>
-
 </body>
 </html>
