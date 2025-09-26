@@ -7,14 +7,19 @@
     <title>A Birthday Surprise!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display.swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root{
-            --card: rgba(19, 34, 51, 0.7); /* Darker, more solid card */
+            --card: rgba(255,255,255,0.08);
             --sidebar-bg: #132233;
             --accent: #4da6ff;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: "Poppins", sans-serif;
             display: flex;
@@ -27,190 +32,301 @@
             position: relative;
             z-index: 0;
         }
+
         body::before {
             content: "";
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: url('background.jpg') no-repeat center center/cover fixed;
             filter: brightness(70%);
             z-index: -1;
         }
+
         /* Sidebar CSS */
         .sidebar {
-            position: fixed; top: 0; left: -260px;
-            width: 260px; height: 100%;
-            background: var(--sidebar-bg);
-            padding: 30px 20px;
-            transition: left 0.3s ease;
-            z-index: 2000;
-            overflow-y: auto;
+          position: fixed;
+          top: 0; left: -260px;
+          width: 260px;
+          height: 100%;
+          background: var(--sidebar-bg);
+          padding: 30px 20px;
+          transition: 0.3s;
+          z-index: 2000;
+          overflow-y: auto;
+          max-height: 100vh;
         }
         .sidebar.active { left: 0; }
         .sidebar a {
-            display: block; padding: 15px 0; color: #fff;
-            font-size: 20px; text-decoration: none;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+          display: block;
+          padding: 15px 0;
+          color: #fff;
+          font-size: 20px;
+          text-decoration: none;
+          border-bottom: 1px solid rgba(255,255,255,0.2);
         }
         .sidebar a:hover { color: var(--accent); }
-        .close-btn { font-size: 22px; color: #fff; cursor: pointer; text-align: right; margin-bottom: 20px; }
-        .hamburger {
-            font-size: 28px; cursor: pointer; color: white;
-            position: fixed; top: 18px; left: 18px; z-index: 2100;
-            background: rgba(19,34,51,0.7);
-            border-radius: 8px; padding: 6px 12px;
-            transition: background 0.2s;
+        .close-btn {
+          font-size: 22px;
+          color: #fff;
+          cursor: pointer;
+          text-align: right;
+          margin-bottom: 20px;
+          display: block;
         }
-        .hamburger:hover { background: var(--accent); color: #132233; }
-        
+        .hamburger {
+          font-size: 28px;
+          cursor: pointer;
+          color: white;
+          position: fixed;
+          top: 18px;
+          left: 18px;
+          z-index: 2100;
+          background: rgba(19,34,51,0.7);
+          border-radius: 8px;
+          padding: 6px 12px;
+          transition: background 0.2s;
+        }
+        .hamburger:hover {
+          background: var(--accent);
+          color: #132233;
+        }
+        @media (max-width: 768px) {
+          .sidebar { width: 80vw; left: -80vw; }
+          .sidebar.active { left: 0; }
+          .hamburger { font-size: 24px; top: 12px; left: 12px; }
+        }
+
         /* Birthday Card & Effects */
-        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-        .star { position: absolute; background-color: #fff; border-radius: 50%; animation: fall linear infinite; }
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+            animation: fall linear infinite;
+        }
         @keyframes fall {
             from { transform: translateY(-20px); opacity: 1; }
             to { transform: translateY(100vh); opacity: 0; }
         }
         .card {
-            background: var(--card);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 16px;
-            padding: 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+          background:var(--card);
+          border-radius:14px;
+          padding:18px;
+          text-align:center;
+          transition:transform 0.1s;
+          position: relative;
+          overflow: hidden;
+        }
+        .card:hover{ transform:translateY(-6px); }
+        .card h2{
+          margin:10px 0;
+          font-size:22px;
+          color:var(--section-title);
+          text-align:center;
+        }
+        .card h3 {
+          color: var(--accent, #00bcd4);
+          margin-bottom: 10px;
+          text-align: left;
         }
         h1 {
-            font-size: 2.8em; font-weight: 700; margin-bottom: 10px;
-            text-shadow: 0 0 8px #ff9d76, 0 0 16px #ff6f61;
+            color: #fff;
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px #ff9d76, 0 0 16px #ff6f61, 0 0 24px #ff3c2f;
             animation: glowPulse 2s infinite alternate;
         }
         @keyframes glowPulse {
-            from { text-shadow: 0 0 8px #ff9d76, 0 0 16px #ff6f61; }
-            to { text-shadow: 0 0 20px #ffd700, 0 0 40px #ff4500; }
+          from { text-shadow: 0 0 8px #ff9d76, 0 0 16px #ff6f61; }
+          to { text-shadow: 0 0 20px #ffd700, 0 0 40px #ff4500; }
         }
-        p { font-size: 1.1em; color: #c9d1e6; }
+        p {
+            font-size: 1.1em;
+            color: #c9d1e6;
+        }
         #birthdayImage {
-            width: 200px; height: 200px; border-radius: 50%;
-            object-fit: cover; border: 6px solid #f97316;
-            margin-top: 25px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            opacity: 0; transform: scale(0.5) rotate(-15deg);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid #f97316;
+            margin-top: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: scale(0.5) rotate(-15deg);
             transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .loaded #birthdayImage { opacity: 1; transform: scale(1) rotate(0deg); }
-        
-        /* New Animations */
+        .loaded #birthdayImage {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
         .balloon {
-            position: absolute; bottom: -150px; width: 60px; height: 80px;
-            background: radial-gradient(circle at 30% 30%, #ff7eb9, #ff2e63);
-            border-radius: 50% 50% 45% 55%;
-            animation: floatUp 8s ease-in-out infinite;
-            z-index: 1; pointer-events: none;
+          position: absolute;
+          bottom: -150px;
+          width: 60px;
+          height: 80px;
+          background: radial-gradient(circle at 30% 30%, #ff7eb9, #ff2e63);
+          border-radius: 50% 50% 45% 55%;
+          animation: floatUp 6s ease-in-out infinite;
+          z-index: 1;
+        }
+        .balloon::after {
+          content: "";
+          position: absolute;
+          bottom: -20px;
+          left: 50%;
+          width: 2px;
+          height: 30px;
+          background: #fff;
         }
         @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-100vh) rotate(15deg); }
-            100% { transform: translateY(0) rotate(-15deg); }
+          0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+          50% { transform: translateY(-50vh) rotate(10deg); opacity: 1; }
+          100% { transform: translateY(-100vh) rotate(-10deg); opacity: 0; }
         }
         .confetti {
-            position: absolute; width: 10px; height: 10px;
-            background: hsl(var(--hue, 0), 100%, 50%);
-            top: 0; opacity: 0;
-            animation: confettiFall 5s linear infinite;
-            pointer-events: none;
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          background: hsl(calc(360 * var(--hue)), 100%, 50%);
+          top: -10px;
+          left: 0;
+          opacity: 0.9;
+          animation: confettiFall linear forwards;
         }
         @keyframes confettiFall {
-            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(110vh) rotate(1080deg); opacity: 0; }
+          to {
+            transform: translateY(110vh) rotate(720deg);
+            opacity: 0;
+          }
+        }
+        .card::before {
+          content: "";
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+          transform: rotate(25deg);
+          animation: shine 5s infinite;
+        }
+        @keyframes shine {
+          from { transform: translateX(-100%) rotate(25deg); }
+          to { transform: translateX(100%) rotate(25deg); }
         }
     </style>
 </head>
-<body class="">
-    <span class="hamburger" onclick="toggleSidebar()" id="hamburger">&#9776;</span>
-    <div class="sidebar" id="sidebar">
-      <span class="close-btn" onclick="toggleSidebar()">Menu ×</span>
-      <a href="index.html">Home</a>
-      <a href="Kosmorena25.html">Kosmorena'25</a>
-      <a href="Events.html">Events</a>
-      </div>
-
-    <div class="stars-container"></div>
-
-    <div class="card">
-        <h1>Happy Birthday!</h1>
-        <p>Wishing you all the best on your special day from everyone at SEDS!</p>
-        <img id="birthdayImage" src="" alt="Your birthday photo!">
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // --- Sidebar Script ---
-            const sidebar = document.getElementById("sidebar");
-            const hamburger = document.getElementById("hamburger");
-            window.toggleSidebar = function() {
-                sidebar.classList.toggle("active");
-                hamburger.style.display = sidebar.classList.contains("active") ? "none" : "inline-block";
-            };
-            document.addEventListener("click", function(e) {
-                if (sidebar.classList.contains("active") && !sidebar.contains(e.target) && e.target !== hamburger) {
-                    sidebar.classList.remove("active");
-                    hamburger.style.display = "inline-block";
-                }
-            });
-
-            // --- Effects Script ---
-            const body = document.body;
-            // Stars
-            const starsContainer = document.querySelector('.stars-container');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.classList.add('star');
-                const size = Math.random() * 3 + 1;
-                star.style.width = `${size}px`; star.style.height = `${size}px`;
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.animationDuration = `${Math.random() * 5 + 3}s`;
-                star.style.animationDelay = `${Math.random() * 5}s`;
-                starsContainer.appendChild(star);
-            }
-            // Balloons
-            for (let i = 0; i < 6; i++) {
-                const balloon = document.createElement("div");
-                balloon.classList.add("balloon");
-                balloon.style.left = `${Math.random() * 90}%`;
-                balloon.style.animationDuration = `${Math.random() * 6 + 8}s`;
-                balloon.style.animationDelay = `${Math.random() * 5}s`;
-                balloon.style.background = `radial-gradient(circle at 30% 30%, hsl(${Math.random()*360}, 90%, 70%), hsl(${Math.random()*360}, 90%, 50%))`;
-                body.appendChild(balloon);
-            }
-            // Confetti
-            for (let i = 0; i < 80; i++) {
-                const confetti = document.createElement("div");
-                confetti.classList.add("confetti");
-                confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.setProperty("--hue", Math.random() * 360);
-                confetti.style.animationDuration = `${Math.random() * 3 + 4}s`;
-                confetti.style.animationDelay = `${Math.random() * 5}s`;
-                body.appendChild(confetti);
-            }
-
-            // --- Image Display Script ---
-            const params = new URLSearchParams(window.location.search);
-            const photoUrl = params.get('photo');
-            const imageElement = document.getElementById('birthdayImage');
-            
-            if (photoUrl && photoUrl !== 'null') {
-                imageElement.src = photoUrl;
-                setTimeout(() => {
-                    body.classList.add('loaded');
-                }, 100);
-            } else {
-                imageElement.style.display = 'none';
-            }
-        });
-    </script>
+<body>
+<body>
+<span class="hamburger" onclick="toggleSidebar()" id="hamburger">&#9776;</span>
+<div class="sidebar" id="sidebar">
+  <span class="close-btn" onclick="toggleSidebar()">Menu ×</span>
+  <a href="index.html#home">Home</a>
+  <a href="index.html#vision">Vision</a>
+  <a href="index.html#mission">Mission</a>
+  <a href="index.html#staff">Staff Coordinator</a>
+  <a href="index.html#teams">Our Teams</a>
+  <a href="#contact">Contact Us</a>
+  <a href="Events.html">Events</a>
+  <a href="Kosmorena25.html">Kosmorena'25</a>
+  <a href="Kosmorena25.html">Kosmorena'24</a>
+  <a href="https://sedsalpha.wordpress.com/kosmorena-2021/">Kosmorena'21</a>
+  <a href="team_members_event.html">Events Team Members</a>
+  <a href="team_members_pr.html">PR Team Members</a>
+  <a href="team_members_admin.html">Admin Team Members</a>
+  <a href="team_members_impm.html">IM & PM Team Members</a>
+  <a href="team_members_media.html">Media Team Members</a>
+  <a href="team_members_finance.html">Finance Team Members</a>
+  <a href="astronomy_team_members.html">Astronomy Team Members</a>
+  <a href="Admin_Page.html">...</a>
+</div>
+<div class="stars-container"></div>
+<div class="card">
+   <h1>Happy Birthday!</h1>
+    <img id="birthdayImage" src="" alt="Your birthday photo!">
+    <p>Current, Wishing you all the best on your special day from everyone at SEDS!</p>
+    <img src="gift.gif" style="width:200px; margin-top:10px;">
+</div>
+<script>
+    // --- Falling Stars Script ---
+    const starsContainer = document.querySelector('.stars-container');
+    const numberOfStars = 100;
+    for (let i = 0; i < numberOfStars; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        const size = Math.random() * 3 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.left = `${Math.random() * 100}%`;
+        const duration = Math.random() * 5 + 3;
+        star.style.animationDuration = `${duration}s`;
+        const delay = Math.random() * 5;
+        star.style.animationDelay = `${delay}s`;
+        starsContainer.appendChild(star);
+    }
+    // --- Image Display Script ---
+    const params = new URLSearchParams(window.location.search);
+    const photoUrl = params.get('photo');
+    const imageElement = document.getElementById('birthdayImage');
+    const bodyElement = document.body;
+    if (photoUrl) {
+        imageElement.src = photoUrl;
+        setTimeout(() => {
+            bodyElement.classList.add('loaded');
+        }, 100);
+    } else {
+        imageElement.style.display = 'none';
+    }
+    // 🎈 Balloons 🎈
+    for (let i = 0; i < 6; i++) {
+      const balloon = document.createElement("div");
+      balloon.classList.add("balloon");
+      balloon.style.left = `${Math.random() * 100}%`;
+      balloon.style.animationDelay = `${Math.random() * 5}s`;
+      document.body.appendChild(balloon);
+    }
+    // 🎉 Confetti 🎉
+    for (let i = 0; i < 80; i++) {
+      const confetti = document.createElement("div");
+      confetti.classList.add("confetti");
+      confetti.style.left = `${Math.random() * 100}%`;
+      confetti.style.setProperty("--hue", Math.random());
+      confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+      confetti.style.animationDelay = `${Math.random() * 5}s`;
+      document.body.appendChild(confetti);
+    }
+    // Sidebar JS
+      function toggleSidebar(){  
+      document.getElementById("sidebar").classList.toggle("active");  
+      // Hide hamburger when sidebar is open
+      const hamburger = document.getElementById("hamburger");
+      if(document.getElementById("sidebar").classList.contains("active")){
+        hamburger.style.display = "none";
+      } else {
+        hamburger.style.display = "inline-block";
+      }
+    }
+    document.addEventListener("click", function(e){  
+      const sidebar = document.getElementById("sidebar");  
+      const hamburger = document.getElementById("hamburger");  
+      if(sidebar.classList.contains("active") && !sidebar.contains(e.target) && !hamburger.contains(e.target)){  
+        sidebar.classList.remove("active");  
+        hamburger.style.display = "inline-block";
+      }  
+    });
+      </script>
 </body>
 </html>
