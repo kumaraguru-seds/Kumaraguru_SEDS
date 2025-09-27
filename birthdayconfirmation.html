@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="sedsb.png" type="image/png">
+    <title>Action Confirmed!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --card: rgba(19, 34, 51, 0.75);
+            --sidebar-bg: #132233;
+            --accent: #4da6ff;
+            --success-color: #28a745;
+            --snooze-color: #ffc107;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Poppins", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('background.jpg') no-repeat center center/cover fixed;
+            filter: brightness(70%);
+            z-index: -1;
+        }
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .star { position: absolute; background-color: #fff; border-radius: 50%; animation: fall linear infinite; }
+        @keyframes fall {
+            from { transform: translateY(-20px); opacity: 1; }
+            to { transform: translateY(100vh); opacity: 0; }
+        }
+        .card {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            transition: border-top-color 0.5s ease;
+        }
+        .card.success { border-top: 5px solid var(--success-color); }
+        .card.snooze { border-top: 5px solid var(--snooze-color); }
+        
+        h1 {
+            font-size: 2.8em; font-weight: 700; margin-bottom: 15px;
+            transition: color 0.5s ease;
+        }
+        h1.success { color: var(--success-color); }
+        h1.snooze { color: var(--snooze-color); }
+        
+        p { font-size: 1.1em; color: #c9d1e6; line-height: 1.6; }
+        .footer-text { font-size: 0.9em; color: #aaa; margin-top: 25px; }
+    </style>
+</head>
+<body>
+    <div class="stars-container"></div>
+
+    <div class="card" id="confirmationCard">
+        <h1 id="statusTitle"></h1>
+        <p id="message">Your action has been recorded.</p>
+        <p class="footer-text">You can now close this tab.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Falling Stars Script ---
+            const starsContainer = document.querySelector('.stars-container');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.animationDuration = `${Math.random() * 5 + 3}s`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                starsContainer.appendChild(star);
+            }
+
+            // --- Message Display Script ---
+            const params = new URLSearchParams(window.location.search);
+            const msg = params.get('msg');
+            const type = params.get('type');
+            
+            const card = document.getElementById('confirmationCard');
+            const title = document.getElementById('statusTitle');
+            const message = document.getElementById('message');
+
+            if (type === 'snooze') {
+                card.className = 'card snooze';
+                title.className = 'snooze';
+                title.textContent = '⏰ Snoozed!';
+            } else { // Default to success
+                card.className = 'card success';
+                title.className = 'success';
+                title.textContent = '✅ Success!';
+            }
+
+            if (msg) {
+                message.innerHTML = decodeURIComponent(msg);
+            }
+        });
+    </script>
+</body>
+</html>
