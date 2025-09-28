@@ -315,10 +315,42 @@ header .seds-logo{height:70px;}
   .event-card .info-row { flex-direction: column; gap: 10px; }
   .event-card .info-box, .register-btn { width: 100%; }
 }
+
+
+        /* Stars */
+       .stars-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none; /* Prevents interaction with stars */
+}
+
+.star {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    from {
+        transform: translateY(-20px);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
 </style>
 </head>
 
 <body>
+  <div class="stars-container"></div>
 <div class="sidebar" id="sidebar">
   <span class="close-btn" onclick="toggleSidebar()">Menu ×</span>
   <a href="index.html#home">Home</a>
@@ -839,6 +871,34 @@ form.addEventListener('submit', function(event) {
   xhr.send(formData);
 });
 });
+
+  // --- Falling Stars Script ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const starsContainer = document.querySelector('.stars-container');
+        
+        // Change this number to control the quantity of stars
+        const numberOfStars = 200; 
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 3 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            const duration = Math.random() * 5 + 3;
+            const twinkleDuration = Math.random() * 2 + 1;
+            star.style.animation = `
+                fall ${duration}s linear infinite,
+                twinkle ${twinkleDuration}s ease-in-out infinite
+            `;
+            starsContainer.appendChild(star);
+        }
+
+        for (let i = 0; i < numberOfStars; i++) {
+            createStar();
+        }
+    });
 </script>
 </body>
 </html>
