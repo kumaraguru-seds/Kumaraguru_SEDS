@@ -127,6 +127,7 @@
           transition:transform 0.1s;
           position: relative;
           overflow: hidden;
+          max-width: 1000px;
         }
         .card:hover{ transform:translateY(-6px); }
         .card h2{
@@ -152,6 +153,7 @@
           from { text-shadow: 0 0 8px #ff9d76, 0 0 16px #ff6f61; }
           to { text-shadow: 0 0 20px #ffd700, 0 0 40px #ff4500; }
         }
+        
         p {
             font-size: 1.1em;
             color: #c9d1e6;
@@ -161,7 +163,7 @@
             height: 200px;
             border-radius: 50%;
             object-fit: cover;
-            border: 6px solid #f97316;
+            border: 6px solid  #4da6ff;
             margin-top: 25px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             opacity: 0;
@@ -227,9 +229,29 @@
           from { transform: translateX(-100%) rotate(25deg); }
           to { transform: translateX(100%) rotate(25deg); }
         }
+        /* New CSS for the SEDS logo */
+        .seds-logo {
+            width: 180px;
+            height: 180px;
+            position: absolute;
+          top: -40px;	
+          bottom: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+            animation: pulse 2s infinite ease-in-out;
+            transition: transform 0.3s ease-out;
+        }
+        .seds-logo:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-40%) scale(1.02); }
+        }
     </style>
 </head>
-<body>
 <body>
 <span class="hamburger" onclick="toggleSidebar()" id="hamburger">&#9776;</span>
 <div class="sidebar" id="sidebar">
@@ -251,13 +273,13 @@
   <a href="team_members_media.html">Media Team Members</a>
   <a href="team_members_finance.html">Finance Team Members</a>
   <a href="astronomy_team_members.html">Astronomy Team Members</a>
-  <a href="Admin_Page.html">...</a>
 </div>
 <div class="stars-container"></div>
 <div class="card">
-   <h1>Happy Birthday!</h1>
+    <img src="SEDS.png" alt="SEDS Logo" class="seds-logo"><br><br><br>
+    <h1>Happy Birthday!</h1>
     <img id="birthdayImage" src="" alt="Your birthday photo!">
-    <p>Alumni, Wishing you all the best on your special day from everyone at SEDS!</p>
+    <p>To our <strong>Kumaraguru SEDS</strong> alumni, you are the pioneers who ignited our passion for the stars. Your intellectual curiosity laid the foundation for our club's success. Your achievements in the aerospace industry, academia, and beyond are a testament to the knowledge and skills you honed here. You've taught us that the sky is not the limit—it's just the beginning. Your continued mentorship and guidance inspire us to reach new heights and carry forward your legacy of innovation and leadership. We're proud to follow in your footsteps.</p>
     <img src="gift.gif" style="width:200px; margin-top:10px;">
 </div>
 <script>
@@ -309,8 +331,8 @@
       document.body.appendChild(confetti);
     }
     // Sidebar JS
-      function toggleSidebar(){  
-      document.getElementById("sidebar").classList.toggle("active");  
+      function toggleSidebar(){   
+      document.getElementById("sidebar").classList.toggle("active");   
       // Hide hamburger when sidebar is open
       const hamburger = document.getElementById("hamburger");
       if(document.getElementById("sidebar").classList.contains("active")){
@@ -319,13 +341,13 @@
         hamburger.style.display = "inline-block";
       }
     }
-    document.addEventListener("click", function(e){  
-      const sidebar = document.getElementById("sidebar");  
-      const hamburger = document.getElementById("hamburger");  
-      if(sidebar.classList.contains("active") && !sidebar.contains(e.target) && !hamburger.contains(e.target)){  
-        sidebar.classList.remove("active");  
+    document.addEventListener("click", function(e){   
+      const sidebar = document.getElementById("sidebar");   
+      const hamburger = document.getElementById("hamburger");   
+      if(sidebar.classList.contains("active") && !sidebar.contains(e.target) && !hamburger.contains(e.target)){   
+        sidebar.classList.remove("active");   
         hamburger.style.display = "inline-block";
-      }  
+      }   
     });
       </script>
 </body>
