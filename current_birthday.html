@@ -9,247 +9,255 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root{
-            --card: rgba(255,255,255,0.08);
-            --sidebar-bg: #132233;
-            --accent: #4da6ff;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+       :root{
+    --card: rgba(255,255,255,0.08);
+    --sidebar-bg: #132233;
+    --accent: #4da6ff;
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
-            font-family: "Poppins", sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            color: #fff;
-            overflow: hidden;
-            position: relative;
-            z-index: 0;
-        }
+body {
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+    z-index: 0;
+}
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('background.jpg') no-repeat center center/cover fixed;
-            filter: brightness(70%);
-            z-index: -1;
-        }
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('background.jpg') no-repeat center center/cover fixed;
+    filter: brightness(70%);
+    z-index: -1;
+}
 
-        /* Sidebar CSS */
-        .sidebar {
-          position: fixed;
-          top: 0; left: -260px;
-          width: 260px;
-          height: 100%;
-          background: var(--sidebar-bg);
-          padding: 30px 20px;
-          transition: 0.3s;
-          z-index: 2000;
-          overflow-y: auto;
-          max-height: 100vh;
-        }
-        .sidebar.active { left: 0; }
-        .sidebar a {
-          display: block;
-          padding: 15px 0;
-          color: #fff;
-          font-size: 20px;
-          text-decoration: none;
-          border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-        .sidebar a:hover { color: var(--accent); }
-        .close-btn {
-          font-size: 22px;
-          color: #fff;
-          cursor: pointer;
-          text-align: right;
-          margin-bottom: 20px;
-          display: block;
-        }
-        .hamburger {
-          font-size: 28px;
-          cursor: pointer;
-          color: white;
-          position: fixed;
-          top: 18px;
-          left: 18px;
-          z-index: 2100;
-          background: rgba(19,34,51,0.7);
-          border-radius: 8px;
-          padding: 6px 12px;
-          transition: background 0.2s;
-        }
-        .hamburger:hover {
-          background: var(--accent);
-          color: #132233;
-        }
-        @media (max-width: 768px) {
-          .sidebar { width: 80vw; left: -80vw; }
-          .sidebar.active { left: 0; }
-          .hamburger { font-size: 24px; top: 12px; left: 12px; }
-        }
+/* Sidebar CSS */
+.sidebar {
+  position: fixed;
+  top: 0; left: -260px;
+  width: 260px;
+  height: 100%;
+  background: var(--sidebar-bg);
+  padding: 30px 20px;
+  transition: 0.3s;
+  z-index: 2000;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+.sidebar.active { left: 0; }
+.sidebar a {
+  display: block;
+  padding: 15px 0;
+  color: #fff;
+  font-size: 20px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+.sidebar a:hover { color: var(--accent); }
+.close-btn {
+  font-size: 22px;
+  color: #fff;
+  cursor: pointer;
+  text-align: right;
+  margin-bottom: 20px;
+  display: block;
+}
+.hamburger {
+  font-size: 28px;
+  cursor: pointer;
+  color: white;
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 2100;
+  background: rgba(19,34,51,0.7);
+  border-radius: 8px;
+  padding: 6px 12px;
+  transition: background 0.2s;
+}
+.hamburger:hover {
+  background: var(--accent);
+  color: #132233;
+}
+@media (max-width: 768px) {
+  .sidebar { width: 80vw; left: -80vw; }
+  .sidebar.active { left: 0; }
+  .hamburger { font-size: 24px; top: 12px; left: 12px; }
+}
 
-        /* Birthday Card & Effects */
-        .stars-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        .star {
-            position: absolute;
-            background-color: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #fff, 0 0 20px #fff;
-            animation: fall linear infinite;
-        }
-        @keyframes fall {
-            from { transform: translateY(-20px); opacity: 1; }
-            to { transform: translateY(100vh); opacity: 0; }
-        }
-        .card {
-          background:var(--card);
-          border-radius:14px;
-          padding:18px;
-          text-align:center;
-          transition:transform 0.1s;
-          position: relative;
-          overflow: hidden;
-          max-width: 1000px;
-        }
-        .card:hover{ transform:translateY(-6px); }
-        .card h2{
-          margin:10px 0;
-          font-size:22px;
-          color:var(--section-title);
-          text-align:center;
-        }
-        .card h3 {
-          color: var(--accent, #00bcd4);
-          margin-bottom: 10px;
-          text-align: left;
-        }
-        h1 {
-            color: #fff;
-            font-size: 2.8em;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 0 8px #ff9d76, 0 0 16px #ff6f61, 0 0 24px #ff3c2f;
-            animation: glowPulse 2s infinite alternate;
-        }
-        @keyframes glowPulse {
-          from { text-shadow: 0 0 8px #ff9d76, 0 0 16px #ff6f61; }
-          to { text-shadow: 0 0 20px #ffd700, 0 0 40px #ff4500; }
-        }
-        
-        p {
-            font-size: 1.1em;
-            color: #c9d1e6;
-        }
-        #birthdayImage {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 6px solid  #4da6ff;
-            margin-top: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            transform: scale(0.5) rotate(-15deg);
-            transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .loaded #birthdayImage {
-            opacity: 1;
-            transform: scale(1) rotate(0deg);
-        }
-        .balloon {
-          position: absolute;
-          bottom: -150px;
-          width: 60px;
-          height: 80px;
-          background: radial-gradient(circle at 30% 30%, #ff7eb9, #ff2e63);
-          border-radius: 50% 50% 45% 55%;
-          animation: floatUp 6s ease-in-out infinite;
-          z-index: 1;
-        }
-        .balloon::after {
-          content: "";
-          position: absolute;
-          bottom: -20px;
-          left: 50%;
-          width: 2px;
-          height: 30px;
-          background: #fff;
-        }
-        @keyframes floatUp {
-          0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
-          50% { transform: translateY(-50vh) rotate(10deg); opacity: 1; }
-          100% { transform: translateY(-100vh) rotate(-10deg); opacity: 0; }
-        }
-        .confetti {
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          background: hsl(calc(360 * var(--hue)), 100%, 50%);
-          top: -10px;
-          left: 0;
-          opacity: 0.9;
-          animation: confettiFall linear forwards;
-        }
-        @keyframes confettiFall {
-          to {
-            transform: translateY(110vh) rotate(720deg);
-            opacity: 0;
-          }
-        }
-        .card::before {
-          content: "";
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
-          transform: rotate(25deg);
-          animation: shine 5s infinite;
-        }
-        @keyframes shine {
-          from { transform: translateX(-100%) rotate(25deg); }
-          to { transform: translateX(100%) rotate(25deg); }
-        }
-        /* New CSS for the SEDS logo */
-        .seds-logo {
-            width: 180px;
-            height: 180px;
-            position: absolute;
-          top: -40px;	
-          bottom: -70px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-            animation: pulse 2s infinite ease-in-out;
-            transition: transform 0.3s ease-out;
-        }
-        .seds-logo:hover {
-            transform: translateX(-50%) scale(1.05);
-        }
-        @keyframes pulse {
-            0%, 100% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-40%) scale(1.02); }
-        }
+/* Birthday Card & Effects */
+.stars-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+.star {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+    animation: fall linear infinite;
+}
+@keyframes fall {
+    from { transform: translateY(-20px); opacity: 1; }
+    to { transform: translateY(100vh); opacity: 0; }
+}
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  transition: transform 0.1s;
+  position: relative;
+  overflow: hidden;
+  max-width: 800px;
+  /* --- Added for Centering --- */
+  margin-left: auto;
+  margin-right: auto;
+  /* OR simply use 'margin: auto;' if you don't need top/bottom margins */
+}
+.card:hover{ transform:translateY(-6px); }
+.card h2{
+  margin:10px 0;
+  font-size:22px;
+  color:var(--section-title);
+  text-align:center;
+}
+.card h3 {
+  color: var(--accent, #00bcd4);
+  margin-bottom: 10px;
+  text-align: left;
+}
+h1 {
+    color: #fff;
+    font-size: 2.8em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    /* Removed text-shadow to prevent layout shift */
+    /* Added filter for glow effect which is more stable */
+    filter: drop-shadow(0 0 8px #ff9d76) drop-shadow(0 0 16px #ff6f61) drop-shadow(0 0 24px #ff3c2f);
+    animation: glowPulse 2s infinite alternate;
+}
+/* Modified glowPulse to only change filter property, which is non-layout-affecting */
+@keyframes glowPulse {
+  from { filter: drop-shadow(0 0 8px #ff9d76) drop-shadow(0 0 16px #ff6f61); }
+  to { filter: drop-shadow(0 0 20px #ffd700) drop-shadow(0 0 40px #ff4500); }
+}
+
+p {
+    font-size: 15px;
+    color: #c9d1e6;
+}
+#birthdayImage {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 6px solid  #4da6ff;
+    margin-top: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: scale(0.5) rotate(-15deg);
+    transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.loaded #birthdayImage {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
+.balloon {
+  position: absolute;
+  bottom: -150px;
+  width: 60px;
+  height: 80px;
+  background: radial-gradient(circle at 30% 30%, #ff7eb9, #ff2e63);
+  border-radius: 50% 50% 45% 55%;
+  animation: floatUp 6s ease-in-out infinite;
+  z-index: 1;
+}
+.balloon::after {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  width: 2px;
+  height: 30px;
+  background: #fff;
+}
+@keyframes floatUp {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+  50% { transform: translateY(-50vh) rotate(10deg); opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(-10deg); opacity: 0; }
+}
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: hsl(calc(360 * var(--hue)), 100%, 50%);
+  top: -10px;
+  left: 0;
+  opacity: 0.9;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+.card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: rotate(25deg);
+  animation: shine 5s infinite;
+}
+@keyframes shine {
+  from { transform: translateX(-100%) rotate(25deg); }
+  to { transform: translateX(100%) rotate(25deg); }
+}
+/* New CSS for the SEDS logo */
+.seds-logo {
+    width: 180px;
+    height: 180px;
+    position: absolute;
+  top: -40px; 
+  /* Removed bottom property as it conflicts with top and is not needed with absolute positioning */
+    left: 50%;
+    transform: translateX(-50%); /* Initial stable position */
+    z-index: 10;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+    animation: pulse 2s infinite ease-in-out;
+    transition: transform 0.3s ease-out;
+}
+.seds-logo:hover {
+    transform: translateX(-50%) scale(1.05);
+}
+/* Modified pulse to ensure translateX(-50%) is consistent, only changing scale */
+@keyframes pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.02); } /* Changed translateX value to -50% to prevent horizontal shake */
+}
     </style>
 </head>
 <body>
@@ -279,7 +287,7 @@
     <img src="SEDS.png" alt="SEDS Logo" class="seds-logo"><br><br><br>
     <h1>Happy Birthday!</h1>
     <img id="birthdayImage" src="" alt="Your birthday photo!">
-    <p>As a current member of <strong>Kumaraguru SEDS</strong>, you are the torchbearers of this legacy. You embody the spirit of exploration and discovery. Your boundless curiosity and collaborative achievements in projects, competitions, and outreach events are propelling us into an exciting future. With every stargazing session, every rocket model you build, and every space-related project you undertake, you are not just gaining knowledge—you are shaping the next generation of space enthusiasts and innovators. Keep pushing the boundaries of what's possible.</p>
+    <p>As a Current of <strong>Kumaraguru SEDS</strong>, you embody the spirit of exploration and discovery. Your boundless curiosity and collaborative achievements are propelling the organization into an exciting future. With every project and stargazing session, you're not just gaining knowledge—you are shaping the next generation of space enthusiasts and innovators. Keep pushing the boundaries!</p>
     <img src="gift.gif" style="width:200px; margin-top:10px;">
 </div>
 <script>
