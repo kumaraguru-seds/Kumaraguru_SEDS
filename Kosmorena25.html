@@ -733,7 +733,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const now = new Date().getTime();
             const diff = targetDate - now;
             if (diff <= 0) {
-                countdownEl.innerHTML = "🚀 The Event Has Started!";
+                countdownEl.innerHTML = "🚀 The Event Has Ended!";
                 clearInterval(interval);
                 return;
             }
