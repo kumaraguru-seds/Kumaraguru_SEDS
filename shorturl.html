@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shortener Creator</title>
-    <style> /* Styles remain the same */
+    <style>
         body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
         input[type="text"], input[type="url"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px; }
@@ -27,10 +27,9 @@
         <input type="text" id="slug" name="slug" placeholder="e.g., mylink" pattern="^[a-zA-Z0-9_-]+$" title="Only letters, numbers, hyphens, and underscores." required>
         <button type="submit" id="submitBtn">Create & Sync Short Link</button>
     </form>
-    <div id="output" style="display: none;"></div>
-    <script>
+    <div id="output" style="display: none;"></div> <script>
         // !! PASTE YOUR GOOGLE APPS SCRIPT WEB APP /exec URL HERE !!
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzFISYfxIlxESJd_6dixnZxovBavgUpm_ldDcv9ZRTB9kHUVkCaTO7rvY_KAtyDJcJp/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby66XjTVTgisXpFpWUATZulvNkqPXtkCNXGtkR2Ui6kpvvypeGVQnMFNENg3JF41pqA/exec';
         const CUSTOM_DOMAIN_BASE = 'https://kumaraguruseds.space/';
 
         document.getElementById('shortenerForm').addEventListener('submit', async function(e) {
@@ -40,9 +39,10 @@
             const submittedSlug = document.getElementById('slug').value.trim();
             submitBtn.disabled = true;
             outputDiv.innerHTML = 'Submitting to script & syncing to GitHub...';
-            outputDiv.className = 'output';
-            outputDiv.style.display = 'block';
+            outputDiv.className = 'output'; // Reset class
+            outputDiv.style.display = 'block'; // Show output area
             const formData = new FormData(this);
+
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
@@ -50,10 +50,12 @@
                     body: new URLSearchParams(formData)
                 });
                 const appsScriptResultText = await response.text();
+
                 if (!response.ok || appsScriptResultText.startsWith("Error:")) {
                      throw new Error(appsScriptResultText.startsWith("Error:") ? appsScriptResultText.substring(6) : `Script returned status ${response.status}. Message: ${appsScriptResultText}`);
                 }
-                
+
+                // Success
                 const finalShortUrl = CUSTOM_DOMAIN_BASE + submittedSlug;
                 outputDiv.innerHTML = `
                     <strong>Success! Link created & sync initiated.</strong>
@@ -65,7 +67,8 @@
                      <p class="reference-link">Script Confirmation: ${appsScriptResultText}</p>
                 `;
                 outputDiv.className = 'success';
-                this.reset();
+                this.reset(); // Clear form on success
+
             } catch (error) {
                 console.error('Submit/Sync Error:', error);
                 outputDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
