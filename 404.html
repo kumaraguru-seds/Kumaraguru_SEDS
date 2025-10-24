@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+    <script>
+        (async function() {
+            const path = window.location.pathname.substring(1).split('?')[0]; // Get slug before query params
+
+            // Redirect to admin page if needed
+            if (!path || path.toLowerCase() === 'shorturl.html' || path.toLowerCase() === 'index.html') {
+                window.location.replace('/shorturl.html'); // Adjust if needed
+                return;
+            }
+
+            // Cache-busting query parameter for fetching links.json
+            const linksJsonUrl = `/links.json?t=${Date.now()}`;
+            const messageEl = document.getElementById("message");
+            const subMessageEl = document.getElementById("submessage");
+
+            try {
+                const response = await fetch(linksJsonUrl, { cache: "no-store" }); // Force fresh fetch
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                         throw new Error(`Links data file not found. Sync from admin page might be pending or failed.`);
+                    }
+                    throw new Error(`Could not load links data (${response.status})`);
+                }
+
+                const linksData = await response.json();
+                const decodedPath = decodeURIComponent(path);
+
+                // Find the long URL (case-sensitive lookup by default)
+                const longUrl = linksData[decodedPath];
+
+                if (longUrl && typeof longUrl === 'string' && longUrl.startsWith('http')) {
+                    console.log(`Redirecting '${decodedPath}' to -> ${longUrl}`);
+                    // Perform redirect immediately
+                    window.location.replace(longUrl);
+                } else {
+                     if (longUrl) {
+                         throw new Error(`Invalid URL found for '/${decodedPath}'.`);
+                     } else {
+                         throw new Error(`Short link '/${decodedPath}' not found in links data.`);
+                     }
+                }
+
+            } catch (error) {
+                console.error("Redirect failed:", error);
+                if (messageEl) messageEl.textContent = `Error: Link Not Found`;
+                if (subMessageEl) subMessageEl.textContent = error.message;
+            }
+        })();
+    </script>
+    <style> body { font-family: sans-serif; text-align: center; padding-top: 100px; color: #333; } </style>
+</head>
+<body>
+    <h1 id="message">Looking up short link...</h1>
+    <p id="submessage">Please wait a moment.</p>
+</body>
+</html>
