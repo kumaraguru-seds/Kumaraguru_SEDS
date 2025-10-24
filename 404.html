@@ -4,99 +4,59 @@
     <meta charset="UTF-8">
     <title>Redirecting...</title>
     <script>
-        // !! PASTE YOUR GOOGLE APPS SCRIPT WEB APP /exec URL HERE !!
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzFISYfxIlxESJd_6dixnZxovBavgUpm_ldDcv9ZRTB9kHUVkCaTO7rvY_KAtyDJcJp/exec';
-        // IPINFO is used for reliable, free, HTTPS analytics data
-        const ANALYTICS_API_URL = 'https://ipinfo.io/json'; 
+        (async function() {
+            const path = window.location.pathname.substring(1).split('?')[0]; // Get slug before query params
 
-        async function logAndRedirect() {
-            const path = window.location.pathname.substring(1).split('?')[0];
-
-            if (!path || path.toLowerCase() === 'shorturl.html') {
-                window.location.replace('/shorturl.html');
+            // Redirect to admin page if needed
+            if (!path || path.toLowerCase() === 'shorturl.html' || path.toLowerCase() === 'index.html') {
+                window.location.replace('/shorturl.html'); // Adjust if needed
                 return;
             }
 
+            // Cache-busting query parameter for fetching links.json
+            const linksJsonUrl = `/links.json?t=${Date.now()}`;
             const messageEl = document.getElementById("message");
             const subMessageEl = document.getElementById("submessage");
-            
-            // --- 1. Gather Analytics Data (Background Task) ---
-            const userAgent = navigator.userAgent || 'N/A';
-            const clickTimestamp = new Date().toISOString();
-            let analyticsData = { ip: 'N/A', city: 'N/A', country: 'N/A', isp: 'N/A' };
 
-            // Start the analytics fetch immediately (non-blocking)
-            const analyticsPromise = fetch(ANALYTICS_API_URL).then(r => r.json()).catch(() => ({}));
-
-            // --- 2. Fetch Redirect URL from GitHub (Main Task) ---
-            const linksJsonUrl = `/links.json?t=${Date.now()}`;
-            
             try {
-                // Fetch Link Data
-                const linkResponse = await fetch(linksJsonUrl, { cache: "no-store" });
+                const response = await fetch(linksJsonUrl, { cache: "no-store" }); // Force fresh fetch
 
-                if (!linkResponse.ok) {
-                    throw new Error(`Could not load links data (${linkResponse.status}).`);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                         throw new Error(`Links data file not found. Sync from admin page might be pending or failed.`);
+                    }
+                    throw new Error(`Could not load links data (${response.status})`);
                 }
 
-                const linksData = await linkResponse.json();
-                const longUrl = linksData[path];
+                const linksData = await response.json();
+                const decodedPath = decodeURIComponent(path);
+
+                // Find the long URL (case-sensitive lookup by default)
+                const longUrl = linksData[decodedPath];
 
                 if (longUrl && typeof longUrl === 'string' && longUrl.startsWith('http')) {
-                    // 3. Wait for Analytics (Max 500ms) and Send Log
-                    const data = await Promise.race([
-                        analyticsPromise,
-                        new Promise(resolve => setTimeout(resolve, 500)) // Timeout promise
-                    ]);
-
-                    if (data && data.ip) {
-                        analyticsData = {
-                            ip: data.ip || 'N/A',
-                            city: data.city || 'N/A',
-                            country: data.country || 'N/A',
-                            isp: data.org || 'N/A'
-                        };
-                    }
-
-                    // Send Analytics Log to Apps Script
-                    const loggingPayload = {
-                        action: 'LOG_ANALYTICS',
-                        slug: path,
-                        ip: analyticsData.ip,
-                        city: analyticsData.city,
-                        country: analyticsData.country,
-                        isp: analyticsData.isp,
-                        userAgent: userAgent,
-                        clickTimestamp: clickTimestamp
-                    };
-
-                    fetch(APPS_SCRIPT_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(loggingPayload),
-                        mode: 'cors'
-                    }).catch(e => console.error("Analytics Logging Failed:", e));
-                    
-                    // 4. Perform Redirect
-                    window.location.replace(longUrl); 
-
+                    console.log(`Redirecting '${decodedPath}' to -> ${longUrl}`);
+                    // Perform redirect immediately
+                    window.location.replace(longUrl);
                 } else {
-                    throw new Error(`Short link '/${path}' not found or URL is invalid.`);
+                     if (longUrl) {
+                         throw new Error(`Invalid URL found for '/${decodedPath}'.`);
+                     } else {
+                         throw new Error(`Short link '/${decodedPath}' not found in links data.`);
+                     }
                 }
 
             } catch (error) {
-                console.error("Redirect logic failed:", error);
+                console.error("Redirect failed:", error);
                 if (messageEl) messageEl.textContent = `Error: Link Not Found`;
                 if (subMessageEl) subMessageEl.textContent = error.message;
             }
-        }
-        
-        logAndRedirect();
+        })();
     </script>
-    <style> body { font-family: sans-serif; text-align: center; padding-top: 100px; } </style>
+    <style> body { font-family: sans-serif; text-align: center; padding-top: 100px; color: #333; } </style>
 </head>
 <body>
-    <h1 id="message">Gathering Analytics & Redirecting...</h1>
+    <h1 id="message">Looking up short link...</h1>
     <p id="submessage">Please wait a moment.</p>
 </body>
 </html>
