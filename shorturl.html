@@ -74,42 +74,35 @@
             color: #FFFF;
             text-align:center;
         }
-
-       /* Stars (Kept unchanged) */
+       /* Stars */
        .stars-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none; /* Prevents interaction with stars */
+}
 
-        .star {
-            position: absolute;
-            background-color: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #fff, 0 0 20px #fff;
-            animation: fall linear infinite;
-        }
+.star {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+    animation: fall linear infinite;
+}
 
-        @keyframes fall {
-            from {
-                transform: translateY(-20px);
-                opacity: 1;
-            }
-            to {
-                transform: translateY(100vh);
-                opacity: 0;
-            }
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
+@keyframes fall {
+    from {
+        transform: translateY(-20px);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
 
         /* Sidebar Navigation (Kept unchanged) */
         .sidebar{
@@ -466,15 +459,21 @@
              border-bottom: 1px dashed rgba(255,255,255,0.1);
              text-align: left;
         }
+        /* FIX: Apply word-break to the strong and anchor tags to handle long URLs */
         .history-item .history-link-details strong {
              font-size: 1.0em;
              color: var(--text);
              display: block;
              margin-top: 5px;
+             word-break: break-all; /* Ensures long, unbroken URL strings wrap */
+             white-space: normal;
         }
-        .history-item .history-link-details a {
+        .history-item .history-link-details strong a {
             color: var(--accent);
+            word-break: break-all; /* Apply to the link itself */
+            display: inline-block; /* Helps link wrapping inside block elements */
         }
+        /* END FIX */
         .history-item .history-link-details .url-label {
             color: var(--muted);
             font-size: 0.9em;
@@ -486,6 +485,7 @@
             to { opacity: 1; }
         }
         
+        /* === FIX: Link Display and Copy Button Adjustment === */
         #linkDisplay { 
             display: flex; 
             align-items: center; 
@@ -495,15 +495,18 @@
             border: 1px solid var(--success-color); 
             margin-top: 15px;
             border-radius: 6px;
+            transition: all 0.3s ease-in-out; 
         }
         #shortLinkText { 
             font-weight: bold; 
             color: #333; 
             text-decoration: none;
-            flex-grow: 1;
+            flex-grow: 1; 
+            min-width: 0; 
             text-align: left;
             padding-right: 10px;
             font-size: 1.1em;
+            word-break: break-all; 
         }
         #shortLinkText:hover {
             text-decoration: underline;
@@ -516,15 +519,18 @@
             border-radius: 6px;
             cursor: pointer;
             border: none;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s, opacity 0.3s; 
             font-size: 14px;
             width: auto; 
             margin: 0;
             font-weight: 600;
+            flex-shrink: 0; 
         }
         #linkDisplay button:hover {
             background-color: #2e8b57;
+            transform: translateY(-1px); 
         }
+        /* === END FIX === */
         
         .reference-link { 
             font-size: 0.8em; 
@@ -584,10 +590,96 @@
             font-weight: 700;
         }
         /* New style to force placeholder text to black */
-input::placeholder {
-    color: #000 !important; /* Forces placeholder text to black */
-    opacity: 1; /* Ensures the text is fully opaque */
-}
+    input::placeholder {
+        color: #000 !important; /* Forces placeholder text to black */
+        opacity: 1; /* Ensures the text is fully opaque */
+    }
+    /* ------------------------------------------- */
+    /* MEDIA QUERIES FOR DESKTOP (Min-width: 768px) */
+    /* ------------------------------------------- */
+
+    @media (min-width: 768px) {
+        
+        /* Restore larger desktop settings */
+        body {
+            font-size: 16px; 
+        }
+
+        /* Header Adjustments */
+        header img{
+            height: 60px;
+        }
+
+        header .seds-logo {
+            height: 70px;
+        }
+        
+        .events-title {
+            margin-top: 8px;
+            font-size: 50px; /* Restored fixed size for desktop title */
+        }
+
+        /* Layout/Section Adjustments */
+        .section{
+            margin: 40px auto;
+            padding: 35px; 
+            max-width: 800px; 
+        }
+
+        .section h1,
+        .contact h2 {
+            font-size: 32px; 
+            margin-bottom: 14px;
+        }
+
+        .section p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Input & Button Adjustments */
+        input[type="text"], input[type="url"], input[type="email"] { 
+            padding: 15px; 
+            font-size: 18px; 
+        }
+
+        #submitBtn { 
+            padding: 15px 15px; 
+            margin-top: 20px; 
+            font-size: 18px;
+        }
+        
+        /* Loading/Output Adjustments */
+        .loading-gif-container {
+            width: 300px; 
+            height: 300px;
+        }
+        
+        /* History Adjustments */
+        #linkHistoryContainer {
+            margin-top: 40px;
+            max-width: 800px;
+        }
+
+        #linkHistoryContainer h2 {
+            font-size: 24px;
+            padding: 15px 25px;
+        }
+
+        #linkHistoryList {
+            padding: 0 25px 25px;
+        }
+        
+        /* Contact Section Adjustments */
+        .contact{
+            padding: 40px 25px;
+            max-width: 1100px;
+        }
+        .socials img:hover{transform:scale(1.3);}
+        .contact img:hover{transform:scale(1.3);}
+        
+        /* Sidebar is implicitly handled by the base CSS when not active */
+    }
     </style>
 </head>
 <body>
@@ -919,14 +1011,17 @@ input::placeholder {
                 
                 <div class="history-link-details">
                     <span class="url-label">Original URL:</span>
-                    <strong><a href="${currentOriginalUrl}" target="_blank" style="color: inherit; text-decoration: underline;">${currentOriginalUrl}</a></strong>
+                    <strong><a href="${currentOriginalUrl}" target="_blank" style="color: inherit; text-decoration: underline; word-break: break-all; display: inline-block;">${currentOriginalUrl}</a></strong>
                     <span class="url-label" style="margin-top: 10px;">Shortened Link:</span>
                     <strong><a href="${currentShortUrl}" target="_blank" style="color: var(--accent); text-decoration: underline;">${currentShortUrl}</a></strong>
                 </div>
 
-                <div id="linkDisplay_${histId}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background-color: #fff; border: 1px solid var(--success-color); margin-top: 15px; border-radius: 6px;">
-                    <a id="shortLinkText_${histId}" href="${currentShortUrl}" target="_blank" style="font-weight: bold; color: #333; text-decoration: none; flex-grow: 1; text-align: left; padding-right: 10px; font-size: 1.1em;">${currentShortUrl}</a>
-                    <button type="button" onclick="copyLink('${currentShortUrl}', this)" style="background-color: var(--success-color); color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; border: none; font-weight: 600;">Copy</button>
+                <div id="linkDisplay_${histId}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background-color: #fff; border: 1px solid var(--success-color); margin-top: 15px; border-radius: 6px; transition: all 0.3s ease-in-out;">
+                    <a id="shortLinkText_${histId}" href="${currentShortUrl}" target="_blank" 
+                       style="font-weight: bold; color: #333; text-decoration: none; flex-grow: 1; min-width: 0; text-align: left; padding-right: 10px; font-size: 1.1em; word-break: break-all;">${currentShortUrl}</a>
+                    
+                    <button type="button" onclick="copyLink('${currentShortUrl}', this)" 
+                            style="background-color: var(--success-color); color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; border: none; font-weight: 600; flex-shrink: 0; transition: background-color 0.3s, transform 0.2s, opacity 0.3s;">Copy</button>
                 </div>
 
                 <div id="countdownStatus_${histId}" class="success ${isCompleted ? 'complete' : ''}" style="margin-top: 20px; padding: 10px; border: 1px solid ${isCompleted ? 'var(--success-color)' : 'var(--warning-color)'}; color: ${isCompleted ? 'var(--text)' : 'var(--warning-color)'}; font-weight: 600; font-size: 1.1em; display: block; background: ${isCompleted ? 'rgba(56, 193, 114, 0.3)' : 'rgba(255, 193, 7, 0.1)'};">
@@ -990,14 +1085,17 @@ input::placeholder {
                 
                 <div class="history-link-details">
                     <span class="url-label">Original URL:</span>
-                    <strong><a href="${originalUrl}" target="_blank" style="color: inherit; text-decoration: underline; font-size:13px">${originalUrl}</a></strong>
+                    <strong><a href="${originalUrl}" target="_blank" style="color: inherit; text-decoration: underline; font-size:13px; word-break: break-all; display: inline-block;">${originalUrl}</a></strong>
                     <span class="url-label" style="margin-top: 10px;">Shortened Link:</span>
                     <strong><a href="${finalShortUrl}" target="_blank" style="color: var(--accent); text-decoration: underline;">${finalShortUrl}</a></strong>
                 </div>
 
-                <div id="linkDisplay_${histId}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background-color: #fff; border: 1px solid var(--success-color); margin-top: 15px; border-radius: 6px;">
-                    <a id="shortLinkText_${histId}" href="${finalShortUrl}" target="_blank" style="font-weight: bold; color: #333; text-decoration: none; flex-grow: 1; text-align: left; padding-right: 10px; font-size: 1.1em;">${finalShortUrl}</a>
-                    <button type="button" onclick="copyLink('${finalShortUrl}', this)" style="background-color: var(--success-color); color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; border: none; font-weight: 600;">Copy</button>
+                <div id="linkDisplay_${histId}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background-color: #fff; border: 1px solid var(--success-color); margin-top: 15px; border-radius: 6px; transition: all 0.3s ease-in-out;">
+                    <a id="shortLinkText_${histId}" href="${finalShortUrl}" target="_blank" 
+                       style="font-weight: bold; color: #333; text-decoration: none; flex-grow: 1; min-width: 0; text-align: left; padding-right: 10px; font-size: 1.1em; word-break: break-all;">${finalShortUrl}</a>
+                    
+                    <button type="button" onclick="copyLink('${finalShortUrl}', this)" 
+                            style="background-color: var(--success-color); color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; border: none; font-weight: 600; flex-shrink: 0; transition: background-color 0.3s, transform 0.2s, opacity 0.3s;">Copy</button>
                 </div>
 
                 <div id="countdownStatus_${histId}" class="success complete" style="margin-top: 20px; padding: 10px; border: 1px solid var(--success-color); color: var(--text); font-weight: 600; font-size: 1.1em; display: block; background: rgba(56, 193, 114, 0.3);">
@@ -1034,7 +1132,14 @@ input::placeholder {
         // Real-time character check AND availability check for slug
         slugInput.addEventListener('input', () => {
             // Clear output only if it's NOT a successful link displayed from the LAST submission
-            if (outputDiv.className === 'error' || outputDiv.className === 'loading') clearOutput(); 
+            // if (outputDiv.className === 'error' || outputDiv.className === 'loading') clearOutput(); 
+            // Note: clearOutput() function is missing, commenting out to prevent error
+
+            if (outputDiv.className === 'error' || outputDiv.className === 'loading') {
+                outputDiv.innerHTML = '';
+                outputDiv.className = '';
+                outputDiv.style.display = 'none';
+            }
             
             const slug = slugInput.value;
             const pattern = new RegExp(slugInput.getAttribute('pattern'));
@@ -1067,7 +1172,13 @@ input::placeholder {
 
         longUrlInput.addEventListener('input', () => {
             // Clear output only if it's NOT a successful link displayed from the LAST submission
-            if (outputDiv.className === 'error' || outputDiv.className === 'loading') clearOutput();
+            // if (outputDiv.className === 'error' || outputDiv.className === 'loading') clearOutput(); 
+            // Note: clearOutput() function is missing, commenting out to prevent error
+            if (outputDiv.className === 'error' || outputDiv.className === 'loading') {
+                outputDiv.innerHTML = '';
+                outputDiv.className = '';
+                outputDiv.style.display = 'none';
+            }
 
             const url = longUrlInput.value.trim();
             checkUrlExistence(url);
@@ -1212,9 +1323,9 @@ input::placeholder {
                     </div>
                     
                     <div id="waitContainer" class="wait-notification">
-                     <h3>
+                       <h3>
                     Wait 30 seconds (If you want to make another long URL to short URL)
-                     </h3>
+                       </h3>
                     </div>
 
                     <p id="scriptConfirmation" class="reference-link" style="display: none; margin: 10px 25px 25px;">Script Confirmation: ${appsScriptResultText}</p>
@@ -1281,14 +1392,17 @@ input::placeholder {
                 
                 <div class="history-link-details">
                     <span class="url-label">Original URL:</span>
-                    <strong><a href="${originalUrl}" target="_blank" style="color: inherit; text-decoration: underline; font-size:13px">${originalUrl}</a></strong>
+                    <strong><a href="${originalUrl}" target="_blank" style="color: inherit; text-decoration: underline; font-size:13px; word-break: break-all; display: inline-block;">${originalUrl}</a></strong>
                    <br> <span class="url-label" style="margin-top: 10px;">Shortened Link:</span>
                     <strong><a href="${finalShortUrl}" target="_blank" style="color: var(--accent); text-decoration: underline;">${finalShortUrl}</a></strong>
                 </div>
 
-                <div id="linkDisplay_${histId}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background-color: #fff; border: 1px solid var(--success-color); margin-top: 15px; border-radius: 6px;">
-                    <a id="shortLinkText_${histId}" href="${finalShortUrl}" target="_blank" style="font-weight: bold; color: #333; text-decoration: none; flex-grow: 1; text-align: left; padding-right: 10px; font-size: 1.1em;">${finalShortUrl}</a>
-                    <button type="button" onclick="copyLink('${finalShortUrl}', this)" style="background-color: var(--success-color); color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; border: none; font-weight: 600;">Copy</button>
+                <div id="linkDisplay_${histId}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background-color: #fff; border: 1px solid var(--success-color); margin-top: 15px; border-radius: 6px; transition: all 0.3s ease-in-out;">
+                    <a id="shortLinkText_${histId}" href="${finalShortUrl}" target="_blank" 
+                       style="font-weight: bold; color: #333; text-decoration: none; flex-grow: 1; min-width: 0; text-align: left; padding-right: 10px; font-size: 1.1em; word-break: break-all;">${finalShortUrl}</a>
+                    
+                    <button type="button" onclick="copyLink('${finalShortUrl}', this)" 
+                            style="background-color: var(--success-color); color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; border: none; font-weight: 600; flex-shrink: 0; transition: background-color 0.3s, transform 0.2s, opacity 0.3s;">Copy</button>
                 </div>
 
                 <div id="countdownStatus_${histId}" class="success complete" style="margin-top: 20px; padding: 10px; border: 1px solid var(--success-color); color: var(--text); font-weight: 600; font-size: 1.1em; display: block; background: rgba(56, 193, 114, 0.3);">
@@ -1322,7 +1436,12 @@ input::placeholder {
 
             const originalText = button.textContent;
             button.textContent = 'Copied! ✅';
-            setTimeout(() => { button.textContent = originalText; }, 2000);
+            // Added temporary visual feedback and smooth transition reset
+            button.style.backgroundColor = '#2e8b57';
+            setTimeout(() => { 
+                button.textContent = originalText;
+                button.style.backgroundColor = 'var(--success-color)';
+            }, 2000);
         }
         
         // --- Existing Functions (Sidebar, Intersect Observer, Protections, Contact Form) ---
@@ -1486,35 +1605,33 @@ input::placeholder {
             xhr.send(formData);
         });
 
-        // --- Falling Stars Script (Kept unchanged) ---
+       // --- Falling Stars Script ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const starsContainer = document.querySelector('.stars-container');
+        
+        // Change this number to control the quantity of stars
+        const numberOfStars = 200; 
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const starsContainer = document.querySelector('.stars-container');
-            const numberOfStars = 200; 
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 3 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            const duration = Math.random() * 5 + 3;
+            const twinkleDuration = Math.random() * 2 + 1;
+            star.style.animation = `
+                fall ${duration}s linear infinite,
+                twinkle ${twinkleDuration}s ease-in-out infinite
+            `;
+            starsContainer.appendChild(star);
+        }
 
-            function createStar() {
-                const star = document.createElement('div');
-                star.classList.add('star');
-                const size = Math.random() * 3 + 1;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.left = `${Math.random() * 100}%`;
-                const duration = Math.random() * 5 + 3;
-                const twinkleDuration = Math.random() * 2 + 1;
-                star.style.animation = `
-                    fall ${duration}s linear infinite,
-                    twinkle ${twinkleDuration}s ease-in-out infinite
-                `;
-                star.style.transform = `translateY(-${Math.random() * 100}vh)`;
-                
-                starsContainer.appendChild(star);
-            }
-
-            for (let i = 0; i < numberOfStars; i++) {
-                createStar();
-            }
-        });
-
+        for (let i = 0; i < numberOfStars; i++) {
+            createStar();
+        }
+    });
     </script>
 </body>
 </html>
