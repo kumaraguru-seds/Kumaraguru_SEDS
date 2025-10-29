@@ -277,43 +277,51 @@
             text-decoration: underline;
             color: #8cd2ff;
         }
+        
+        /* New CSS for Highlighting */
+        .results-table .highlight {
+            background-color: #ffd700; /* Gold/Yellow background for visibility */
+            color: #1a1a1a; /* Dark text for contrast */
+            padding: 1px 2px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
 
         
         /* Stars */
        .stars-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    pointer-events: none; /* Prevents interaction with stars */
-}
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none; /* Prevents interaction with stars */
+        }
 
-.star {
-    position: absolute;
-    background-color: #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #fff, 0 0 20px #fff;
-    animation: fall linear infinite;
-}
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+            animation: fall linear infinite;
+        }
 
-@keyframes fall {
-    from {
-        transform: translateY(-20px);
-        opacity: 1;
-    }
-    to {
-        transform: translateY(100vh);
-        opacity: 0;
-    }
-}
+        @keyframes fall {
+            from {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="stars-container"></div>
-        <!-- Sidebar Navigation -->
-  <div class="sidebar" id="sidebar">
+        <div class="sidebar" id="sidebar">
     <span class="close-btn" onclick="toggleSidebar()">Menu ×</span>
       <a href="current_birthday.html">Current Birthday</a>
       <a href="alumni_birthday.html">Alumni Birthday</a>
@@ -359,6 +367,22 @@
     let debounceTimer;
     const urlPattern = /^(https?:\/\/[^\s$.?#].[^\s]*)$/i;
 
+    let currentSearchQuery = ''; 
+
+    function highlightText(text, query) {
+        const lowerCaseText = String(text);
+        const shouldHighlight = query.length > 0;
+        if (!shouldHighlight || typeof lowerCaseText !== 'string') return text;
+
+        // Escape special characters in the query for regex
+        const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        // Create a global, case-insensitive regular expression
+        const regex = new RegExp(`(${escapedQuery})`, 'gi');
+        
+        // Replace the matched text with a span for highlighting
+        return lowerCaseText.replace(regex, '<span class="highlight">\$1</span>');
+    }
+
     function renderTable(data) {
         if (data.length === 0) {
             resultsTable.innerHTML = '';
@@ -378,6 +402,8 @@
         });
         tableHTML += '</tr></thead><tbody>';
 
+        const query = currentSearchQuery.toLowerCase().trim();
+
         data.forEach((row, index) => {
             tableHTML += '<tr>';
             
@@ -386,10 +412,14 @@
             
             headers.forEach(header => {
                 const cellValue = row[header];
-                let cellContent = cellValue;
+                let cellContent = String(cellValue); 
                 
-                if (typeof cellValue === 'string' && urlPattern.test(cellValue)) {
+                if (urlPattern.test(cellValue)) {
+                    // For URLs, don't highlight the link text, just display it as a link
                     cellContent = `<a href="${cellValue}" target="_blank">${cellValue}</a>`;
+                } else {
+                    // Highlight non-URL content
+                    cellContent = highlightText(cellContent, query);
                 }
 
                 tableHTML += `<td>${cellContent}</td>`;
@@ -402,12 +432,14 @@
     }
     
     function filterData(query) {
-        if (query.length === 0) {
+        currentSearchQuery = query.trim();
+
+        if (currentSearchQuery.length === 0) {
             renderTable(allData);
             return;
         }
         
-        const lowerCaseQuery = query.toLowerCase();
+        const lowerCaseQuery = currentSearchQuery.toLowerCase();
         const filteredData = allData.filter(row => {
             for (const key in row) {
                 if (String(row[key]).toLowerCase().includes(lowerCaseQuery)) {
@@ -422,6 +454,10 @@
     function fetchData() {
         const selectedSheetId = sheetSelect.value;
         statusMessage.textContent = 'Loading all data from the sheet... Please wait.';
+        // Clear search and table when fetching new data
+        searchInput.value = '';
+        currentSearchQuery = ''; 
+        resultsTable.innerHTML = '';
 
         fetch(`${scriptURL}?sheetId=${encodeURIComponent(selectedSheetId)}`)
             .then(response => response.json())
@@ -450,7 +486,6 @@
     });
 
     sheetSelect.addEventListener('change', () => {
-        searchInput.value = '';
         fetchData();
     });
 
@@ -520,7 +555,5 @@
         }
     });
 </script>
-
-
-
-
+</body>
+</html>
