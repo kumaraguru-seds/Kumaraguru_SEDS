@@ -1,5 +1,14 @@
+# Turn the Rewrite Engine on
 RewriteEngine On
+
+# Ensure the requested item is NOT a real file or directory on the server
+# This prevents rewriting requests for actual files (like images, CSS, JS) or directories.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.htm -f
+
+# Check if the requested name PLUS the .html extension exists as a file
+RewriteCond %{REQUEST_FILENAME}\.html -f
+
+# If all conditions pass, rewrite the URL internally to add the .html extension.
+# Example: /about becomes /about.html
 RewriteRule ^(.*)$ $1.html [L]
