@@ -1,14 +1,25 @@
 # Turn the Rewrite Engine on
 RewriteEngine On
 
-# Ensure the requested item is NOT a real file or directory on the server
-# This prevents rewriting requests for actual files (like images, CSS, JS) or directories.
+# 1. HANDLE REQUESTS FOR CLEAN URLS (The Core Rule)
+# If a user requests a path like /media/ or /events/, this rule maps it to the .html file.
+
+# Check that the requested path (e.g., 'media') is NOT a real file and NOT a real directory
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Check if the requested name PLUS the .html extension exists as a file
+# Check if the requested file WITHOUT the trailing slash, plus .html, exists (e.g., 'media.html')
 RewriteCond %{REQUEST_FILENAME}\.html -f
 
-# If all conditions pass, rewrite the URL internally to add the .html extension.
-# Example: /about becomes /about.html
-RewriteRule ^(.*)$ $1.html [L]
+# Internally rewrite the clean path (e.g., /media or /media/) to its .html version (e.g., media.html)
+RewriteRule ^([^\.]+)$ $1.html [L]
+
+# 2. OPTIONAL: HANDLE TRAILING SLASHES (The Directory-Style Cleanup)
+# This rule specifically maps requests that end in a slash (e.g., /media/) 
+# back to the version without the slash (e.g., /media) for the first rule to catch.
+RewriteRule ^([^/]+)/$ $1 [L]
+
+# 3. OPTIONAL: REDIRECT /filename.html TO /filename (For SEO/Clean-up)
+# If a user or bot visits the old, ugly URL, permanently redirect them to the clean URL.
+RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
+RewriteRule ^[^/]+\.html$ /%1 [R=301,L,NC]
