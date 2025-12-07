@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>KUMARAGURU SEDS Intake Document</title>
+    
+    <style>
+        /* *** CSS for Full Responsiveness ***
+        */
+        
+        /* 1. Reset margins and ensure the body fills the entire screen */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%; /* Important for vertical sizing */
+            overflow: hidden; /* Prevents scrollbars on the main page */
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; /* Light background for a clean look */
+        }
+
+        /* 2. Container to hold the iframe */
+        #pdf-viewer-container {
+            width: 100%;
+            /* Use 100vh (viewport height) for full vertical screen fill */
+            height: 100vh; 
+            box-sizing: border-box; 
+        }
+
+        /* 3. The Iframe itself */
+        #pdf-frame {
+            width: 100%;
+            height: 100%;
+            border: none; /* Remove the ugly default border */
+            display: block; /* Ensures no extra spacing */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pdf-viewer-container">
+        <iframe 
+            id="pdf-frame"
+            src="KUMARAGURU_SEDS_INTAKE.pdf" 
+            title="KUMARAGURU SEDS Intake Document">
+            
+            <p>Your browser does not support embedded PDF files. 
+               <a href="KUMARAGURU_SEDS_INTAKE.pdf" target="_blank">Click here to view or download the document.</a>
+            </p>
+        </iframe>
+    </div>
+
+</body>
+</html>
