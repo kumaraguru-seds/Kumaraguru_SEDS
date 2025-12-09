@@ -562,7 +562,9 @@
       .staff img{width:160px;}
     }
 
-    /* 🎧 MUSIC CARD */
+    
+
+/* 🎧 MUSIC CARD */
 .music-card {
   position: fixed;
   bottom: 12px;
@@ -741,6 +743,8 @@
     transform: scale(0.85);
   }
 }
+
+
   </style>
   <script type="application/ld+json">
   {
@@ -1216,17 +1220,14 @@
 </div>
 
   <!-- 🎵 DRAGGABLE / MINIMIZABLE MUSIC PLAYER -->
-<div class="music-wrapper" id="musicWrapper">
+<<div class="music-wrapper" id="musicWrapper">
 
-  <!-- SMALL ICON (MINIMIZED) -->
   <div class="music-mini" id="musicMini">
     🎵
   </div>
 
-  <!-- FULL PLAYER -->
   <div class="music-card" id="musicCard">
 
-    <!-- DRAG HANDLE -->
     <div class="drag-handle" id="dragHandle">
       Minimize
       <button class="min-btn" id="minBtn">—</button>
@@ -1240,7 +1241,7 @@
       <img src="musicalbum.jpg" class="album-art" id="albumArt">
       <div>
         <h4>Kosmic Beats</h4>
-        <p>SEDS Kumaraguru</p>
+        <p>Kumaraguru SEDS</p>
       </div>
     </div>
 
@@ -1272,7 +1273,6 @@
     <audio id="audio" src="space.mp3"></audio>
   </div>
 </div>
-
   
   <script>
     function toggleSidebar(){  
@@ -1495,7 +1495,9 @@ form.addEventListener('submit', function(event) {
         }
     });
 
+
 // --- FULL PLAYER ---
+
 const audio = document.getElementById("audio");
 const playBtn = document.getElementById("playBtn");
 const playIcon = document.getElementById("playIcon");
@@ -1510,8 +1512,24 @@ volume.value = 0.7;
 audio.volume = 0.7;
 volume.oninput = () => audio.volume = volume.value;
 
-/* ▶ Play / Pause */
+/* 🔊 REAL AUDIO VISUALIZER SETUP */
+const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const src = AudioCtx.createMediaElementSource(audio);
+const analyser = AudioCtx.createAnalyser();
+src.connect(analyser);
+analyser.connect(AudioCtx.destination);
+analyser.fftSize = 64;
+
+const data = new Uint8Array(analyser.frequencyBinCount);
+
+
+/* ▶ Play / Pause (Chrome Autoplay Fix Included) */
 playBtn.onclick = () => {
+  // CRITICAL FIX: Resume the AudioContext on the first interaction
+  if (AudioCtx.state === 'suspended') {
+      AudioCtx.resume();
+  }
+
   if (audio.paused) {
     audio.play();
     playIcon.style.display = "none";
@@ -1526,18 +1544,10 @@ playBtn.onclick = () => {
 /* ⭕ Progress Ring */
 audio.ontimeupdate = () => {
   const percent = audio.currentTime / audio.duration;
-  progress.style.strokeDashoffset = 213 - (213 * percent);
+  // 213 is the circumference of the progress ring (2 * π * r, where r=34)
+  progress.style.strokeDashoffset = 213 - (213 * percent); 
 };
 
-/* 🔊 REAL AUDIO VISUALIZER */
-const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-const src = AudioCtx.createMediaElementSource(audio);
-const analyser = AudioCtx.createAnalyser();
-src.connect(analyser);
-analyser.connect(AudioCtx.destination);
-analyser.fftSize = 64;
-
-const data = new Uint8Array(analyser.frequencyBinCount);
 
 function drawWave() {
   requestAnimationFrame(drawWave);
@@ -1571,7 +1581,7 @@ mini.onclick = () => {
   mini.style.display = "none";
   card.style.display = "block";
 };
-    
+
   </script>
 </body>
 </html>
