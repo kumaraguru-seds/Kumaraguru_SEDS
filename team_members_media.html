@@ -8,6 +8,7 @@
   <link rel="canonical" href="https://kumaraguruseds.space/team_members_media.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="sedsb.png" type="image/png">
+  <link rel="stylesheet" href="music_player.css">
 <title>Kumaraguru SEDS Media Team Members</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -673,6 +674,62 @@ header .seds-logo{height:70px;}
   <h2>Follow Us</h2>
 </div>
 
+<!-- 🎵 DRAGGABLE / MINIMIZABLE MUSIC PLAYER -->
+<div class="music-wrapper" id="musicWrapper">
+
+  <div class="music-mini" id="musicMini">
+    🎵
+  </div>
+
+  <div class="music-card" id="musicCard">
+
+    <div class="drag-handle" id="dragHandle">
+      Minimize & Drag Bar
+      <button class="min-btn" id="minBtn">—</button>
+    </div>
+
+    <div class="music-top">
+      <canvas id="waveform"></canvas>
+    </div>
+
+    <div class="music-info">
+      <img src="musicalbum.jpg" class="album-art" id="albumArt">
+      <div>
+        <h4>Kosmic Beats</h4>
+        <p>Kumaraguru SEDS</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="progress-wrap">
+        <svg class="progress-ring" width="80" height="80">
+          <circle class="bg" cx="40" cy="40" r="34" />
+          <circle class="progress" cx="40" cy="40" r="34" />
+        </svg>
+        <button id="playBtn" class="play-btn">
+          <svg id="playIcon" viewBox="0 0 100 100">
+            <polygon points="35,25 75,50 35,75"/>
+          </svg>
+          <svg id="pauseIcon" viewBox="0 0 100 100">
+            <rect x="35" y="25" width="10" height="50"/>
+            <rect x="55" y="25" width="10" height="50"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="volume">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 9v6h4l5 4V5L7 9H3z"/>
+        </svg>
+        <input type="range" id="volume" min="0" max="1" step="0.01">
+      </div>
+    </div>
+
+    <audio id="audio" src="space.mp3"></audio>
+  </div>
+</div>
+  <script src="load_player.js"></script>
+  
 <script>
 // Sidebar toggle
 function toggleSidebar(){  
