@@ -3,7 +3,6 @@
 document.addEventListener("DOMContentLoaded", function() {
 
     // --- Element Declarations ---
-    // These elements MUST be available in the HTML when the script runs.
     const musicWrapper = document.getElementById("musicWrapper");
     const dragHandle = document.getElementById("dragHandle");
     const musicMini = document.getElementById("musicMini");
@@ -85,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let initialY;
     let xOffset = 0;
     let yOffset = 0;
-    let wasDragged = false; // Flag to prevent minimizing/maximizing on drag
+    let wasDragged = false; 
 
     function setTranslate(xPos, yPos, el) {
       el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
@@ -99,13 +98,12 @@ document.addEventListener("DOMContentLoaded", function() {
       e.preventDefault(); 
       wasDragged = false; 
 
-      if (e.type === "touchstart") {
-        initialX = e.touches[0].clientX - xOffset;
-        initialY = e.touches[0].clientY - yOffset;
-      } else {
-        initialX = e.clientX - xOffset;
-        initialY = e.clientY - yOffset;
-      }
+      let clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+      let clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+      
+      // Calculate the starting point relative to the WRAPPER's last known position (xOffset, yOffset)
+      initialX = clientX - xOffset;
+      initialY = clientY - yOffset;
 
       isDragging = true;
       dragHandle.style.cursor = "grabbing";
@@ -113,6 +111,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function dragEnd(e) {
+      // CRITICAL: Only update the stored offset (xOffset, yOffset) when the drag ends
       xOffset = currentX;
       yOffset = currentY;
       isDragging = false;
@@ -122,23 +121,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function drag(e) {
       if (isDragging) {
-        if (e.type === "touchmove") {
-          currentX = e.touches[0].clientX - initialX;
-          currentY = e.touches[0].clientY - initialY;
-        } else {
-          currentX = e.clientX - initialX;
-          currentY = e.clientY - initialY;
-        }
+        e.preventDefault(); 
+        
+        let clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+        let clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+
+        // Calculate the new position by subtracting the initial offset from the current mouse/touch position
+        currentX = clientX - initialX;
+        currentY = clientY - initialY;
         
         // Set drag flag if movement is significant
         if (Math.abs(currentX - xOffset) > 5 || Math.abs(currentY - yOffset) > 5) {
             wasDragged = true;
         }
 
-        xOffset = currentX;
-        yOffset = currentY;
-
-        setTranslate(currentX, currentY, musicWrapper); // Apply transform to the WRAPPER
+        setTranslate(currentX, currentY, musicWrapper);
+        // The redundant updates of xOffset/yOffset have been removed from here for smoothness
       }
     }
 
