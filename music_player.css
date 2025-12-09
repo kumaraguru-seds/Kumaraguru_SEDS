@@ -1,0 +1,179 @@
+/* 🎧 MUSIC CARD */
+.music-card {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  width: 280px;              /* smaller width */
+  transform: scale(0.9);    /* visually smaller */
+  transform-origin: bottom right;
+    background: rgba(15,20,30,0.9);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 16px;
+  color: white;
+  box-shadow: 0 0 35px var(--accent);
+  z-index: 9999;
+  /* >>>>>> CHANGE TO MINIMIZE ON LOAD <<<<<< */
+  display: none; 
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .music-card {
+    width: 240px;
+    transform: scale(0.85);
+  }
+}
+
+.music-top {
+  height: 60px;
+}
+
+#waveform {
+  width: 100%;
+  height: 60px;
+}
+
+.music-info {
+  display: flex;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.album-art {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.music-info h4 {
+  font-size: 14px;
+}
+.music-info p {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+/* 🎯 Controls */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progress-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+/* Progress Ring */
+.progress-ring circle {
+  fill: none;
+  stroke-width: 4;
+}
+.progress-ring .bg {
+  stroke: rgba(255,255,255,0.1);
+}
+.progress-ring .progress {
+  stroke: var(--accent);
+  stroke-dasharray: 213;
+  stroke-dashoffset: 213;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 0.2s linear;
+}
+
+/* Play Button */
+.play-btn {
+  position: absolute;
+  inset: 18px;
+  border: none;
+  background: radial-gradient(circle, #56c8ff, #1f7ae0);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.play-btn svg {
+  width: 26px;
+  fill: white;
+}
+
+#pauseIcon { display: none; }
+
+/* 🔊 Volume */
+.volume {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.volume svg {
+  width: 18px;
+  fill: white;
+}
+
+.volume input {
+  width: 70px;
+}
+  
+/* 🎵 MUSIC WRAPPER */
+.music-wrapper {
+  position: fixed;
+  bottom: 14px;
+  right: 14px;
+  z-index: 10000;
+}
+
+/* 🔘 MINI ICON */
+.music-mini {
+  width: 56px;
+  height: 56px;
+  background: radial-gradient(circle, #56c8ff, #1f7ae0);
+  border-radius: 50%;
+  display: none;
+  cursor: pointer;
+  font-size: 26px;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 25px rgba(91,192,255,0.9);
+}
+
+/* 🎵 FULL CARD */
+.music-card {
+  margin-top: 8px;
+}
+
+/* 🧲 DRAG HANDLE */
+.drag-handle {
+  height: 36px;
+  cursor: grab;
+  user-select: none;
+  background: rgba(255,255,255,0.08);
+  border-radius: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+/* ➖ MIN BUTTON */
+.min-btn {
+  border: none;
+  background: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* 📱 MOBILE: smaller card */
+@media (max-width: 600px) {
+  .music-card {
+    width: 240px;
+    transform: scale(0.85);
+  }
+}
