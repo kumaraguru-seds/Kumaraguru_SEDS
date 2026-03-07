@@ -398,7 +398,7 @@
     <img src="SEDS.png" alt="SEDS Logo" class="seds-logo">
   </header>
   
-  <h1 class="events-title">KOSMORENA'25 REGISTRATION LINKS</h1>
+  <h1 class="events-title">YUGAM'26</h1>
   
 <div class="card">
   <div class="card">
@@ -410,78 +410,6 @@
 
   </div>
 </div>
-</div>
-  
-  <!-- Contact Us -->
-<div class="contact" id="contact">
-  <h2>Contact Us</h2>
-  <div class="contact-items">
-  <div class="contact-item">
-    <a href="https://maps.app.goo.gl/TBWDGsAeKccGw9cm8" target="_blank">
-      <img src="location.png" alt="Location">
-      <p>Kumaraguru Campus<br>Saravanampatti,<br>Chinnavedampatti (Post),<br>Coimbatore- 641049, Tamilnadu.</p>
-    </a>
-  </div>
-  
-  <div class="contact-item">
-    <a href="mailto:seds@kct.ac.in,manilunar07@gmail.com">
-      <img src="email.png" alt="Email">
-      <p>manilunar07@gmail.com<br>seds@kct.ac.in</p>
-    </a>
-  </div>
-  
-  <div class="contact-item">
-    <a href="tel:+919344752075">
-      <img src="phone.png" alt="Phone">
-      <p>+91 9344752075</p>
-    </a>
-  </div>
-</div>
-  <form class="contact-form" id="contactForm" novalidate action="https://script.google.com/macros/s/AKfycbxnJbcuyoVymlnFwOmTddbKLERKSkTFF5LHmPVjEvpj0HLiOx6npHtroiJlljVcFHaf/exec" method="post">
-    <div class="form-group">
-        <input type="text" name="name" placeholder="Your Name" required>
-        <span class="error-message"></span>
-    </div>
-    <div class="form-group">
-        <input type="email" name="email" placeholder="Your Email" required>
-        <span class="error-message"></span>
-    </div>
-    <div class="form-group">
-        <input type="tel" name="phone" placeholder="Phone Number" required>
-        <span class="error-message"></span>
-    </div>
-    <div class="form-group">
-        <textarea name="message" placeholder="Your Message" required></textarea>
-        <span class="error-message"></span>
-    </div>
-    <button type="submit">Send Message</button>
-    <!-- The status box is now hidden by default and will be shown by JS -->
-    <div id="status" class="status-box content-card-like" style="display: none;"></div>
-  </form>
-  <br>
- <div class="socials">
-  <div class="social-item">
-    <a href="https://www.instagram.com/seds_kumaraguru">
-      <img src="instagram.png" alt="Instagram">
-      <p>seds_kumaraguru</p>
-    </a>
-  </div>
-  <div class="social-item">
-    <a href="https://www.linkedin.com/company/seds-kct/">
-      <img src="linkedin.png" alt="LinkedIn">
-      <p>Kumaraguru SEDS</p>
-    </a>
-  </div>
-  <div class="social-item">
-    <a href="https://youtube.com/@kumaraguru_seds">
-      <img src="youtube.png" alt="Email">
-      <p>Kumaraguru_SEDS</p>
-    </a>
-  </div>
-  
-  </div>
-  <br>
-  <h2>Follow Us</h2>
 </div>
 
 
@@ -509,107 +437,6 @@ const cardObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.2 });
 
 cards.forEach(card => cardObserver.observe(card));
-  
-  
-  <!-- Contact Us -->
-const form = document.getElementById('contactForm');
-const statusDiv = document.getElementById('status');
-const submitButton = form.querySelector('button[type="submit"]');
-
-function validateField(input) {
-    const errorSpan = input.closest('.form-group').querySelector('.error-message');
-    let errorMessage = '';
-
-    if (input.name === 'name') {
-        if (!input.value.trim()) {
-            errorMessage = 'Enter your Name.';
-        } else if (!/^[a-zA-Z\s]+$/.test(input.value.trim())) {
-            errorMessage = 'Please enter a valid name (letters and spaces only).';
-        }
-    } else if (input.name === 'email') {
-        if (!input.value.trim()) {
-            errorMessage = 'Enter your Email ID.';
-        } else if (!/^\S+@\S+\.\S+$/.test(input.value.trim())) {
-            errorMessage = 'Please enter a valid email address.';
-        }
-    } else if (input.name === 'phone') {
-        if (!input.value.trim()) {
-            errorMessage = 'Enter your Phone number.';
-        } else if (input.value.length !== 10 || isNaN(input.value)) {
-            errorMessage = 'Please enter a valid 10-digit mobile number.';
-        }
-    } else if (input.name === 'message' && !input.value.trim()) {
-        errorMessage = 'Enter your Message here.';
-    }
-
-    if (errorMessage) {
-        input.classList.add('error-input');
-        errorSpan.textContent = errorMessage;
-        errorSpan.style.display = 'block';
-        return false;
-    } else {
-        input.classList.remove('error-input');
-        errorSpan.style.display = 'none';
-        return true;
-    }
-}
-
-form.querySelectorAll('input, textarea').forEach(input => {
-    input.addEventListener('input', () => validateField(input));
-    input.addEventListener('blur', () => validateField(input));
-});
-
-form.addEventListener('submit', function(event) {
-  event.preventDefault();
-  
-  let allValid = true;
-  form.querySelectorAll('input, textarea').forEach(input => {
-      if (!validateField(input)) {
-          allValid = false;
-      }
-  });
-
-  if (!allValid) {
-      statusDiv.innerHTML = "Please fix the errors above.";
-      statusDiv.className = 'status-error';
-      statusDiv.style.display = 'block';
-      return;
-  }
-
-  statusDiv.innerHTML = "Submitting...";
-  statusDiv.className = 'submitting';
-  statusDiv.style.display = 'block';
-  submitButton.disabled = true;
-
-  const formData = new FormData(form);
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', form.action);
-  xhr.setRequestHeader('Accept', 'application/json');
-
-  xhr.onload = function() {
-    submitButton.disabled = false;
-    if (xhr.status === 200) {
-      try {
-        const response = JSON.parse(xhr.responseText);
-        if (response.result === 'success') {
-          statusDiv.innerHTML = "Message sent successfully!";
-          statusDiv.className = 'status-box content-card-like status-success';
-          form.reset();
-        } else {
-          statusDiv.innerHTML = "Error: " + response.message;
-          statusDiv.className = 'status-error';
-        }
-      } catch (e) {
-        statusDiv.innerHTML = "An unexpected error occurred.";
-        statusDiv.className = 'status-error';
-      }
-    } else {
-      statusDiv.innerHTML = "Error: Could not send message.";
-      statusDiv.className = 'status-error';
-    }
-  };
-  xhr.send(formData);
-});
   
       // --- Falling Stars Script ---
     document.addEventListener('DOMContentLoaded', () => {
@@ -641,5 +468,6 @@ form.addEventListener('submit', function(event) {
   </script>
 </body>
 </html>
+
 
 
