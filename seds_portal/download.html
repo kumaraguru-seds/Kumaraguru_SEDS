@@ -40,27 +40,32 @@
             z-index: 0;
             background: #0d1e3a;
             padding: 20px;
+            overflow-x: hidden;
         }
 
+        /* 🌌 Fixed Background Image Layout Solution */
         body::before {
             content: "";
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('../background.jpg') no-repeat center center/cover fixed;
+            width: 100vw;
+            height: 100vh;
+            background: url('../background.jpg') no-repeat center center;
+            background-size: cover;
             filter: brightness(65%);
-            z-index: -1;
+            z-index: -2;
+            pointer-events: none;
+            will-change: transform; /* Enhances mobile rendering performance */
         }
 
         .download-container {
-            background: var(--card); /* Restored to exact original transparent profile */
+            background: var(--card);
             padding: 40px;
             border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-            max-width: 400px; /* Matched perfectly to original login sizing width */
-            width: 90%;
+            max-width: 400px;
+            width: 100%; /* Fully responsive width matching system specifications */
             text-align: center;
             animation: fadeIn 0.8s ease-out;
         }
@@ -96,7 +101,6 @@
             width: 100%;
         }
 
-        /* 🧪 Fixed Glassmorphism Buttons matching original inputs */
         .download-btn {
             display: flex;
             align-items: center;
@@ -164,43 +168,6 @@
             }
         }
     </style>
-
-    <!-- Schema Structured Data Left Intact -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Kumaraguru SEDS",
-      "url": "https://kumaraguruseds.space/",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://kumaraguruseds.space/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Kumaraguru SEDS",
-      "url": "https://kumaraguruseds.space/",
-      "logo": "https://kumaraguruseds.space/sedsb.png",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "email": "seds@kct.ac.in",
-        "telephone": "+91-9344752075",
-        "contactType": "Customer Support",
-        "areaServed": "IN",
-        "availableLanguage": "English"
-      },
-      "sameAs": [
-        "https://youtube.com/@kumaraguru_seds",
-        "https://www.linkedin.com/company/seds-kct/",
-        "https://www.instagram.com/seds_kumaraguru/"
-      ]
-    }
-    </script>
 </head>
 <body>
 
@@ -213,9 +180,9 @@
     
     <div class="download-options">
         <a href="YOUR_ANDROID_APK_DRIVE_LINK_HERE" class="download-btn android" target="_blank" rel="noopener noreferrer">
-            <!-- Authentic Vector Android Robot Icon -->
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6 18c0 .55.45 1 1 1h1v3c0 .55.45 1 1 1s1-.45 1-1v-3h4v3c0 .55.45 1 1 1s1-.45 1-1v-3h1c.55 0 1-.45 1-1V8H6v10zM11.25 3.12c-.17-.44-.65-.66-1.09-.49-.44.17-.66.66-.49 1.1l1.01 2.58C8.16 7.15 6.45 9.38 6.09 12h11.82c-.36-2.62-2.07-4.85-4.58-5.69l1.01-2.58c.17-.44-.05-.93-.49-1.1-.44-.17-.92.05-1.09.49L12.75 6h-1.5l-1-2.88zM9 10c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM2 9c-.55 0-1 .45-1 1v5c0 .55.45 1 1 1s1-.45 1-1v-5c0-.55-.45-1-1-1zm20 0c-.55 0-1 .45-1 1v5c0 .55.45 1 1 1s1-.45 1-1v-5c0-.55-.45-1-1-1z"/>
+            <!-- 🤖 Correct Official Modern Android Head Icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.583 9.167a.499.499 0 0 1 .477.653l-.008.023C16.892 13.593 14.613 15.5 12 15.5c-2.614 0-4.893-1.907-6.052-5.657l-.008-.023a.499.499 0 0 1 .477-.653h11.166zm-7.666-4.59a.5.5 0 0 1 .684-.183l.02.011 1.706 1.01a6.389 6.389 0 0 1 3.346 0l1.706-1.01.02-.011a.5.5 0 0 1 .501.854l-.018.014-1.637.97a6.452 6.452 0 0 1 1.396 2.116H6.363a6.452 6.452 0 0 1 1.396-2.116l-1.637-.97-.018-.014a.5.5 0 0 1 .183-.684zm-1.065 4.09a.583.583 0 1 0 0-1.167.583.583 0 0 0 0 1.166zm6.3 0a.583.583 0 1 0 0-1.167.583.583 0 0 0 0 1.166z"/>
             </svg>
             Download Android APK
         </a>
