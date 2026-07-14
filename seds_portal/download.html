@@ -21,9 +21,6 @@
             --accent: #4da6ff;
             --card: rgba(255, 255, 255, 0.08);
             --border-color: rgba(255, 255, 255, 0.2);
-            --android-green: #3ddc84;
-            --apple-silver: #f5f5f7;
-            --windows-blue: #0078d4;
         }
 
         * {
@@ -106,21 +103,22 @@
             width: 100%;
         }
 
+        /* 🧪 Glassmorphism Action Buttons matching original input styles */
         .download-btn {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             padding: 14px 20px;
-            color: #ffffff;
+            color: var(--text);
             text-decoration: none;
             font-weight: 600;
             font-size: 1rem;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.25s ease;
-            background: rgba(255, 255, 255, 0.05);
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
+            background-color: rgba(255, 255, 255, 0.1);
             width: 100%;
         }
 
@@ -128,24 +126,10 @@
             flex-shrink: 0;
         }
 
-        .download-btn.android:hover {
-            background: var(--android-green);
-            color: #000;
-            box-shadow: 0 0 15px rgba(61, 220, 132, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .download-btn.ios:hover {
-            background: var(--apple-silver);
-            color: #000;
-            box-shadow: 0 0 15px rgba(245, 245, 247, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .download-btn.windows:hover {
-            background: var(--windows-blue);
-            color: #fff;
-            box-shadow: 0 0 15px rgba(0, 120, 212, 0.4);
+        .download-btn:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 15px var(--accent);
+            border-color: var(--accent);
             transform: translateY(-2px);
         }
 
@@ -193,7 +177,7 @@
         }
     </style>
 
-    <!-- Schema Structured Data Left Intact -->
+    <!-- Schema Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -240,11 +224,10 @@
     <p class="subtitle">Get the official Kumaraguru SEDS ecosystem installation files.</p>
     
     <div class="download-options">
-        <!-- REPLACE THE href VALUES BELOW WITH YOUR ACTUAL DOWNLOAD LINKS -->
         <a href="YOUR_ANDROID_APK_DRIVE_LINK_HERE" class="download-btn android" target="_blank" rel="noopener noreferrer">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 14h14M12 5v14M12 19l-7-7M12 19l7-7" />
-                <path d="M16 2v2M8 2v2" />
+            <!-- Fixed Clean Vector Android Icon -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16.63 21.92c-.37 0-.67-.3-.67-.67v-3.64c0-.46-.37-.83-.83-.83H8.87c-.46 0-.83.37-.83.83v3.64c0 .37-.3.67-.67.67s-.67-.3-.67-.67v-3.64c0-1.2 1-2.17 2.17-2.17h5.26c1.2 0 2.17.97 2.17 2.17v3.64c0 .37-.3.67-.67.67zm-9.26-8.24c-.37 0-.67-.3-.67-.67V8.58c0-.37.3-.67.67-.67s.67.3.67.67v4.43c0 .37-.3.67-.67.67zm9.26 0c-.37 0-.67-.3-.67-.67V8.58c0-.37.3-.67.67-.67s.67.3.67.67v4.43c0 .37-.3.67-.67.67zM12 14.52c-2.95 0-5.36-2.41-5.36-5.36V9.1c0-.28.1-.53.28-.73l1.83-1.83a.668.668 0 0 1 .95 0c.26.26.26.69 0 .95L8.24 8.94c.14 2.15 1.92 3.86 4.09 3.86s3.94-1.71 4.09-3.86l-1.47-1.47c-.26-.26-.26-.69 0-.95.26-.26.69-.26.95 0l1.83 1.83c.18.2.28.45.28.73v.06c0 2.95-2.41 5.36-5.36 5.36zM9.04 6.13c-.31 0-.6-.19-.71-.5-.15-.42.07-.88.49-1.03l1.91-.68c.42-.15.88.07 1.03.49.15.42-.07.88-.49 1.03l-1.91.68c-.11.04-.21.05-.32.05zm5.92 0c-.11 0-.21-.01-.32-.05l-1.91-.68c-.42-.15-.64-.61-.49-1.03.15-.42.61-.64 1.03-.49l1.91.68c.42.15.64.61.49 1.03-.11.31-.4.5-.71.5z"/>
             </svg>
             Download Android APK
         </a>
