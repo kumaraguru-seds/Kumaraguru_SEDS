@@ -244,19 +244,66 @@
                         </div>
                     </div>
 
-                    <!-- ▸ SECTION: Notes & Purpose ───────────── -->
-                    <div class="form-section-header">&#128203; Notes &amp; Purpose</div>
-
+                    <!-- Description / Purpose -->
                     <div class="field-group">
-                        <label for="description">Description &amp; Purpose *</label>
-                        <textarea id="description" rows="4" required
-                            placeholder="What do you think about this propellant? What is its purpose?&#10;e.g. First test batch for 29mm motor — testing burn rate and consistency...">
-                        </textarea>
+                        <label for="description">Description / Purpose *</label>
+                        <textarea id="description" rows="3"
+                                  placeholder="e.g. Static burn test, throat expansion study, high oxidizer experiment..."
+                                  required></textarea>
+                    </div>
+
+                    <!-- ▸ SECTION: Batch / Burn Photos (Mandatory) ── -->
+                    <div class="form-section-header">📸 Batch / Burn Photos *</div>
+
+                    <div class="field-group" style="margin-bottom: 22px;">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+                            <button type="button" id="openCameraBtn" onclick="startLiveCamera()"
+                                    class="camera-action-btn primary-camera-btn">
+                                📷 Open Live Camera
+                            </button>
+                            <label for="imageFileInput" class="camera-action-btn secondary-camera-btn">
+                                📁 Choose / Drop Files
+                            </label>
+                            <input type="file" id="imageFileInput" accept="image/*" multiple style="display:none;" onchange="handleFileSelect(event)">
+                        </div>
+
+                        <!-- Live Camera Stream Box (hidden by default) -->
+                        <div id="cameraArea" style="display:none; background:#050d18; border-radius:14px; padding:12px; text-align:center; margin-bottom:14px; border:2px solid var(--accent); box-shadow:0 0 20px rgba(77,166,255,0.25);">
+                            <video id="cameraVideo" autoplay playsinline style="width:100%; max-height:280px; border-radius:10px; object-fit:cover; background:#000;"></video>
+                            <canvas id="cameraCanvas" style="display:none;"></canvas>
+                            <div style="display:flex; gap:10px; justify-content:center; margin-top:12px;">
+                                <button type="button" onclick="capturePhoto()" style="padding:9px 20px; border-radius:8px; background:var(--success-color); color:#fff; border:none; font-weight:700; cursor:pointer; font-size:13px;">📸 Capture &amp; Add</button>
+                                <button type="button" onclick="stopLiveCamera()" style="padding:9px 18px; border-radius:8px; background:rgba(255,255,255,0.15); color:#fff; border:none; font-weight:600; cursor:pointer; font-size:13px;">Done / Close Camera</button>
+                            </div>
+                        </div>
+
+                        <!-- Big Square Drag & Drop Zone -->
+                        <div id="dropZone" class="photo-drop-zone big-square"
+                             ondragover="handleDragOver(event)"
+                             ondragleave="handleDragLeave(event)"
+                             ondrop="handleDrop(event)"
+                             onclick="document.getElementById('imageFileInput').click()">
+                            <div class="drop-zone-icon">📥</div>
+                            <div class="drop-zone-title">Drag &amp; Drop 1 or More Photos Here</div>
+                            <div class="drop-zone-subtitle">or click to browse from device (JPG, PNG, WEBP) — Mandatory</div>
+                        </div>
+
+                        <!-- Multiple Photo Gallery Preview Grid -->
+                        <div id="photoPreviewContainer" style="display:none; margin-top:14px; background:rgba(19,34,51,0.85); padding:16px; border-radius:14px; border:1px solid rgba(77,166,255,0.35); flex-direction:column; gap:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                                <div>
+                                    <span style="font-size:13px; font-weight:700; color:var(--text);">📸 Selected Photos (<span id="photoCountBadge" style="color:var(--accent)">0</span>)</span>
+                                    <div style="font-size:11px; color:var(--success-color); margin-top:2px;">✔ Will be saved in a dedicated Google Drive folder for this batch</div>
+                                </div>
+                                <button type="button" onclick="clearAllPhotos()" style="padding:5px 12px; border-radius:6px; background:rgba(231,76,60,0.15); color:var(--error-color); border:1px solid var(--error-color); font-size:12px; font-weight:600; cursor:pointer;">Clear All</button>
+                            </div>
+                            <div id="photoGalleryGrid" class="photo-gallery-grid"></div>
+                        </div>
                     </div>
 
                     <!-- Submit -->
                     <button type="submit" id="submitBtn">
-                        &#128640; Submit Propellant Batch
+                        🚀 Submit Propellant Batch
                     </button>
 
                     <!-- Inline loading GIF & message sequence (matching shorturl.html design) -->

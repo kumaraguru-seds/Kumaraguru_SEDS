@@ -8,7 +8,7 @@
 // ────────────────────────────────────────────────────────────────
 //  CONFIG  — Paste your deployed Apps Script URL below
 // ────────────────────────────────────────────────────────────────
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPGLbJlP9Hde93biMpYgkS-Vh3Ps83AfSF18cpouG7IY_CH8CI6yYWgkAB3FRB5MpxrA/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyFkdkxJ_IaIMFVsKIpnV_OqIHgtOyTOiTNSvb2_Y9Lc9Ov77ncqTI650vJN8mChiaSw/exec';
 
 // ────────────────────────────────────────────────────────────────
 //  PROPELLANT PRESETS
@@ -90,7 +90,7 @@ const SK = {
 };
 
 // ────────────────────────────────────────────────────────────────
-//  LOADING MESSAGES (like shorturl.html)
+//  LOADING MESSAGES
 // ────────────────────────────────────────────────────────────────
 const LOADING_MESSAGES = [
   '🔬 Validating Propellant Data...',
@@ -101,12 +101,176 @@ const LOADING_MESSAGES = [
 const LOADING_STEP_MS = 1750;
 
 // ────────────────────────────────────────────────────────────────
-//  DOM REFS
+//  DOM REFS & STATE
 // ────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 
 let catalystEnabled = false;
 let selectedStatus = '';
+let uploadedImages = []; // Array of { id, name, dataUrl }
+let mediaStream = null;
+
+// ── PHOTO CAPTURE & UPLOAD HANDLERS ──────────────────────────────────────
+async function startLiveCamera() {
+  const cameraArea = $('cameraArea');
+  const video = $('cameraVideo');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('Camera API is not supported in this browser.');
+    return;
+  }
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    if (video) video.srcObject = mediaStream;
+    if (cameraArea) cameraArea.style.display = 'block';
+  } catch (err) {
+    console.error('Camera access error:', err);
+    alert('Could not access live camera: ' + err.message);
+  }
+}
+
+function stopLiveCamera() {
+  if (mediaStream) {
+    mediaStream.getTracks().forEach(t => t.stop());
+    mediaStream = null;
+  }
+  const cameraArea = $('cameraArea');
+  if (cameraArea) cameraArea.style.display = 'none';
+}
+
+function compressImage(dataUrl, maxDim = 1200, quality = 0.8) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width;
+      let h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+async function capturePhoto() {
+  const video = $('cameraVideo');
+  const canvas = $('cameraCanvas');
+  if (!video || !canvas) return;
+
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  const raw = canvas.toDataURL('image/jpeg', 0.85);
+  const compressed = await compressImage(raw);
+  const photoIndex = uploadedImages.length + 1;
+  addPhotoToGallery(compressed, `Camera_Photo_${photoIndex}.jpg`);
+}
+
+function handleFileSelect(event) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+  processSelectedImageFiles(Array.from(files));
+  event.target.value = '';
+}
+
+function handleDragOver(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dz = $('dropZone');
+  if (dz) dz.classList.add('drag-over');
+}
+
+function handleDragLeave(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dz = $('dropZone');
+  if (dz) dz.classList.remove('drag-over');
+}
+
+function handleDrop(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dz = $('dropZone');
+  if (dz) dz.classList.remove('drag-over');
+
+  const files = event.dataTransfer && event.dataTransfer.files;
+  if (!files || files.length === 0) return;
+  processSelectedImageFiles(Array.from(files));
+}
+
+async function processSelectedImageFiles(files) {
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue;
+    await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        const compressed = await compressImage(e.target.result);
+        addPhotoToGallery(compressed, file.name);
+        resolve();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+}
+
+function addPhotoToGallery(dataUrl, name) {
+  uploadedImages.push({
+    id: 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+    name: name || `photo_${uploadedImages.length + 1}.jpg`,
+    dataUrl: dataUrl
+  });
+  renderPhotoGallery();
+}
+
+function removePhotoFromGallery(imgId) {
+  uploadedImages = uploadedImages.filter(img => img.id !== imgId);
+  renderPhotoGallery();
+}
+
+function clearAllPhotos() {
+  uploadedImages = [];
+  renderPhotoGallery();
+  const fileInput = $('imageFileInput');
+  if (fileInput) fileInput.value = '';
+}
+
+function renderPhotoGallery() {
+  const previewContainer = $('photoPreviewContainer');
+  const countBadge = $('photoCountBadge');
+  const grid = $('photoGalleryGrid');
+  if (!previewContainer || !grid) return;
+
+  if (countBadge) countBadge.textContent = uploadedImages.length;
+
+  if (uploadedImages.length === 0) {
+    previewContainer.style.display = 'none';
+    grid.innerHTML = '';
+    return;
+  }
+
+  previewContainer.style.display = 'flex';
+  grid.innerHTML = uploadedImages.map((img, idx) => `
+    <div class="gallery-item-card" title="${img.name}">
+      <img src="${img.dataUrl}" alt="${img.name}">
+      <button type="button" class="remove-item-btn" onclick="removePhotoFromGallery('${img.id}')" title="Remove photo">✕</button>
+      <span class="gallery-item-index">#${idx + 1}</span>
+    </div>
+  `).join('');
+}
 
 // ────────────────────────────────────────────────────────────────
 //  DATETIME
@@ -174,21 +338,21 @@ function initBatchIds(forceNew = false) {
 // ────────────────────────────────────────────────────────────────
 function saveFormState() {
   const state = {
-    propellantId: $('propellantId').value,
-    uniqueUid: $('uniqueUid').value,
-    recordedAt: $('recordedAt').value,
-    propellantName: $('propellantName').value,
-    propellantType: $('propellantType').value,
-    mixRatio: $('mixRatio').value,
-    chem1Name: $('chem1Name').value,
-    chem1Pct: $('chem1Pct').value,
-    chem2Name: $('chem2Name').value,
-    chem2Pct: $('chem2Pct').value,
+    propellantId: $('propellantId')?.value || '',
+    uniqueUid: $('uniqueUid')?.value || '',
+    recordedAt: $('recordedAt')?.value || '',
+    propellantName: $('propellantName')?.value || '',
+    propellantType: $('propellantType')?.value || '',
+    mixRatio: $('mixRatio')?.value || '',
+    chem1Name: $('chem1Name')?.value || '',
+    chem1Pct: $('chem1Pct')?.value || '',
+    chem2Name: $('chem2Name')?.value || '',
+    chem2Pct: $('chem2Pct')?.value || '',
     catalystEnabled,
-    catalystPct: $('catalystPct').value,
-    totalGrams: $('totalGrams').value,
-    cookTime: $('cookTime').value,
-    description: $('description').value,
+    catalystPct: $('catalystPct')?.value || '',
+    totalGrams: $('totalGrams')?.value || '',
+    cookTime: $('cookTime')?.value || '',
+    description: $('description')?.value || '',
     _submitted: false
   };
   localStorage.setItem(SK.formState, JSON.stringify(state));
@@ -203,33 +367,28 @@ function restoreFormState() {
   const state = loadFormState();
   if (!state || state._submitted) return;
 
-  // Restore simple fields
-  if (state.propellantName) $('propellantName').value = state.propellantName;
-  if (state.cookTime) $('cookTime').value = state.cookTime;
-  if (state.description) $('description').value = state.description;
-  if (state.totalGrams) $('totalGrams').value = state.totalGrams;
+  if (state.propellantName && $('propellantName')) $('propellantName').value = state.propellantName;
+  if (state.cookTime && $('cookTime')) $('cookTime').value = state.cookTime;
+  if (state.description && $('description')) $('description').value = state.description;
+  if (state.totalGrams && $('totalGrams')) $('totalGrams').value = state.totalGrams;
 
-  // Restore type first (this triggers dropdowns)
-  if (state.propellantType) {
+  if (state.propellantType && $('propellantType')) {
     $('propellantType').value = state.propellantType;
-    handleTypeChange(false); // don't reset fields yet
+    handleTypeChange(false);
 
-    // Restore ratio
-    if (state.mixRatio) {
+    if (state.mixRatio && $('mixRatio')) {
       $('mixRatio').value = state.mixRatio;
-      handleRatioChange(false); // don't reset fields
+      handleRatioChange(false);
     }
-    // Restore chem fields (may override preset)
-    if (state.chem1Name) $('chem1Name').value = state.chem1Name;
-    if (state.chem1Pct) $('chem1Pct').value = state.chem1Pct;
-    if (state.chem2Name) $('chem2Name').value = state.chem2Name;
-    if (state.chem2Pct) $('chem2Pct').value = state.chem2Pct;
+    if (state.chem1Name && $('chem1Name')) $('chem1Name').value = state.chem1Name;
+    if (state.chem1Pct && $('chem1Pct')) $('chem1Pct').value = state.chem1Pct;
+    if (state.chem2Name && $('chem2Name')) $('chem2Name').value = state.chem2Name;
+    if (state.chem2Pct && $('chem2Pct')) $('chem2Pct').value = state.chem2Pct;
 
-    // Restore catalyst
     if (state.catalystEnabled !== undefined) {
       setCatalyst(state.catalystEnabled, false);
     }
-    if (state.catalystPct) $('catalystPct').value = state.catalystPct;
+    if (state.catalystPct && $('catalystPct')) $('catalystPct').value = state.catalystPct;
   }
   updatePreview();
 }
@@ -240,7 +399,6 @@ function restoreFormState() {
 function handleTypeChange(resetFields = true) {
   const type = $('propellantType').value;
 
-  // Hide all conditional sections
   $('mixHeader').style.display = 'none';
   $('ratioGroup').style.display = 'none';
   $('chem1Row').style.display = 'none';
@@ -254,7 +412,6 @@ function handleTypeChange(resetFields = true) {
   $('chem2Row').style.display = '';
 
   if (type === 'Custom') {
-    // Custom: editable name + percentage
     makeChemEditable('chem1Name', 'chem1Pct', 'Chemical Name 1', '');
     makeChemEditable('chem2Name', 'chem2Pct', 'Chemical Name 2', '');
     if (resetFields) {
@@ -265,11 +422,9 @@ function handleTypeChange(resetFields = true) {
     }
   } else {
     const preset = PRESETS[type];
-    // Populate ratio dropdown
     $('ratioGroup').style.display = '';
     populateRatioDropdown(type);
 
-    // Pre-fill chemical names (readonly for non-custom)
     makeChemReadonly('chem1Name', preset.chem1);
     makeChemReadonly('chem2Name', preset.chem2);
     if (resetFields) {
@@ -278,10 +433,8 @@ function handleTypeChange(resetFields = true) {
       $('mixRatio').value = '';
     }
 
-    // Show catalyst section for KNDX only
     if (type === 'KNDX') {
       $('catalystSection').style.display = '';
-      // Always reset to 'free' lock when type changes so buttons aren't stale-disabled
       if (resetFields) setCatalyst(false, false, 'free');
       else setCatalyst(catalystEnabled, false, 'free');
     }
@@ -296,7 +449,7 @@ function handleTypeChange(resetFields = true) {
 // ────────────────────────────────────────────────────────────────
 function handleRatioChange(resetCustom = true) {
   const type = $('propellantType').value;
-  const idx = $('mixRatio').selectedIndex - 1; // -1 for placeholder
+  const idx = $('mixRatio').selectedIndex - 1;
   if (!type || type === 'Custom' || idx < 0) return;
 
   const ratios = PRESETS[type].ratios;
@@ -305,7 +458,6 @@ function handleRatioChange(resetCustom = true) {
 
   const isCustomRatio = ratio.isCustom === true;
 
-  // Set percentages
   if (!isCustomRatio) {
     $('chem1Pct').value = ratio.c1 !== null ? ratio.c1 : '';
     $('chem2Pct').value = ratio.c2 !== null ? ratio.c2 : '';
@@ -316,21 +468,16 @@ function handleRatioChange(resetCustom = true) {
     }
   }
 
-  // Handle KNDX catalyst — lock toggle based on preset
   if (type === 'KNDX') {
     if (!isCustomRatio) {
-      // Preset ratio — catalyst state is FIXED
       if (ratio.hasCatalyst) {
-        // Catalyst is REQUIRED for this ratio
-        setCatalyst(true, false, 'locked-yes');   // lock YES on, NO disabled
+        setCatalyst(true, false, 'locked-yes');
         if (ratio.cat !== null) $('catalystPct').value = ratio.cat;
       } else {
-        // No catalyst for this ratio
-        setCatalyst(false, false, 'locked-no');   // lock NO on, YES disabled
+        setCatalyst(false, false, 'locked-no');
         $('catalystPct').value = '';
       }
     } else {
-      // Custom ratio — both buttons free
       setCatalyst(false, false, 'free');
       if (resetCustom) $('catalystPct').value = '';
     }
@@ -373,40 +520,32 @@ function makeChemEditable(nameId, pctId, namePlaceholder, defaultValue) {
 // ────────────────────────────────────────────────────────────────
 //  CATALYST TOGGLE
 // ────────────────────────────────────────────────────────────────
-// lockMode: 'free' = both buttons clickable
-//           'locked-yes' = YES active + NO disabled (ratio requires catalyst)
-//           'locked-no'  = NO active  + YES disabled (ratio has no catalyst)
 function setCatalyst(enabled, updatePreviewNow = true, lockMode = 'free') {
   catalystEnabled = enabled;
-  const yesBtn  = $('catalystYesBtn');
-  const noBtn   = $('catalystNoBtn');
-  const grp     = $('catalystInputGroup');
+  const yesBtn = $('catalystYesBtn');
+  const noBtn = $('catalystNoBtn');
+  const grp = $('catalystInputGroup');
   const prevRow = $('prev-catalyst-row');
 
-  // Active classes
-  yesBtn.className = 'toggle-btn' + (enabled  ? ' active'    : '');
-  noBtn.className  = 'toggle-btn' + (!enabled ? ' active-no' : '');
+  yesBtn.className = 'toggle-btn' + (enabled ? ' active' : '');
+  noBtn.className = 'toggle-btn' + (!enabled ? ' active-no' : '');
 
-  // Disable / enable based on lock mode
   const DISABLED_STYLE = 'opacity:0.35; cursor:not-allowed; pointer-events:none;';
-  const ENABLED_STYLE  = '';
+  const ENABLED_STYLE = '';
   if (lockMode === 'locked-yes') {
-    // Catalyst is required — disable "No" button
     yesBtn.setAttribute('style', ENABLED_STYLE);
     noBtn.setAttribute('style', DISABLED_STYLE);
     noBtn.title = 'This mix ratio requires a catalyst';
   } else if (lockMode === 'locked-no') {
-    // No catalyst — disable "Yes" button
     yesBtn.setAttribute('style', DISABLED_STYLE);
     yesBtn.title = 'This mix ratio has no catalyst';
     noBtn.setAttribute('style', ENABLED_STYLE);
     noBtn.title = '';
   } else {
-    // Free: both buttons usable
     yesBtn.setAttribute('style', ENABLED_STYLE);
     noBtn.setAttribute('style', ENABLED_STYLE);
     yesBtn.title = '';
-    noBtn.title  = '';
+    noBtn.title = '';
   }
 
   grp.style.display = enabled ? '' : 'none';
@@ -439,7 +578,6 @@ function updatePreview() {
   const sumPct = round2(c1Pct + c2Pct + catPct);
   const totalCalc = round2(c1G + c2G + catG);
 
-  // Populate preview cells
   $('prev-chem1-name').textContent = c1Name;
   $('prev-chem1-pct').textContent = c1Pct ? c1Pct + ' %' : '—';
   $('prev-chem1-grams').textContent = totalG && c1Pct ? c1G + ' g' : '— g';
@@ -455,20 +593,17 @@ function updatePreview() {
   $('prev-total-pct').textContent = sumPct ? sumPct + ' %' : '—';
   $('prev-total-grams').textContent = totalCalc ? totalCalc + ' g' : '— g';
 
-  // Percentage sum check
   const pctSumEl = $('pctSumValue');
   if (type) {
     $('pctSumDisplay').style.display = '';
     pctSumEl.textContent = sumPct + ' %';
     if (sumPct === 100) { pctSumEl.className = 'pct-ok'; }
     else if (sumPct > 100) { pctSumEl.className = 'pct-err'; }
-    else if (sumPct >= 95) { pctSumEl.className = 'pct-warn'; }
     else { pctSumEl.className = 'pct-warn'; }
   } else {
     $('pctSumDisplay').style.display = 'none';
   }
 
-  // Info chips
   if (type) {
     $('previewInfo').style.display = '';
     $('chip-type').textContent = type;
@@ -485,22 +620,22 @@ function updatePreview() {
 //  FORM VALIDATION
 // ────────────────────────────────────────────────────────────────
 function validateForm() {
-  const type = $('propellantType').value;
-  const name = $('propellantName').value.trim();
-  const c1Pct = parseFloat($('chem1Pct').value);
-  const c2Pct = parseFloat($('chem2Pct').value);
-  const catPct = catalystEnabled ? parseFloat($('catalystPct').value) : 0;
-  const totalG = parseFloat($('totalGrams').value);
-  const cookT = parseFloat($('cookTime').value);
-  const desc = $('description').value.trim();
+  const type = $('propellantType')?.value || '';
+  const name = $('propellantName')?.value?.trim() || '';
+  const c1Pct = parseFloat($('chem1Pct')?.value) || 0;
+  const c2Pct = parseFloat($('chem2Pct')?.value) || 0;
+  const catPct = catalystEnabled ? (parseFloat($('catalystPct')?.value) || 0) : 0;
+  const totalG = parseFloat($('totalGrams')?.value) || 0;
+  const cookT = parseFloat($('cookTime')?.value) || 0;
+  const desc = $('description')?.value?.trim() || '';
 
   if (!type) return 'Please select a Propellant Type.';
   if (!name) return 'Please enter a Propellant Name.';
-  if (type !== 'Custom' && !$('mixRatio').value) return 'Please select a Mix Ratio.';
+  if (type !== 'Custom' && !$('mixRatio')?.value) return 'Please select a Mix Ratio.';
   if (!c1Pct) return 'Chemical 1 percentage is required.';
   if (!c2Pct) return 'Chemical 2 percentage is required.';
-  if (!$('chem1Name').value.trim()) return 'Chemical 1 name is required.';
-  if (!$('chem2Name').value.trim()) return 'Chemical 2 name is required.';
+  if (!$('chem1Name')?.value?.trim()) return 'Chemical 1 name is required.';
+  if (!$('chem2Name')?.value?.trim()) return 'Chemical 2 name is required.';
   if (catalystEnabled && !catPct) return 'Catalyst percentage is required when catalyst is enabled.';
   if (!totalG || totalG <= 0) return 'Total batch mass (grams) is required and must be > 0.';
   if (!cookT || cookT < 1) return 'Cook time is required and must be at least 1 minute.';
@@ -510,23 +645,32 @@ function validateForm() {
   if (Math.abs(sumPct - 100) > 0.5) {
     return `Chemical percentages must sum to 100%. Current sum: ${round2(sumPct)}%`;
   }
-  return null; // OK
+
+  // Photos are mandatory (1 or more required)
+  if (uploadedImages.length === 0) {
+    return 'At least one Batch / Burn Photo is required (mandatory). Please capture or upload a photo.';
+  }
+
+  return null;
 }
 
 // ────────────────────────────────────────────────────────────────
-//  SHOW OUTPUT  (same pattern as shorturl.html)
+//  SHOW OUTPUT
 // ────────────────────────────────────────────────────────────────
 function showOutput(html, cssClass) {
   const out = $('output');
+  if (!out) return;
   out.innerHTML = html;
   out.className = cssClass;
   out.style.display = 'block';
   out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 function hideOutput() {
-  $('output').style.display = 'none';
-  $('output').innerHTML = '';
-  $('output').className = '';
+  const out = $('output');
+  if (!out) return;
+  out.style.display = 'none';
+  out.innerHTML = '';
+  out.className = '';
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -535,7 +679,6 @@ function hideOutput() {
 document.getElementById('propellantForm').addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  // Validate
   const validErr = validateForm();
   if (validErr) {
     showOutput(`<strong>⚠️ Validation Error:</strong> ${validErr}`, 'error');
@@ -543,26 +686,26 @@ document.getElementById('propellantForm').addEventListener('submit', async funct
   }
 
   const submitBtn = $('submitBtn');
-  submitBtn.disabled = true;
+  if (submitBtn) submitBtn.disabled = true;
 
-
-  // Collect data
-  const propellantId = $('propellantId').value;
-  const uniqueUid = $('uniqueUid').value;
-  const submittedAt = $('recordedAt').value;
-  const propName = $('propellantName').value.trim();
-  const propType = $('propellantType').value;
-  const mixRatioVal = $('mixRatio').value;
-  const mixRatioLabel = $('mixRatio').options[$('mixRatio').selectedIndex]?.text || '';
-  const c1Name = $('chem1Name').value.trim();
-  const c1Pct = parseFloat($('chem1Pct').value);
-  const c2Name = $('chem2Name').value.trim();
-  const c2Pct = parseFloat($('chem2Pct').value);
-  const catPct = catalystEnabled ? (parseFloat($('catalystPct').value) || 0) : 0;
-  const catName = $('catalystName').value.trim();
-  const totalG = parseFloat($('totalGrams').value);
-  const cookTime = parseFloat($('cookTime').value);
-  const description = $('description').value.trim();
+  const propellantId = $('propellantId')?.value || '';
+  const uniqueUid = $('uniqueUid')?.value || '';
+  const submittedAt = $('recordedAt')?.value || '';
+  const propName = $('propellantName')?.value?.trim() || '';
+  const propType = $('propellantType')?.value || '';
+  const mixRatioEl = $('mixRatio');
+  const mixRatioLabel = (mixRatioEl && mixRatioEl.selectedIndex >= 0)
+    ? mixRatioEl.options[mixRatioEl.selectedIndex]?.text || ''
+    : '';
+  const c1Name = $('chem1Name')?.value?.trim() || '';
+  const c1Pct = parseFloat($('chem1Pct')?.value) || 0;
+  const c2Name = $('chem2Name')?.value?.trim() || '';
+  const c2Pct = parseFloat($('chem2Pct')?.value) || 0;
+  const catPct = catalystEnabled ? (parseFloat($('catalystPct')?.value) || 0) : 0;
+  const catName = $('catalystName')?.value?.trim() || '';
+  const totalG = parseFloat($('totalGrams')?.value) || 0;
+  const cookTime = parseFloat($('cookTime')?.value) || 0;
+  const description = $('description')?.value?.trim() || '';
 
   const c1G = round2(totalG * c1Pct / 100);
   const c2G = round2(totalG * c2Pct / 100);
@@ -588,14 +731,16 @@ document.getElementById('propellantForm').addEventListener('submit', async funct
     catalystGrams: catalystEnabled ? catG : 0,
     totalGrams: totalG,
     cookTimeMinutes: cookTime,
-    description
+    description,
+    images: uploadedImages.map((img, idx) => ({
+      name: img.name || `photo_${idx + 1}.jpg`,
+      base64: img.dataUrl
+    }))
   };
 
-  // ── Loading sequence ──
   let msgIdx = 0;
-  hideOutput(); // Hide any previous error message
+  hideOutput();
 
-  // Show inline loading area matching shorturl.html UI design
   const btnLoader = $('btnLoadingArea');
   const btnMsg = $('btnLoadingMsg');
   if (btnLoader) btnLoader.style.display = 'flex';
@@ -604,7 +749,6 @@ document.getElementById('propellantForm').addEventListener('submit', async funct
     btnMsg.style.opacity = '1';
   }
 
-  // Helper to hide button loader
   function hideBtnLoader() {
     if (btnLoader) btnLoader.style.display = 'none';
   }
@@ -625,29 +769,25 @@ document.getElementById('propellantForm').addEventListener('submit', async funct
   const animationDone = new Promise(r => setTimeout(r, LOADING_MESSAGES.length * LOADING_STEP_MS));
 
   try {
-    // ── Check for ID/UID conflicts (GET – no preflight) ──────────────────
     const checkUrl = `${APPS_SCRIPT_URL}?action=checkId&propellantId=${encodeURIComponent(propellantId)}&uniqueUid=${encodeURIComponent(uniqueUid)}`;
     const checkRes = await fetch(checkUrl);
     const checkData = await checkRes.json();
 
     if (checkData.exists) {
       clearInterval(loadInterval);
-      // Auto-advance ID
       getNextCounter();
       const n2 = peekCounter();
       $('propellantId').value = buildPropellantId(n2);
       $('uniqueUid').value = buildUniqueUid(n2);
-      // Retry once
       payload.propellantId = $('propellantId').value;
       payload.uniqueUid = $('uniqueUid').value;
     }
 
-    // Submit + wait for animation
-    // Use URLSearchParams (application/x-www-form-urlencoded) — no CORS preflight!
     const fetchDone = fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'cors',
-      body: new URLSearchParams(payload)
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
     });
 
     const [_, res] = await Promise.all([animationDone, fetchDone]);
@@ -660,35 +800,50 @@ document.getElementById('propellantForm').addEventListener('submit', async funct
       throw new Error(result.message || result.error || 'Server returned an error.');
     }
 
-    // ── Success ──
-    // Increment counter and generate new IDs for next batch
-    getNextCounter();
-    const newN = peekCounter();
+    const finalPropellantId = result.propellantId || payload.propellantId;
+    const finalUniqueUid = result.uniqueUid || payload.uniqueUid;
+
+    // Increment counter past the successfully submitted ID
+    const idMatch = String(finalPropellantId).match(/(\d+)$/);
+    const submittedNum = idMatch ? parseInt(idMatch[1], 10) : peekCounter();
+    localStorage.setItem(SK.counter, submittedNum);
+
+    const newN = submittedNum + 1;
     const newId = buildPropellantId(newN);
     const newUid = buildUniqueUid(newN);
 
-    // Save to local history
     saveLocalHistory({
-      propellantId, uniqueUid, propellantName: propName,
-      propellantType: propType, submittedAt, status: 'Pending',
-      totalGrams: totalG, cookTimeMinutes: cookTime
+      propellantId: finalPropellantId,
+      uniqueUid: finalUniqueUid,
+      propellantName: propName,
+      propellantType: propType,
+      submittedAt,
+      status: 'Pending',
+      totalGrams: totalG,
+      cookTimeMinutes: cookTime,
+      drivePhotoUrl: result.drivePhotoUrl || result.driveFolderUrl || ''
     });
 
-    // Mark old state as submitted
     const state = loadFormState() || {};
     state._submitted = true;
     localStorage.setItem(SK.formState, JSON.stringify(state));
+
+    const photoInfoHtml = result.drivePhotoUrl ? `
+      <div style="margin-top:8px;">
+        <b>📁 Drive Photos Folder:</b> <a href="${result.drivePhotoUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">Open Batch Folder on Drive (${uploadedImages.length} photo${uploadedImages.length > 1 ? 's' : ''})</a>
+      </div>` : '';
 
     showOutput(`
       <p style="font-size:1.15em;color:var(--success-color);font-weight:700;margin-bottom:14px;">
         ✅ Propellant Batch Submitted Successfully!
       </p>
       <div style="background:rgba(56,193,114,0.08);border:1px solid var(--success-color);border-radius:10px;padding:16px 20px;margin-bottom:14px;font-size:14px;line-height:1.8;">
-        <b>Batch ID:</b> ${propellantId}<br>
-        <b>UID:</b> ${uniqueUid}<br>
+        <b>Batch ID:</b> ${finalPropellantId}<br>
+        <b>UID:</b> ${finalUniqueUid}<br>
         <b>Name:</b> ${propName}<br>
         <b>Type:</b> ${propType} | <b>Ratio:</b> ${payload.mixRatio}<br>
-        <b>Sheet:</b> ${result.sheetName || propellantId}
+        <b>Sheet:</b> ${result.sheetName || finalPropellantId}
+        ${photoInfoHtml}
       </div>
       <p style="color:var(--muted);font-size:13px;">
         🍳 Cook time: <b>${cookTime} min</b>. 
@@ -698,17 +853,13 @@ document.getElementById('propellantForm').addEventListener('submit', async funct
         Next batch ID ready: <b style="color:var(--accent)">${newId}</b>
       </p>`, 'success');
 
-    // Reset form and prepare new batch
     document.getElementById('propellantForm').reset();
     clearConditionalUI();
     $('propellantId').value = newId;
     $('uniqueUid').value = newUid;
     $('recordedAt').value = buildTimestamp();
 
-    // Clear form state for next batch
     localStorage.removeItem(SK.formState);
-
-    // Refresh history list
     loadHistoryList();
 
   } catch (err) {
@@ -733,7 +884,8 @@ function clearConditionalUI() {
   $('pctSumDisplay').style.display = 'none';
   $('previewPlaceholder').style.display = '';
   catalystEnabled = false;
-  setCatalyst(false, false, 'free'); // Unlock both catalyst buttons
+  setCatalyst(false, false, 'free');
+  clearAllPhotos();
   updatePreview();
 }
 
@@ -766,11 +918,36 @@ async function loadHistoryList() {
     console.warn('Could not fetch remote history:', e);
   }
 
-  // Merge with local history
   const localData = getLocalHistory();
   const remoteIds = new Set(remoteData.map(d => d.propellantId));
   const localOnly = localData.filter(d => !remoteIds.has(d.propellantId));
   const allData = [...remoteData, ...localOnly];
+
+  // Auto-synchronize counter with highest batch ID in the database
+  let maxIdNum = 0;
+  allData.forEach(entry => {
+    const match = String(entry.propellantId || '').match(/(\d+)$/);
+    if (match) {
+      const n = parseInt(match[1], 10);
+      if (n > maxIdNum) maxIdNum = n;
+    }
+  });
+
+  if (maxIdNum > 0) {
+    const cur = parseInt(localStorage.getItem(SK.counter) || '0', 10);
+    if (maxIdNum >= cur) {
+      localStorage.setItem(SK.counter, maxIdNum);
+      const formId = $('propellantId')?.value || '';
+      const formMatch = formId.match(/(\d+)$/);
+      const formN = formMatch ? parseInt(formMatch[1], 10) : 0;
+      if (formN <= maxIdNum) {
+        const nextN = maxIdNum + 1;
+        if ($('propellantId')) $('propellantId').value = buildPropellantId(nextN);
+        if ($('uniqueUid')) $('uniqueUid').value = buildUniqueUid(nextN);
+        updatePreview();
+      }
+    }
+  }
 
   sel.innerHTML = '<option value="">— Select a Propellant Batch —</option>';
   if (allData.length === 0) {
@@ -781,10 +958,8 @@ async function loadHistoryList() {
   allData.forEach(entry => {
     const opt = document.createElement('option');
     opt.value = entry.propellantId;
-    // Status badge
     const badge = entry.status && entry.status !== 'Pending'
       ? ` [${entry.status}]` : ' [Pending]';
-    // Date/time — shorten if too long
     const dt = entry.submittedAt
       ? ' | ' + String(entry.submittedAt).replace(/\s+/g, ' ').trim()
       : '';
@@ -820,7 +995,6 @@ async function loadHistoryEntry() {
     console.warn('Remote getOne fetch error:', e);
   }
 
-  // Fallback to local history cache if remote fetch failed or returned empty
   if (!data) {
     const local = getLocalHistory().find(d => d.propellantId === propellantId);
     if (local) data = local;
@@ -836,7 +1010,6 @@ async function loadHistoryEntry() {
     return;
   }
 
-  // Robust parsing for vertical key-value / flat object keys
   const pId = data['Propellant ID'] || data.propellantId || propellantId;
   const uid = data['Unique UID'] || data.uniqueUid || '';
   const pName = data['Propellant Name'] || data.name || data.propellantName || '';
@@ -875,10 +1048,15 @@ async function loadHistoryEntry() {
       <td style="text-align:right;color:#ff9f43">${catG} g</td>
     </tr>` : '';
 
-  // Escaped strings for JS inline call
-  const escName  = String(pName).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  const escName = String(pName).replace(/'/g, "\\'").replace(/"/g, '&quot;');
   const escRatio = String(ratio).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-  const escDesc  = String(desc).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+  const escDesc = String(desc).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+
+  const photoUrl = data['Drive Photo URL'] || data.drivePhotoUrl || data.driveFolderUrl || data.photoUrl || '';
+  const photoBtnHtml = photoUrl ? `
+    <a href="${photoUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" title="Open Batch Photos Folder on Google Drive">
+      📁 View Photos Folder
+    </a>` : '';
 
   display.innerHTML = `
     <div class="history-card">
@@ -889,6 +1067,7 @@ async function loadHistoryEntry() {
           <div class="history-card-id" style="margin-top:4px">Submitted: ${submAt}</div>
         </div>
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+          ${photoBtnHtml}
           <button type="button" class="history-edit-toggle-btn"
                   onclick="openEditModal('${pId}', '${uid}', '${escName}', '${escRatio}', ${cookTm}, '${escDesc}')"
                   title="Edit Batch Details">
@@ -977,7 +1156,6 @@ async function loadHistoryEntry() {
 
   display.style.display = '';
   selectedStatus = status === 'Pending' ? '' : status;
-  // Re-highlight if already has a status
   if (selectedStatus && selectedStatus !== 'Pending') selectStatus(selectedStatus);
   display.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -1023,7 +1201,6 @@ async function submitStatusUpdate(propellantId, uniqueUid) {
     const result = await res.json();
     if (!result.success) throw new Error(result.message || result.error);
 
-    // Update local history cache
     const hist = getLocalHistory().map(h => {
       if (h.propellantId === propellantId) {
         h.status = selectedStatus;
@@ -1032,14 +1209,12 @@ async function submitStatusUpdate(propellantId, uniqueUid) {
     });
     localStorage.setItem(SK.history, JSON.stringify(hist));
 
-    // Show success feedback
     if (btn) {
       btn.textContent = '✅ Status Updated!';
       btn.style.background = 'var(--success-color)';
       btn.style.color = '#fff';
     }
 
-    // Refresh history dropdown & reload history entry display
     await loadHistoryList();
     $('historySelect').value = propellantId;
     await loadHistoryEntry();
@@ -1051,17 +1226,16 @@ async function submitStatusUpdate(propellantId, uniqueUid) {
   }
 }
 
-
 // ────────────────────────────────────────────────────────────────
 //  EDIT DETAILS POPUP MODAL HANDLERS
 // ────────────────────────────────────────────────────────────────
 function openEditModal(pId, uid, pName, ratio, cookTm, desc) {
   $('editPropellantId').value = pId || '';
-  $('editUniqueUid').value    = uid || '';
-  $('editPropName').value     = pName || '';
-  $('editMixRatio').value     = ratio || '';
-  $('editCookTime').value     = cookTm || '';
-  $('editPropDesc').value     = desc || '';
+  $('editUniqueUid').value = uid || '';
+  $('editPropName').value = pName || '';
+  $('editMixRatio').value = ratio || '';
+  $('editCookTime').value = cookTm || '';
+  $('editPropDesc').value = desc || '';
   $('editModalTitle').textContent = `✏️ Edit Batch Details — ${pId}`;
 
   const modal = $('editModalOverlay');
@@ -1075,12 +1249,12 @@ function closeEditModal() {
 
 async function saveHistoryEdit() {
   const propellantId = $('editPropellantId').value;
-  const uniqueUid    = $('editUniqueUid').value;
-  const newName      = $('editPropName').value.trim();
-  const newRatio     = $('editMixRatio').value.trim();
-  const newCookTime  = parseFloat($('editCookTime').value) || 0;
-  const newDesc      = $('editPropDesc').value.trim();
-  const btn          = $('editSaveBtn');
+  const uniqueUid = $('editUniqueUid').value;
+  const newName = $('editPropName').value.trim();
+  const newRatio = $('editMixRatio').value.trim();
+  const newCookTime = parseFloat($('editCookTime').value) || 0;
+  const newDesc = $('editPropDesc').value.trim();
+  const btn = $('editSaveBtn');
 
   if (!newName) {
     alert('Propellant name cannot be empty.');
@@ -1106,7 +1280,6 @@ async function saveHistoryEdit() {
     const result = await res.json();
     if (!result.success) throw new Error(result.message || result.error);
 
-    // Update local history cache
     const hist = getLocalHistory().map(h => {
       if (h.propellantId === propellantId) {
         h.propellantName = newName;
@@ -1121,7 +1294,6 @@ async function saveHistoryEdit() {
 
     closeEditModal();
 
-    // Refresh history dropdown & reload history entry display
     await loadHistoryList();
     $('historySelect').value = propellantId;
     await loadHistoryEntry();
@@ -1139,25 +1311,16 @@ async function saveHistoryEdit() {
 function clearAllForm() {
   if (!confirm('Clear all entered data and start a fresh batch?')) return;
 
-  // Reset the HTML form
   document.getElementById('propellantForm').reset();
-
-  // Reset conditional UI
   clearConditionalUI();
 
-  // Generate fresh IDs for the next batch
   const n = peekCounter();
   $('propellantId').value = buildPropellantId(n);
-  $('uniqueUid').value    = buildUniqueUid(n);
-  $('recordedAt').value   = buildTimestamp();
+  $('uniqueUid').value = buildUniqueUid(n);
+  $('recordedAt').value = buildTimestamp();
 
-  // Remove saved form state
   localStorage.removeItem(SK.formState);
-
-  // Hide output box
   hideOutput();
-
-  // Scroll to top of form
   $('formSection')?.scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -1175,7 +1338,7 @@ document.addEventListener('click', function (e) {
 });
 
 // ────────────────────────────────────────────────────────────────
-//  INTERSECTION OBSERVER (same as shorturl.html)
+//  INTERSECTION OBSERVER
 // ────────────────────────────────────────────────────────────────
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('show'); });
@@ -1183,10 +1346,11 @@ const observer = new IntersectionObserver(entries => {
 document.querySelectorAll('.section').forEach(s => observer.observe(s));
 
 // ────────────────────────────────────────────────────────────────
-//  FALLING STARS  (same as shorturl.html)
+//  FALLING STARS
 // ────────────────────────────────────────────────────────────────
 (function createStars() {
   const container = document.getElementById('starsContainer');
+  if (!container) return;
   for (let i = 0; i < 200; i++) {
     const star = document.createElement('div');
     star.classList.add('star');
@@ -1204,8 +1368,8 @@ document.querySelectorAll('.section').forEach(s => observer.observe(s));
 // ────────────────────────────────────────────────────────────────
 //  EVENT LISTENERS – auto-save + preview
 // ────────────────────────────────────────────────────────────────
-$('propellantType').addEventListener('change', () => { handleTypeChange(); saveFormState(); });
-$('mixRatio').addEventListener('change', () => { handleRatioChange(); saveFormState(); });
+$('propellantType')?.addEventListener('change', () => { handleTypeChange(); saveFormState(); });
+$('mixRatio')?.addEventListener('change', () => { handleRatioChange(); saveFormState(); });
 
 ['propellantName', 'chem1Name', 'chem1Pct', 'chem2Name', 'chem2Pct', 'catalystPct',
   'totalGrams', 'cookTime', 'description'].forEach(id => {
@@ -1215,7 +1379,6 @@ $('mixRatio').addEventListener('change', () => { handleRatioChange(); saveFormSt
       el.addEventListener('change', () => { updatePreview(); saveFormState(); });
     }
   });
-
 
 // ────────────────────────────────────────────────────────────────
 //  INIT

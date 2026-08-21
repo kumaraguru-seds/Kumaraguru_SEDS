@@ -13,6 +13,7 @@
 
 const SHEET_ID = '1NpcBnUd-kwpW6n_jeExwZ8KXMoTbQsl11xF56_i_5jI';
 const MASTER_SHEET_NAME = 'Master Log';
+const DRIVE_FOLDER_ID = '1bHgzm_RzjisONjg53_KVcAjLovV2udQN';
 
 const MASTER_HEADERS = [
   'Propellant ID',
@@ -34,11 +35,130 @@ const MASTER_HEADERS = [
   'Total Grams (g)',
   'Cook Time (min)',
   'Description / Purpose',
+  'Drive Photo URL',
   'Status',
   'Status Description',
   'Status Updated At',
   'Sheet Tab Name'
 ];
+
+/**
+ * Upload multiple base64 encoded photos to a dedicated subfolder in Google Drive.
+ * Creates a folder named `${propellantId} – ${propName}` inside the main folder.
+ * Returns { folderUrl, fileUrls, primaryUrl }
+ */
+function uploadImagesToBatchFolder(imagesList, propellantId, propName) {
+  if (!imagesList || !Array.isArray(imagesList) || imagesList.length === 0) {
+    return { folderUrl: '', fileUrls: [], primaryUrl: '' };
+  }
+
+  try {
+    const parentFolder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
+    const folderName = `${propellantId} – ${propName}`.substring(0, 100);
+
+    // Create dedicated batch subfolder
+    const batchFolder = parentFolder.createFolder(folderName);
+    try {
+      batchFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (shareNotice) {
+      Logger.log('Folder share notice: ' + shareNotice.toString());
+    }
+
+    const fileUrls = [];
+
+    imagesList.forEach((imgItem, idx) => {
+      try {
+        let base64Data = (typeof imgItem === 'string') ? imgItem : (imgItem.base64 || imgItem.dataUrl || '');
+        if (!base64Data) return;
+
+        let cleanBase64 = base64Data.trim();
+        let contentType = 'image/jpeg';
+
+        if (cleanBase64.indexOf(';base64,') !== -1) {
+          const parts = cleanBase64.split(';base64,');
+          const meta = parts[0];
+          cleanBase64 = parts[1];
+          const match = meta.match(/data:(image\/[^;]+)/);
+          if (match) contentType = match[1];
+        }
+
+        cleanBase64 = cleanBase64.replace(/\s+/g, '+');
+        const bytes = Utilities.base64Decode(cleanBase64);
+        const fileName = (typeof imgItem === 'object' && imgItem.name)
+          ? `${propellantId}_${idx + 1}_${imgItem.name}`
+          : `${propellantId}_photo_${idx + 1}.jpg`;
+
+        const blob = Utilities.newBlob(bytes, contentType, fileName);
+        const file = batchFolder.createFile(blob);
+        try {
+          file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        } catch (fe) {}
+        fileUrls.push(file.getUrl());
+      } catch (fileErr) {
+        Logger.log(`Error uploading photo #${idx + 1}: ` + fileErr.toString());
+      }
+    });
+
+    const folderUrl = batchFolder.getUrl();
+    const primaryUrl = fileUrls.length > 0 ? fileUrls[0] : folderUrl;
+
+    return {
+      folderUrl: folderUrl,
+      fileUrls: fileUrls,
+      primaryUrl: primaryUrl
+    };
+  } catch (err) {
+    Logger.log('Drive folder creation error: ' + err.toString());
+    return { folderUrl: '', fileUrls: [], primaryUrl: '' };
+  }
+}
+
+/** Upload single base64 encoded photo to Google Drive folder (fallback) */
+function uploadImageToDrive(base64Data, filename) {
+  if (!base64Data || typeof base64Data !== 'string' || base64Data.trim() === '') {
+    return '';
+  }
+  try {
+    let cleanBase64 = base64Data.trim();
+    let contentType = 'image/jpeg';
+
+    if (cleanBase64.indexOf(';base64,') !== -1) {
+      const parts = cleanBase64.split(';base64,');
+      const meta = parts[0];
+      cleanBase64 = parts[1];
+      const match = meta.match(/data:(image\/[^;]+)/);
+      if (match) contentType = match[1];
+    }
+
+    cleanBase64 = cleanBase64.replace(/\s+/g, '+');
+    const bytes = Utilities.base64Decode(cleanBase64);
+    const blob = Utilities.newBlob(bytes, contentType, filename || 'burn_photo.jpg');
+
+    const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
+    const file = folder.createFile(blob);
+    try {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (shareErr) {
+      Logger.log('Drive share permission notice: ' + shareErr.toString());
+    }
+    return file.getUrl();
+  } catch (err) {
+    Logger.log('Drive upload error: ' + err.toString());
+    return 'Drive Error: ' + err.toString();
+  }
+}
+
+/** Test helper to verify Drive folder access permissions */
+function testDrivePermissions() {
+  try {
+    const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
+    Logger.log('SUCCESS: Drive Folder accessed: ' + folder.getName());
+    return 'SUCCESS: Folder accessed: ' + folder.getName();
+  } catch (e) {
+    Logger.log('ERROR: ' + e.toString());
+    return 'ERROR: ' + e.toString();
+  }
+}
 
 // ── Column index map for the data sheet (1-based) ──
 const DATA_COLS = {
@@ -83,7 +203,18 @@ const DATA_HEADERS = [
 function doPost(e) {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
-    const params = e.parameter;
+    let params = {};
+
+    if (e && e.postData && e.postData.contents) {
+      try {
+        params = JSON.parse(e.postData.contents);
+      } catch (jsonErr) {
+        params = e.parameter || {};
+      }
+    } else if (e && e.parameter) {
+      params = e.parameter;
+    }
+
     const action = params.action;
 
     if (action === 'submit')        return handleSubmit(ss, params);
@@ -164,6 +295,26 @@ function handleSubmit(ss, params) {
   styleHeaderRow(headerRange);
   newSheet.setFrozenRows(1);
 
+  // ── Upload images to dedicated Drive batch subfolder ──────────
+  let imagesToUpload = [];
+  if (params.images && Array.isArray(params.images)) {
+    imagesToUpload = params.images;
+  } else if (params.imagesBase64 && Array.isArray(params.imagesBase64)) {
+    imagesToUpload = params.imagesBase64;
+  } else if (params.imageBase64) {
+    imagesToUpload = [params.imageBase64];
+  }
+
+  let driveResult = { folderUrl: '', fileUrls: [], primaryUrl: '' };
+  if (imagesToUpload.length > 0) {
+    driveResult = uploadImagesToBatchFolder(imagesToUpload, propellantId, propName);
+  }
+
+  // Use dedicated folder URL (or primary photo URL) for sheet & Master Log
+  const drivePhotoUrl = driveResult.folderUrl || driveResult.primaryUrl || '';
+  params.drivePhotoUrl = drivePhotoUrl;
+  params.driveFolderUrl = driveResult.folderUrl;
+
   const verticalData = buildVerticalData(params);
   newSheet.getRange(2, 1, verticalData.length, 2).setValues(verticalData);
 
@@ -193,6 +344,7 @@ function handleSubmit(ss, params) {
     Number(params.totalGrams) || 0,
     Number(params.cookTimeMinutes) || 0,
     String(params.description || ''),
+    drivePhotoUrl,
     'Pending',
     '',
     '',
@@ -201,8 +353,13 @@ function handleSubmit(ss, params) {
 
   return jsonResponse({
     success: true,
-    message: `Propellant "${propellantId}" submitted successfully!`,
-    sheetName: sheetName
+    message: `Propellant "${propellantId}" submitted successfully with ${driveResult.fileUrls.length} photo(s)!`,
+    propellantId: propellantId,
+    uniqueUid: uniqueUid,
+    sheetName: sheetName,
+    drivePhotoUrl: drivePhotoUrl,
+    driveFolderUrl: driveResult.folderUrl,
+    photoCount: driveResult.fileUrls.length
   });
 }
 
@@ -289,6 +446,8 @@ function handleGetAll(ss) {
   let statCol  = headers.indexOf('status');
   if (statCol < 0) statCol = 6; // Col G (0-indexed 6) fallback
 
+  const photoCol = headers.indexOf('drive photo url');
+
   const data = [];
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
@@ -303,7 +462,8 @@ function handleGetAll(ss) {
       type:         typeCol >= 0 ? String(r[typeCol]) : String(r[4] || r[3] || ''),
       submittedAt:  subCol >= 0 ? String(r[subCol]) : String(r[3] || ''),
       sheetName:    sheetCol >= 0 ? String(r[sheetCol]) : String(r[5] || ''),
-      status:       statCol >= 0 ? String(r[statCol] || 'Pending') : 'Pending'
+      status:       statCol >= 0 ? String(r[statCol] || 'Pending') : 'Pending',
+      drivePhotoUrl: photoCol >= 0 ? String(r[photoCol] || '') : ''
     });
   }
 
@@ -499,6 +659,7 @@ function buildVerticalData(p) {
     ['Total Grams (g)',        Number(p.totalGrams)      || 0],
     ['Cook Time (min)',        Number(p.cookTimeMinutes) || 0],
     ['Description / Purpose',  String(p.description      || '')],
+    ['Drive Photo URL',        String(p.drivePhotoUrl    || '')],
     ['Status',                 'Pending'],
     ['Status Description',     ''],
     ['Status Updated At',      '']
