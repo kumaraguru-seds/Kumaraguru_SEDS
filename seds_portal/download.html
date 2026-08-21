@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,8 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://kumaraguruseds.space/">
     <meta property="og:title" content="Kumaraguru SEDS">
-    <meta property="og:description" content="Kumaraguru SEDS is a student-driven chapter dedicated to space exploration, astronomy, and aerospace innovation. We conduct hands-on workshops, stargazing sessions, and technical projects to inspire curiosity and scientific learning. Our mission is to empower young minds to explore the universe and contribute to the advancement of space science and technology.">
+    <meta property="og:description"
+        content="Kumaraguru SEDS is a student-driven chapter dedicated to space exploration, astronomy, and aerospace innovation. We conduct hands-on workshops, stargazing sessions, and technical projects to inspire curiosity and scientific learning. Our mission is to empower young minds to explore the universe and contribute to the advancement of space science and technology.">
     <meta property="og:image" content="https://kumaraguruseds.space/sedsb.png">
     <style>
         :root {
@@ -56,7 +58,8 @@
             filter: brightness(65%);
             z-index: -2;
             pointer-events: none;
-            will-change: transform; /* Enhances mobile rendering performance */
+            will-change: transform;
+            /* Enhances mobile rendering performance */
         }
 
         .download-container {
@@ -65,14 +68,22 @@
             border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
             max-width: 400px;
-            width: 100%; /* Fully responsive width matching system specifications */
+            width: 100%;
+            /* Fully responsive width matching system specifications */
             text-align: center;
             animation: fadeIn 0.8s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .download-container h2 {
@@ -133,6 +144,7 @@
             .download-container {
                 padding: 30px 20px;
             }
+
             .download-container h2 {
                 font-size: 1.6rem;
             }
@@ -162,6 +174,7 @@
                 transform: translateY(-20px);
                 opacity: 1;
             }
+
             to {
                 transform: translateY(100vh);
                 opacity: 0;
@@ -169,128 +182,136 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="stars-container"></div>
+    <div class="stars-container"></div>
 
-<div class="download-container">
-    <img src="../SEDS.png" alt="SEDS Logo">
-    <h2>Application Downloads Updated</h2>
-    <p class="subtitle">Get the official Kumaraguru SEDS Portal ecosystem installation files.</p>
-    
-    <div class="download-options">
-        <!-- Converted Android APK Direct Link -->
-        <a href="https://raw.githubusercontent.com/kumaraguru-seds/seds_portal/main/android/SEDS_Portal_Android.apk" class="download-btn android" download>
-            <!-- 🤖 Correct Official Android Robot Icon (Material Design) -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6,18c0,0.55 0.45,1 1,1h1v3.5c0,0.83 0.67,1.5 1.5,1.5s1.5,-0.67 1.5,-1.5L11,19h2v3.5c0,0.83 0.67,1.5 1.5,1.5s1.5,-0.67 1.5,-1.5L16,19h1c0.55,0 1,-0.45 1,-1L18,8L6,8L6,18z M3.5,8C2.67,8 2,8.67 2,9.5v7c0,0.83 0.67,1.5 1.5,1.5S5,17.33 5,16.5v-7C5,8.67 4.33,8 3.5,8z M20.5,8c-0.83,0 -1.5,0.67 -1.5,1.5v7c0,0.83 0.67,1.5 1.5,1.5s1.5,-0.67 1.5,-1.5v-7C22,8.67 21.33,8 20.5,8z M15.53,2.16l1.3,-1.3c0.2,-0.2 0.2,-0.51 0,-0.71 -0.2,-0.2 -0.51,-0.2 -0.71,0l-1.48,1.48C13.85,1.23 12.95,1 12,1c-0.96,0 -1.86,0.23 -2.66,0.63L7.85,0.15c-0.2,-0.2 -0.51,-0.2 -0.71,0 -0.2,0.2 -0.2,0.51 0,0.71l1.31,1.31C6.97,3.26 6,5.01 6,7L18,7c0,-1.99 -0.97,-3.75 -2.47,-4.84z M10,5L9,5L9,4l1,0l0,1z M15,5l-1,0l0,-1l1,0l0,1z"/>
-            </svg>
-            Download Android APK
-        </a>
+    <div class="download-container">
+        <img src="../SEDS.png" alt="SEDS Logo">
+        <h2>Applications Downloads Updated</h2>
+        <p class="subtitle">Get the official Kumaraguru SEDS Portal ecosystem installation files.</p>
 
-        <!-- Converted iOS link (keep your AppStore link here) -->
-        <a href="YOUR_IOS_DRIVE_OR_APPSTORE_LINK_HERE" class="download-btn ios" target="_blank" rel="noopener noreferrer">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.58 2.95-1.39z"/>
-            </svg>
-            Download iOS App
-        </a>
-        
-        <!-- Converted Windows Setup Direct Link -->
-        <a href="https://raw.githubusercontent.com/kumaraguru-seds/seds_portal/main/windows/SEDS_Portal_Windows.msix" class="download-btn windows" download>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M0 3.449L9.75 2.1v9.45H0V3.449zM0 12.45h9.75v9.45L0 20.551v-8.1zm10.8-10.5L24 0v11.85H10.8V1.95zM10.8 12.45H24v11.85l-13.2-1.95V12.45z"/>
-            </svg>
-            Download Windows Setup
-        </a>
+        <div class="download-options">
+            <!-- Converted Android APK Direct Link -->
+            <a href="https://raw.githubusercontent.com/kumaraguru-seds/seds_portal/main/android/SEDS_Portal_Android.apk"
+                class="download-btn android" download>
+                <!-- 🤖 Correct Official Android Robot Icon (Material Design) -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M6,18c0,0.55 0.45,1 1,1h1v3.5c0,0.83 0.67,1.5 1.5,1.5s1.5,-0.67 1.5,-1.5L11,19h2v3.5c0,0.83 0.67,1.5 1.5,1.5s1.5,-0.67 1.5,-1.5L16,19h1c0.55,0 1,-0.45 1,-1L18,8L6,8L6,18z M3.5,8C2.67,8 2,8.67 2,9.5v7c0,0.83 0.67,1.5 1.5,1.5S5,17.33 5,16.5v-7C5,8.67 4.33,8 3.5,8z M20.5,8c-0.83,0 -1.5,0.67 -1.5,1.5v7c0,0.83 0.67,1.5 1.5,1.5s1.5,-0.67 1.5,-1.5v-7C22,8.67 21.33,8 20.5,8z M15.53,2.16l1.3,-1.3c0.2,-0.2 0.2,-0.51 0,-0.71 -0.2,-0.2 -0.51,-0.2 -0.71,0l-1.48,1.48C13.85,1.23 12.95,1 12,1c-0.96,0 -1.86,0.23 -2.66,0.63L7.85,0.15c-0.2,-0.2 -0.51,-0.2 -0.71,0 -0.2,0.2 -0.2,0.51 0,0.71l1.31,1.31C6.97,3.26 6,5.01 6,7L18,7c0,-1.99 -0.97,-3.75 -2.47,-4.84z M10,5L9,5L9,4l1,0l0,1z M15,5l-1,0l0,-1l1,0l0,1z" />
+                </svg>
+                Download Android APK
+            </a>
+
+            <!-- Converted iOS link (keep your AppStore link here) -->
+            <a href="YOUR_IOS_DRIVE_OR_APPSTORE_LINK_HERE" class="download-btn ios" target="_blank"
+                rel="noopener noreferrer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.58 2.95-1.39z" />
+                </svg>
+                Download iOS App
+            </a>
+
+            <!-- Converted Windows Setup Direct Link -->
+            <a href="https://raw.githubusercontent.com/kumaraguru-seds/seds_portal/main/windows/SEDS_Portal_Windows.msix"
+                class="download-btn windows" download>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M0 3.449L9.75 2.1v9.45H0V3.449zM0 12.45h9.75v9.45L0 20.551v-8.1zm10.8-10.5L24 0v11.85H10.8V1.95zM10.8 12.45H24v11.85l-13.2-1.95V12.45z" />
+                </svg>
+                Download Windows Setup
+            </a>
+        </div>
+
     </div>
 
-</div>
-
-<!-- 🎵 DRAGGABLE / MINIMIZABLE MUSIC PLAYER -->
-<div class="music-wrapper" id="musicWrapper">
-  <div class="music-mini" id="musicMini">🎵</div>
-  <div class="music-card" id="musicCard">
-    <div class="drag-handle" id="dragHandle">
-      Minimize & Drag Bar
-      <button class="min-btn" id="minBtn">—</button>
+    <!-- 🎵 DRAGGABLE / MINIMIZABLE MUSIC PLAYER -->
+    <div class="music-wrapper" id="musicWrapper">
+        <div class="music-mini" id="musicMini">🎵</div>
+        <div class="music-card" id="musicCard">
+            <div class="drag-handle" id="dragHandle">
+                Minimize & Drag Bar
+                <button class="min-btn" id="minBtn">—</button>
+            </div>
+            <div class="music-top">
+                <canvas id="waveform"></canvas>
+            </div>
+            <div class="music-info">
+                <img src="../musicalbum.jpg" class="album-art" id="albumArt">
+                <div>
+                    <h4>Kosmic Beats</h4>
+                    <p>Kumaraguru SEDS</p>
+                </div>
+            </div>
+            <div class="controls">
+                <div class="progress-wrap">
+                    <svg class="progress-ring" width="80" height="80">
+                        <circle class="bg" cx="40" cy="40" r="34" />
+                        <circle class="progress" cx="40" cy="40" r="34" />
+                    </svg>
+                    <button id="playBtn" class="play-btn">
+                        <svg id="playIcon" viewBox="0 0 100 100">
+                            <polygon points="35,25 75,50 35,75" />
+                        </svg>
+                        <svg id="pauseIcon" viewBox="0 0 100 100">
+                            <rect x="35" y="25" width="10" height="50" />
+                            <rect x="55" y="25" width="10" height="50" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="volume">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 9v6h4l5 4V5L7 9H3z" />
+                    </svg>
+                    <input type="range" id="volume" min="0" max="1" step="0.01">
+                </div>
+            </div>
+            <audio id="audio" src="../space.mp3"></audio>
+        </div>
     </div>
-    <div class="music-top">
-      <canvas id="waveform"></canvas>
-    </div>
-    <div class="music-info">
-      <img src="../musicalbum.jpg" class="album-art" id="albumArt">
-      <div>
-        <h4>Kosmic Beats</h4>
-        <p>Kumaraguru SEDS</p>
-      </div>
-    </div>
-    <div class="controls">
-      <div class="progress-wrap">
-        <svg class="progress-ring" width="80" height="80">
-          <circle class="bg" cx="40" cy="40" r="34" />
-          <circle class="progress" cx="40" cy="40" r="34" />
-        </svg>
-        <button id="playBtn" class="play-btn">
-          <svg id="playIcon" viewBox="0 0 100 100">
-            <polygon points="35,25 75,50 35,75"/>
-          </svg>
-          <svg id="pauseIcon" viewBox="0 0 100 100">
-            <rect x="35" y="25" width="10" height="50"/>
-            <rect x="55" y="25" width="10" height="50"/>
-          </svg>
-        </button>
-      </div>
-      <div class="volume">
-        <svg viewBox="0 0 24 24">
-          <path d="M3 9v6h4l5 4V5L7 9H3z"/>
-        </svg>
-        <input type="range" id="volume" min="0" max="1" step="0.01">
-      </div>
-    </div>
-    <audio id="audio" src="../space.mp3"></audio>
-  </div>
-</div>
 
-<script src="../load_player.js"></script>
+    <script src="../load_player.js"></script>
 
-<script>
-    // Security Restrictions
-    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-    document.addEventListener('dragstart', function(e) { e.preventDefault(); });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'F12' || 
-           (e.ctrlKey && e.shiftKey && ['I','i','C','c','J','j'].includes(e.key)) || 
-           (e.ctrlKey && ['U','u'].includes(e.key))) {
-            e.preventDefault();
-        }
-    });
+    <script>
+        // Security Restrictions
+        document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+        document.addEventListener('dragstart', function (e) { e.preventDefault(); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && ['I', 'i', 'C', 'c', 'J', 'j'].includes(e.key)) ||
+                (e.ctrlKey && ['U', 'u'].includes(e.key))) {
+                e.preventDefault();
+            }
+        });
 
-    // Falling Stars Script
-    document.addEventListener('DOMContentLoaded', () => {
-        const starsContainer = document.querySelector('.stars-container');
-        const numberOfStars = 200; 
+        // Falling Stars Script
+        document.addEventListener('DOMContentLoaded', () => {
+            const starsContainer = document.querySelector('.stars-container');
+            const numberOfStars = 200;
 
-        function createStar() {
-            const star = document.createElement('div');
-            star.classList.add('star');
-            const size = Math.random() * 3 + 1;
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            star.style.left = `${Math.random() * 100}%`;
-            const duration = Math.random() * 5 + 3;
-            const twinkleDuration = Math.random() * 2 + 1;
-            star.style.animation = `
+            function createStar() {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}%`;
+                const duration = Math.random() * 5 + 3;
+                const twinkleDuration = Math.random() * 2 + 1;
+                star.style.animation = `
                 fall ${duration}s linear infinite,
                 twinkle ${twinkleDuration}s ease-in-out infinite
             `;
-            starsContainer.appendChild(star);
-        }
+                starsContainer.appendChild(star);
+            }
 
-        for (let i = 0; i < numberOfStars; i++) {
-            createStar();
-        }
-    });
-</script>
+            for (let i = 0; i < numberOfStars; i++) {
+                createStar();
+            }
+        });
+    </script>
 </body>
+
 </html>
