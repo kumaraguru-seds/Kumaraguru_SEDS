@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../sedsb.png" type="image/png">
+    <title>Tenacity – Propellant Batch Tracker | Kumaraguru SEDS</title>
+    <meta name="description" content="Tenacity Propellant Batch Tracker by Kumaraguru SEDS – Log, calculate, and track your rocket propellant formulations with KNSB, KNSU, KNDX and custom blends.">
+    <meta name="author" content="Kumaraguru SEDS">
+    <meta property="og:type"        content="website">
+    <meta property="og:url"         content="https://kumaraguruseds.space/tenacity/">
+    <meta property="og:title"       content="Tenacity – Propellant Batch Tracker | Kumaraguru SEDS">
+    <meta property="og:description" content="Log, calculate & track your rocket propellant formulations.">
+    <meta property="og:image"       content="https://kumaraguruseds.space/sedsb.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ── Falling Stars ─────────────────────────────────────── -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- ── Sidebar ───────────────────────────────────────────── -->
+    <div class="sidebar" id="sidebar">
+        <span class="close-btn" onclick="toggleSidebar()">Menu ×</span>
+        <a href="../index.html#home">Home</a>
+        <a href="../index.html#vision">Vision</a>
+        <a href="../index.html#mission">Mission</a>
+        <a href="../index.html#staff">Staff Coordinator</a>
+        <a href="../index.html#teams">Our Teams</a>
+        <a href="#contact">Contact Us</a>
+        <a href="../Events.html">Events</a>
+        <a href="../Kosmorena25.html">Kosmorena&rsquo;25</a>
+        <a href="../shorturl.html">URL Shortener</a>
+    </div>
+
+    <!-- ── Header ────────────────────────────────────────────── -->
+    <header>
+        <div class="left-header">
+            <span class="hamburger" onclick="toggleSidebar()">&#9776;</span>
+            <img src="../kumaraguru.png" alt="Kumaraguru Institutions">
+        </div>
+        <img src="../SEDS.png" alt="SEDS Logo" class="seds-logo">
+    </header>
+
+    <!-- ── Live Date / Time Bar ──────────────────────────────── -->
+    <div class="datetime-bar">
+        <span id="liveDateTime">Loading current time...</span>
+    </div>
+
+    <!-- ── Page Title ─────────────────────────────────────────── -->
+    <h1 class="events-title">TENACITY</h1>
+
+    <!-- ══════════════════════════════════════════════════════════
+         MAIN FORM SECTION
+    ═══════════════════════════════════════════════════════════ -->
+    <div class="section" id="formSection">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:6px;">
+            <h1 style="margin:0; text-align:left;">🔬 Propellant Batch Logger</h1>
+            <button type="button" id="clearAllBtn" onclick="clearAllForm()"
+                style="padding:10px 20px; border-radius:10px; border:2px solid #e3342f;
+                       background:transparent; color:#e3342f; font-family:'Poppins',sans-serif;
+                       font-size:13px; font-weight:700; cursor:pointer; transition:all 0.25s;
+                       letter-spacing:0.3px; white-space:nowrap;"
+                onmouseover="this.style.background='#e3342f';this.style.color='#fff';"
+                onmouseout="this.style.background='transparent';this.style.color='#e3342f';">
+                🗑️ Clear All
+            </button>
+        </div>
+        <p style="margin-bottom:0;">Configure your formulation, calculate chemical weights, and submit to the lab database</p>
+
+        <div class="main-form-grid">
+
+            <!-- ══ LEFT: Form Panel ══════════════════════════════ -->
+            <div class="form-panel">
+                <form id="propellantForm" autocomplete="off" novalidate>
+
+                    <!-- ▸ SECTION: Batch Identity ─────────────── -->
+                    <div class="form-section-header">🆔 Batch Identity</div>
+
+                    <div class="field-row-2">
+                        <div class="field-group">
+                            <label for="propellantId">Propellant ID</label>
+                            <input type="text" id="propellantId" readonly
+                                   class="readonly-field"
+                                   placeholder="Auto-generated"
+                                   title="Auto-generated. Non-editable.">
+                        </div>
+                        <div class="field-group">
+                            <label for="uniqueUid">Unique UID</label>
+                            <input type="text" id="uniqueUid" readonly
+                                   class="readonly-field"
+                                   placeholder="Auto-generated"
+                                   title="Auto-generated unique identifier. Non-editable.">
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="recordedAt">Recorded At (Timestamp)</label>
+                        <input type="text" id="recordedAt" readonly
+                               class="readonly-field"
+                               placeholder="Auto timestamp">
+                    </div>
+
+                    <!-- ▸ SECTION: Basic Information ─────────── -->
+                    <div class="form-section-header">📝 Basic Information</div>
+
+                    <div class="field-group">
+                        <label for="propellantName">Propellant Name *</label>
+                        <input type="text" id="propellantName"
+                               placeholder="e.g. Alpha-1 KNSB Batch, Test Run 3..." required>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="propellantType">Propellant Type *</label>
+                        <select id="propellantType" required>
+                            <option value="">&#8212; Select Propellant Type &#8212;</option>
+                            <option value="KNSB">KNSB &nbsp; (KNO&#8323; + Sorbitol)</option>
+                            <option value="KNSU">KNSU &nbsp; (KNO&#8323; + Sucrose)</option>
+                            <option value="KNDX">KNDX &nbsp; (KNO&#8323; + Dextrose)</option>
+                            <option value="Custom">&#9878;&#65039; Custom Formulation</option>
+                        </select>
+                    </div>
+
+                    <!-- ▸ SECTION: Chemical Mix (shown on type select) -->
+                    <div class="form-section-header" id="mixHeader" style="display:none;">
+                        &#9876;&#65039; Chemical Mix Configuration
+                    </div>
+
+                    <!-- Preset ratio dropdown (KNSB / KNSU / KNDX) -->
+                    <div class="field-group" id="ratioGroup" style="display:none;">
+                        <label for="mixRatio">Mix Ratio &nbsp;<span style="color:var(--muted);font-weight:400;font-size:12px;">(KNO&#8323; / Fuel / Catalyst %)</span></label>
+                        <select id="mixRatio">
+                            <option value="">&#8212; Select Mix Ratio &#8212;</option>
+                        </select>
+                    </div>
+
+                    <!-- Chemical 1 row: name (left) + % (right) -->
+                    <div class="chem-row" id="chem1Row" style="display:none;">
+                        <div class="chem-name-group field-group" style="margin-bottom:0">
+                            <label>Chemical 1 Name *</label>
+                            <input type="text" id="chem1Name"
+                                   placeholder="Chemical Name 1">
+                        </div>
+                        <div class="chem-pct-group field-group" style="margin-bottom:0">
+                            <label>Percentage</label>
+                            <input type="number" id="chem1Pct"
+                                   placeholder="%" min="0" max="100" step="0.1"
+                                   list="commonPcts">
+                        </div>
+                    </div>
+
+                    <!-- Chemical 2 row: name (left) + % (right) -->
+                    <div class="chem-row" id="chem2Row" style="display:none;" style="margin-top:12px">
+                        <div class="chem-name-group field-group" style="margin-bottom:0">
+                            <label>Chemical 2 Name *</label>
+                            <input type="text" id="chem2Name"
+                                   placeholder="Chemical Name 2">
+                        </div>
+                        <div class="chem-pct-group field-group" style="margin-bottom:0">
+                            <label>Percentage</label>
+                            <input type="number" id="chem2Pct"
+                                   placeholder="%" min="0" max="100" step="0.1"
+                                   list="commonPcts">
+                        </div>
+                    </div>
+
+                    <!-- Datalist for common percentages -->
+                    <datalist id="commonPcts">
+                        <option value="25"><option value="27"><option value="28">
+                        <option value="29"><option value="30"><option value="32">
+                        <option value="35"><option value="38"><option value="40">
+                        <option value="60"><option value="62"><option value="65">
+                        <option value="68"><option value="70"><option value="72">
+                        <option value="74"><option value="75">
+                    </datalist>
+
+                    <!-- ▸ SECTION: KNDX Catalyst ─────────────── -->
+                    <div id="catalystSection" style="display:none;">
+                        <div class="form-section-header">
+                            &#127995; Catalyst &#8212; Red Iron Oxide (Fe&#8322;O&#8323;)
+                        </div>
+
+                        <div class="field-group">
+                            <label>Add Red Iron Oxide Catalyst?</label>
+                            <div class="toggle-row">
+                                <button type="button" id="catalystYesBtn"
+                                        class="toggle-btn"
+                                        onclick="setCatalyst(true)">
+                                    &#9989; Yes, Add Catalyst
+                                </button>
+                                <button type="button" id="catalystNoBtn"
+                                        class="toggle-btn active-no"
+                                        onclick="setCatalyst(false)">
+                                    &#10060; No Catalyst
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="catalystInputGroup" style="display:none;">
+                            <div class="chem-row">
+                                <div class="chem-name-group field-group" style="margin-bottom:0">
+                                    <label>Catalyst Name</label>
+                                    <input type="text" id="catalystName"
+                                           value="Red Iron Oxide (Fe&#8322;O&#8323;)"
+                                           class="readonly-field" readonly>
+                                </div>
+                                <div class="chem-pct-group field-group" style="margin-bottom:0">
+                                    <label>Catalyst %</label>
+                                    <input type="number" id="catalystPct"
+                                           placeholder="%" min="0.5" max="15" step="0.5"
+                                           list="catalystPcts">
+                                </div>
+                            </div>
+                            <datalist id="catalystPcts">
+                                <option value="1"><option value="2"><option value="3">
+                                <option value="4"><option value="5"><option value="6">
+                                <option value="7"><option value="8"><option value="10">
+                            </datalist>
+                            <div class="pct-hint">
+                                &#128161; Common values: 1%, 2%, 3%, 4%, 5%, 7%, 10%.
+                                Catalyst % is deducted from fuel in preset ratios.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ▸ SECTION: Batch Details ─────────────── -->
+                    <div class="form-section-header">&#9878;&#65039; Batch Details</div>
+
+                    <div class="field-row-2">
+                        <div class="field-group">
+                            <label for="totalGrams">Total Batch Mass (g) *</label>
+                            <input type="number" id="totalGrams"
+                                   placeholder="e.g. 500" min="0.1" step="0.1" required>
+                        </div>
+                        <div class="field-group">
+                            <label for="cookTime">Cook Time (minutes) *</label>
+                            <input type="number" id="cookTime"
+                                   placeholder="e.g. 45" min="1" step="1" required
+                                   list="cookTimes">
+                            <datalist id="cookTimes">
+                                <option value="30"><option value="45"><option value="60">
+                                <option value="90"><option value="120"><option value="180">
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <!-- ▸ SECTION: Notes & Purpose ───────────── -->
+                    <div class="form-section-header">&#128203; Notes &amp; Purpose</div>
+
+                    <div class="field-group">
+                        <label for="description">Description &amp; Purpose *</label>
+                        <textarea id="description" rows="4" required
+                            placeholder="What do you think about this propellant? What is its purpose?&#10;e.g. First test batch for 29mm motor — testing burn rate and consistency...">
+                        </textarea>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" id="submitBtn">
+                        &#128640; Submit Propellant Batch
+                    </button>
+
+                    <!-- Inline loading GIF & message sequence (matching shorturl.html design) -->
+                    <div id="btnLoadingArea" style="display:none; animation: fadeIn 0.4s ease-out;">
+                        <div id="conversionDisplay">
+                            <div class="loading-message-box" id="btnLoadingMsg" style="opacity: 1;">
+                                Initiating Secure Deployment Protocol...
+                            </div>
+                        </div>
+                        <div class="loading-gif-container">
+                            <img src="../loading.gif" alt="Processing animation" class="loading-gif">
+                        </div>
+                    </div>
+
+                    <!-- Output: validation errors / success messages (below submit) -->
+                    <div id="output" style="display:none; margin-top:18px;"></div>
+
+                </form>
+            </div><!-- /form-panel -->
+
+            <!-- ══ RIGHT: Live Preview Panel ════════════════════ -->
+            <div class="preview-panel">
+                <div class="preview-card">
+
+                    <div class="preview-header">
+                        <h3>&#128202; Live Calculation Preview</h3>
+                        <span class="preview-badge" id="previewBadge">&#8212;</span>
+                    </div>
+
+                    <!-- Σ percentage sum -->
+                    <div class="preview-pct-sum" id="pctSumDisplay" style="display:none;">
+                        <span>&#931; Percentages&nbsp;</span>
+                        <span id="pctSumValue" class="pct-warn">&#8212;</span>
+                    </div>
+
+                    <!-- Chemical rows -->
+                    <div class="preview-chemicals">
+                        <div class="preview-row preview-header-row">
+                            <span>Chemical</span>
+                            <span>%</span>
+                            <span>Grams</span>
+                        </div>
+                        <div class="preview-row" id="prev-chem1-row">
+                            <span class="prev-chem-name" id="prev-chem1-name">Chemical 1</span>
+                            <span class="prev-chem-pct"  id="prev-chem1-pct">&#8212;</span>
+                            <span class="prev-chem-grams" id="prev-chem1-grams">&#8212; g</span>
+                        </div>
+                        <div class="preview-row" id="prev-chem2-row">
+                            <span class="prev-chem-name" id="prev-chem2-name">Chemical 2</span>
+                            <span class="prev-chem-pct"  id="prev-chem2-pct">&#8212;</span>
+                            <span class="prev-chem-grams" id="prev-chem2-grams">&#8212; g</span>
+                        </div>
+                        <div class="preview-row catalyst-row" id="prev-catalyst-row" style="display:none;">
+                            <span class="prev-chem-name" id="prev-catalyst-name">Red Iron Oxide</span>
+                            <span class="prev-chem-pct"  id="prev-catalyst-pct">&#8212;</span>
+                            <span class="prev-chem-grams" id="prev-catalyst-grams">&#8212; g</span>
+                        </div>
+                        <div class="preview-total-row">
+                            <span>TOTAL</span>
+                            <span id="prev-total-pct">&#8212;</span>
+                            <span class="prev-total-grams" id="prev-total-grams">&#8212; g</span>
+                        </div>
+                    </div>
+
+                    <!-- Propellant info chips -->
+                    <div class="preview-info" id="previewInfo" style="display:none;">
+                        <div class="info-chip">
+                            <span class="chip-label">Type</span>
+                            <span class="chip-value" id="chip-type">&#8212;</span>
+                        </div>
+                        <div class="info-chip">
+                            <span class="chip-label">Cook Time</span>
+                            <span class="chip-value" id="chip-cook">&#8212;</span>
+                        </div>
+                        <div class="info-chip">
+                            <span class="chip-label">Batch ID</span>
+                            <span class="chip-value" id="chip-id">&#8212;</span>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder text when no type selected -->
+                    <div class="preview-placeholder" id="previewPlaceholder">
+                        <span>&#129514; Select a propellant type and enter batch details above to see live gram calculations here</span>
+                    </div>
+
+                </div><!-- /preview-card -->
+            </div><!-- /preview-panel -->
+
+        </div><!-- /main-form-grid -->
+    </div><!-- /formSection -->
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         HISTORY SECTION
+    ═══════════════════════════════════════════════════════════ -->
+    <div class="section" id="historySection">
+        <h1>&#128203; Propellant History</h1>
+        <p>View past batches, review chemical data, and update cook-result status</p>
+
+        <div class="history-controls">
+            <select id="historySelect">
+                <option value="">&#8212; Select a Propellant Batch &#8212;</option>
+            </select>
+            <button type="button" id="loadHistoryBtn" onclick="loadHistoryEntry()">
+                &#128196; Load Entry
+            </button>
+            <button type="button" id="refreshHistoryBtn" onclick="loadHistoryList()">
+                &#128260; Refresh
+            </button>
+        </div>
+
+        <div id="historyLoading" class="history-loading" style="display:none;">
+            &#8987; Loading propellant data from lab database...
+        </div>
+
+        <div id="historyDisplay" style="display:none;"></div>
+    </div><!-- /historySection -->
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         CONTACT SECTION  (same as shorturl.html)
+    ═══════════════════════════════════════════════════════════ -->
+    <div class="contact" id="contact">
+        <h2>Contact Us</h2>
+        <div class="contact-items">
+            <div class="contact-item">
+                <a href="https://maps.app.goo.gl/TBWDGsAeKccGw9cm8" target="_blank">
+                    <img src="../location.png" alt="Location">
+                    <p>Kumaraguru Campus<br>Saravanampatti,<br>Chinnavedampatti (Post),<br>Coimbatore&#8209; 641049, Tamilnadu.</p>
+                </a>
+            </div>
+            <div class="contact-item">
+                <a href="mailto:seds@kct.ac.in,manilunar07@gmail.com">
+                    <img src="../email.png" alt="Email">
+                    <p>manilunar07@gmail.com<br>seds@kct.ac.in</p>
+                </a>
+            </div>
+            <div class="contact-item">
+                <a href="tel:+919344752075">
+                    <img src="../phone.png" alt="Phone">
+                    <p>+91 9344752075</p>
+                </a>
+            </div>
+        </div>
+        <div class="socials">
+            <div class="social-item">
+                <a href="https://www.instagram.com/seds_kumaraguru">
+                    <img src="../instagram.png" alt="Instagram">
+                    <p>seds_kumaraguru</p>
+                </a>
+            </div>
+            <div class="social-item">
+                <a href="https://www.linkedin.com/company/seds-kct/">
+                    <img src="../linkedin.png" alt="LinkedIn">
+                    <p>Kumaraguru SEDS</p>
+                </a>
+            </div>
+            <div class="social-item">
+                <a href="https://youtube.com/@kumaraguru_seds">
+                    <img src="../youtube.png" alt="YouTube">
+                    <p>Kumaraguru_SEDS</p>
+                </a>
+            </div>
+        </div>
+        <br>
+        <h2>Follow Us</h2>
+    </div>
+
+    <!-- ✏️ EDIT DETAILS POPUP MODAL -->
+    <div id="editModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEditModal();">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="editModalTitle">✏️ Edit Batch Details</h3>
+                <button type="button" class="modal-close-btn" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="field-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div class="field-group" style="margin-bottom:0;">
+                        <label style="font-size:12px; color:var(--muted);">Propellant Name *</label>
+                        <input type="text" id="editPropName" placeholder="Enter propellant name">
+                    </div>
+                    <div class="field-group" style="margin-bottom:0;">
+                        <label style="font-size:12px; color:var(--muted);">Mix Ratio</label>
+                        <input type="text" id="editMixRatio" placeholder="e.g. 65 / 35 — No Catalyst">
+                    </div>
+                </div>
+
+                <div class="field-group" style="margin-bottom:14px;">
+                    <label style="font-size:12px; color:var(--muted);">Cook Time (minutes)</label>
+                    <input type="number" id="editCookTime" placeholder="e.g. 45" min="1" step="1">
+                </div>
+
+                <div class="field-group" style="margin-bottom:16px;">
+                    <label style="font-size:12px; color:var(--muted);">Description / Purpose</label>
+                    <textarea id="editPropDesc" rows="4" placeholder="Describe purpose, observations..."></textarea>
+                </div>
+
+                <input type="hidden" id="editPropellantId">
+                <input type="hidden" id="editUniqueUid">
+
+                <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:20px;">
+                    <button type="button" class="modal-cancel-btn" onclick="closeEditModal()">Cancel</button>
+                    <button type="button" class="modal-save-btn" id="editSaveBtn" onclick="saveHistoryEdit()">
+                        💾 Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <!-- Security: disable right-click / devtools shortcuts -->
+    <script src="hi.js"></script>
+</body>
+</html>
