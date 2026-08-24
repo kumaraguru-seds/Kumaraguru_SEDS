@@ -353,6 +353,11 @@ function saveFormState() {
     totalGrams: $('totalGrams')?.value || '',
     cookTime: $('cookTime')?.value || '',
     description: $('description')?.value || '',
+    motorInnerDia: $('motorInnerDia')?.value || '',
+    motorOuterDia: $('motorOuterDia')?.value || '',
+    motorLength: $('motorLength')?.value || '',
+    motorType: $('motorType')?.value || '',
+    motorCasingMass: $('motorCasingMass')?.value || '',
     _submitted: false
   };
   localStorage.setItem(SK.formState, JSON.stringify(state));
@@ -371,6 +376,11 @@ function restoreFormState() {
   if (state.cookTime && $('cookTime')) $('cookTime').value = state.cookTime;
   if (state.description && $('description')) $('description').value = state.description;
   if (state.totalGrams && $('totalGrams')) $('totalGrams').value = state.totalGrams;
+  if (state.motorInnerDia && $('motorInnerDia')) $('motorInnerDia').value = state.motorInnerDia;
+  if (state.motorOuterDia && $('motorOuterDia')) $('motorOuterDia').value = state.motorOuterDia;
+  if (state.motorLength && $('motorLength')) $('motorLength').value = state.motorLength;
+  if (state.motorType && $('motorType')) $('motorType').value = state.motorType;
+  if (state.motorCasingMass && $('motorCasingMass')) $('motorCasingMass').value = state.motorCasingMass;
 
   if (state.propellantType && $('propellantType')) {
     $('propellantType').value = state.propellantType;
@@ -390,7 +400,17 @@ function restoreFormState() {
     }
     if (state.catalystPct && $('catalystPct')) $('catalystPct').value = state.catalystPct;
   }
+  calcTotalAssemblyMass();
   updatePreview();
+}
+
+// Auto-calculate total assembly mass (propellant + motor casing)
+function calcTotalAssemblyMass() {
+  const propG = parseFloat($('totalGrams')?.value) || 0;
+  const casingG = parseFloat($('motorCasingMass')?.value) || 0;
+  const total = propG + casingG;
+  const el = $('totalAssemblyMass');
+  if (el) el.value = total > 0 ? total.toFixed(2) : '';
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -641,6 +661,20 @@ function validateForm() {
   if (!cookT || cookT < 1) return 'Cook time is required and must be at least 1 minute.';
   if (!desc) return 'Description / Purpose is required.';
 
+  // Motor Casing fields are required (mandatory)
+  const motorInner = parseFloat($('motorInnerDia')?.value) || 0;
+  const motorOuter = parseFloat($('motorOuterDia')?.value) || 0;
+  const motorLen = parseFloat($('motorLength')?.value) || 0;
+  const motorMat = $('motorType')?.value?.trim() || '';
+  const casingMass = parseFloat($('motorCasingMass')?.value) || 0;
+
+  if (!motorInner || motorInner <= 0) return 'Motor Casing Inner Diameter (mm) is required and must be > 0.';
+  if (!motorOuter || motorOuter <= 0) return 'Motor Casing Outer Diameter (mm) is required and must be > 0.';
+  if (motorOuter <= motorInner) return 'Motor Casing Outer Diameter must be greater than Inner Diameter.';
+  if (!motorLen || motorLen <= 0) return 'Motor Length (mm) is required and must be > 0.';
+  if (!motorMat) return 'Motor Casing Material is required.';
+  if (!casingMass || casingMass <= 0) return 'Motor Casing Mass (g) is required and must be > 0.';
+
   const sumPct = c1Pct + c2Pct + (catalystEnabled ? catPct : 0);
   if (Math.abs(sumPct - 100) > 0.5) {
     return `Chemical percentages must sum to 100%. Current sum: ${round2(sumPct)}%`;
@@ -707,6 +741,14 @@ document.getElementById('propellantForm').addEventListener('submit', async funct
   const cookTime = parseFloat($('cookTime')?.value) || 0;
   const description = $('description')?.value?.trim() || '';
 
+  // Motor Casing fields (optional)
+  const motorInnerDia = parseFloat($('motorInnerDia')?.value) || 0;
+  const motorOuterDia = parseFloat($('motorOuterDia')?.value) || 0;
+  const motorLength = parseFloat($('motorLength')?.value) || 0;
+  const motorType = $('motorType')?.value?.trim() || '';
+  const motorCasingMass = parseFloat($('motorCasingMass')?.value) || 0;
+  const totalAssemblyMass = totalG + motorCasingMass;
+
   const c1G = round2(totalG * c1Pct / 100);
   const c2G = round2(totalG * c2Pct / 100);
   const catG = round2(totalG * catPct / 100);
@@ -732,6 +774,12 @@ document.getElementById('propellantForm').addEventListener('submit', async funct
     totalGrams: totalG,
     cookTimeMinutes: cookTime,
     description,
+    motorInnerDia,
+    motorOuterDia,
+    motorLength,
+    motorType,
+    motorCasingMass,
+    totalAssemblyMass: round2(totalAssemblyMass),
     images: uploadedImages.map((img, idx) => ({
       name: img.name || `photo_${idx + 1}.jpg`,
       base64: img.dataUrl
@@ -886,6 +934,9 @@ function clearConditionalUI() {
   catalystEnabled = false;
   setCatalyst(false, false, 'free');
   clearAllPhotos();
+  // Clear motor casing fields
+  const mcIds = ['motorInnerDia', 'motorOuterDia', 'motorLength', 'motorType', 'motorCasingMass', 'totalAssemblyMass'];
+  mcIds.forEach(id => { const el = $(id); if (el) el.value = ''; });
   updatePreview();
 }
 
@@ -922,6 +973,7 @@ async function loadHistoryList() {
   const remoteIds = new Set(remoteData.map(d => d.propellantId));
   const localOnly = localData.filter(d => !remoteIds.has(d.propellantId));
   const allData = [...remoteData, ...localOnly];
+  window.cachedHistoryData = allData;
 
   // Auto-synchronize counter with highest batch ID in the database
   let maxIdNum = 0;
@@ -938,35 +990,42 @@ async function loadHistoryList() {
     if (maxIdNum >= cur) {
       localStorage.setItem(SK.counter, maxIdNum);
       const formId = $('propellantId')?.value || '';
-      const formMatch = formId.match(/(\d+)$/);
-      const formN = formMatch ? parseInt(formMatch[1], 10) : 0;
-      if (formN <= maxIdNum) {
-        const nextN = maxIdNum + 1;
-        if ($('propellantId')) $('propellantId').value = buildPropellantId(nextN);
-        if ($('uniqueUid')) $('uniqueUid').value = buildUniqueUid(nextN);
-        updatePreview();
+      if (!formId || formId.startsWith('PROPP-')) {
+        const nextId = buildPropellantId(maxIdNum + 1);
+        const nextUid = buildUniqueUid(maxIdNum + 1);
+        if ($('propellantId')) $('propellantId').value = nextId;
+        if ($('uniqueUid')) $('uniqueUid').value = nextUid;
       }
     }
   }
 
-  sel.innerHTML = '<option value="">— Select a Propellant Batch —</option>';
   if (allData.length === 0) {
-    sel.innerHTML += '<option value="" disabled>No batches found</option>';
+    sel.innerHTML = '<option value="">— No batches found —</option>';
     return;
   }
 
-  allData.forEach(entry => {
-    const opt = document.createElement('option');
-    opt.value = entry.propellantId;
-    const badge = entry.status && entry.status !== 'Pending'
-      ? ` [${entry.status}]` : ' [Pending]';
-    const dt = entry.submittedAt
-      ? ' | ' + String(entry.submittedAt).replace(/\s+/g, ' ').trim()
-      : '';
-    const label = entry.name || entry.propellantName || '';
-    opt.textContent = `${entry.propellantId} — ${label}${dt}${badge}`;
-    sel.appendChild(opt);
-  });
+  sel.innerHTML = '<option value="">— Select a Propellant Batch —</option>' +
+    allData.map(d => {
+      const id   = d['Propellant ID'] || d.propellantId || '';
+      const name = d['Propellant Name'] || d.propellantName || d.name || '';
+      const stat = d['Status'] || d.status || 'Pending';
+      const rawDate = d.submittedAt || d['Submitted At'] || d.recordedAt || d['Recorded At'] || '';
+      let datePart = '';
+      if (rawDate) {
+        try {
+          const dt = new Date(rawDate);
+          if (!isNaN(dt.getTime())) {
+            const day  = String(dt.getDate()).padStart(2, '0');
+            const mon  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()];
+            const yr   = dt.getFullYear();
+            const hr   = String(dt.getHours()).padStart(2, '0');
+            const min  = String(dt.getMinutes()).padStart(2, '0');
+            datePart   = ` | ${day}-${mon}-${yr} ${hr}:${min}`;
+          }
+        } catch(e) {}
+      }
+      return `<option value="${id}">${id}${name ? ' – ' + name : ''} [${stat}]${datePart}</option>`;
+    }).join('');
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -993,6 +1052,13 @@ async function loadHistoryEntry() {
     }
   } catch (e) {
     console.warn('Remote getOne fetch error:', e);
+  }
+
+  if (!data && window.cachedHistoryData) {
+    const cached = window.cachedHistoryData.find(d =>
+      String(d['Propellant ID'] || d.propellantId || '').trim().toLowerCase() === String(propellantId).trim().toLowerCase()
+    );
+    if (cached) data = cached;
   }
 
   if (!data) {
@@ -1031,10 +1097,39 @@ async function loadHistoryEntry() {
   const totG = parseFloat(data['Total Grams (g)'] !== undefined ? data['Total Grams (g)'] : data.totalGrams) || 0;
   const cookTm = parseFloat(data['Cook Time (min)'] !== undefined ? data['Cook Time (min)'] : data.cookTimeMinutes) || 0;
   const desc = data['Description / Purpose'] !== undefined ? data['Description / Purpose'] : (data.description || '');
-  const status = data['Status'] || data.status || 'Pending';
-  const stDesc = data['Status Description'] || data.statusDescription || '';
-  const stAt = data['Status Updated At'] || data.statusUpdatedAt || '';
-  const submAt = data['Submitted At'] || data.submittedAt || '';
+  const mInner = parseFloat(data['Motor Inner Dia (mm)'] !== undefined ? data['Motor Inner Dia (mm)'] : data.motorInnerDia) || 0;
+  const mOuter = parseFloat(data['Motor Outer Dia (mm)'] !== undefined ? data['Motor Outer Dia (mm)'] : data.motorOuterDia) || 0;
+  const mLen = parseFloat(data['Motor Length (mm)'] !== undefined ? data['Motor Length (mm)'] : data.motorLength) || 0;
+  const mType = data['Motor Casing Type'] || data.motorType || '';
+  const mMass = parseFloat(data['Motor Casing Mass (g)'] !== undefined ? data['Motor Casing Mass (g)'] : data.motorCasingMass) || 0;
+  const mTotMass = parseFloat(data['Total Assembly Mass (g)'] !== undefined ? data['Total Assembly Mass (g)'] : data.totalAssemblyMass) || (totG + mMass);
+
+  const status  = data['Status'] || data.status || 'Pending';
+  const stDesc  = data['Status Description'] || data.statusDescription || '';
+  const stAt    = data['Status Updated At'] || data.statusUpdatedAt || '';
+  const rawSubmAt = data['Submitted At'] || data.submittedAt || data['Recorded At'] || data.recordedAt || '';
+  let submAt = rawSubmAt;
+  if (rawSubmAt) {
+    try {
+      const dt = new Date(rawSubmAt);
+      if (!isNaN(dt.getTime())) {
+        const day = String(dt.getDate()).padStart(2, '0');
+        const mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()];
+        const yr  = dt.getFullYear();
+        const hr  = String(dt.getHours()).padStart(2, '0');
+        const min = String(dt.getMinutes()).padStart(2, '0');
+        submAt = `${day}-${mon}-${yr} ${hr}:${min}`;
+      }
+    } catch(e) {}
+  }
+  const detailsUrl   = data['Propellant Details Drive URL'] || data.detailsDriveUrl || data['Drive Photo URL'] || data.drivePhotoUrl || data.photoUrl || '';
+  const testUrl      = data['Propellant Test Drive URL'] || data.testDriveUrl || '';
+  const mainFolderUrl = data['Main Batch Drive Folder URL'] || data.driveFolderUrl || '';
+
+  activeHistoryEntry = {
+    pId, uid, pName, ratio, cookTm, desc, totG,
+    mInner, mOuter, mLen, mType, mMass, mTotMass
+  };
 
   const statusClass = {
     Pending: 'status-pending', Success: 'status-success',
@@ -1048,15 +1143,22 @@ async function loadHistoryEntry() {
       <td style="text-align:right;color:#ff9f43">${catG} g</td>
     </tr>` : '';
 
-  const escName = String(pName).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-  const escRatio = String(ratio).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-  const escDesc = String(desc).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
 
-  const photoUrl = data['Drive Photo URL'] || data.drivePhotoUrl || data.driveFolderUrl || data.photoUrl || '';
-  const photoBtnHtml = photoUrl ? `
-    <a href="${photoUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" title="Open Batch Photos Folder on Google Drive">
-      📁 View Photos Folder
-    </a>` : '';
+
+  const photoBtnHtml = `
+    ${detailsUrl ? `
+      <a href="${detailsUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" title="Open Propellant Details Photos Folder on Google Drive">
+        📁 Propellant Details Photos
+      </a>` : ''}
+    ${testUrl ? `
+      <a href="${testUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="border-color:var(--accent); color:var(--accent); background:rgba(77,166,255,0.12);" title="Open Propellant Test & Reports Folder on Google Drive">
+        📂 Propellant Test & Reports
+      </a>` : ''}
+    ${mainFolderUrl && mainFolderUrl !== detailsUrl && mainFolderUrl !== testUrl ? `
+      <a href="${mainFolderUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="border-color:#ffc107; color:#ffc107; background:rgba(255,193,7,0.12);" title="Open Main Batch Folder on Google Drive">
+        ☁️ Main Batch Folder
+      </a>` : ''}
+  `;
 
   display.innerHTML = `
     <div class="history-card">
@@ -1069,7 +1171,7 @@ async function loadHistoryEntry() {
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
           ${photoBtnHtml}
           <button type="button" class="history-edit-toggle-btn"
-                  onclick="openEditModal('${pId}', '${uid}', '${escName}', '${escRatio}', ${cookTm}, '${escDesc}')"
+                  onclick="openEditModal()"
                   title="Edit Batch Details">
             ✏️ Edit Details
           </button>
@@ -1093,6 +1195,26 @@ async function loadHistoryEntry() {
         <div class="history-data-item">
           <div class="history-data-label">Cook Time</div>
           <div class="history-data-value">${cookTm} min</div>
+        </div>
+        <div class="history-data-item">
+          <div class="history-data-label">Motor Inner / Outer Dia</div>
+          <div class="history-data-value">${mInner > 0 ? `${mInner} mm / ${mOuter} mm` : '—'}</div>
+        </div>
+        <div class="history-data-item">
+          <div class="history-data-label">Motor Length</div>
+          <div class="history-data-value">${mLen > 0 ? `${mLen} mm` : '—'}</div>
+        </div>
+        <div class="history-data-item">
+          <div class="history-data-label">Motor Material / Type</div>
+          <div class="history-data-value">${mType || '—'}</div>
+        </div>
+        <div class="history-data-item">
+          <div class="history-data-label">Casing Mass</div>
+          <div class="history-data-value">${mMass > 0 ? `${mMass} g` : '—'}</div>
+        </div>
+        <div class="history-data-item" style="border:1px solid rgba(77,166,255,0.3); background:rgba(77,166,255,0.08);">
+          <div class="history-data-label" style="color:var(--accent);">Total Assembly Mass</div>
+          <div class="history-data-value" style="color:#ffffff; font-weight:800;">${mTotMass > 0 ? `${mTotMass} g` : '—'}</div>
         </div>
       </div>
 
@@ -1135,30 +1257,59 @@ async function loadHistoryEntry() {
         ${stAt ? `<div style="font-size:12px;color:var(--muted);margin-top:4px">Updated: ${stAt}</div>` : ''}
       </div>` : ''}
 
-      <!-- 🔄 Status Update Form -->
-      <div class="status-update-form" style="margin-top:16px;">
-        <h4>🔄 Update Status After Cook</h4>
-        <div class="status-options">
-          <button class="status-opt-btn opt-success" onclick="selectStatus('Success')">✅ Success</button>
-          <button class="status-opt-btn opt-failure" onclick="selectStatus('Failure')">❌ Failure</button>
-          <button class="status-opt-btn opt-ok"      onclick="selectStatus('OK')">🟡 OK</button>
+      <!-- ☁️ GOOGLE DRIVE STORAGE LINKS BELOW DESCRIPTION -->
+      <div style="background:rgba(77,166,255,0.06); border:1px solid rgba(77,166,255,0.25); border-radius:12px; padding:16px 18px; margin-top:16px; margin-bottom:18px;">
+        <div style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+          ☁️ Batch Google Drive Storage Folders
         </div>
-        <div class="field-group">
-          <label style="font-size:13px;color:var(--muted)">Status Description (optional)</label>
-          <textarea id="statusDescInput" placeholder="Describe the outcome, observations, burn characteristics..." rows="3"></textarea>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          ${detailsUrl ? `
+            <a href="${detailsUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px;" title="Open Propellant Details Folder on Drive">
+              📁 Propellant Details Drive Folder
+            </a>` : ''}
+          ${testUrl ? `
+            <a href="${testUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px; border-color:var(--accent); color:var(--accent); background:rgba(77,166,255,0.14);" title="Open Propellant Test Folder on Drive">
+              📂 Propellant Test & Reports Drive Folder
+            </a>` : ''}
+          ${mainFolderUrl && mainFolderUrl !== detailsUrl && mainFolderUrl !== testUrl ? `
+            <a href="${mainFolderUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px; border-color:#ffc107; color:#ffc107; background:rgba(255,193,7,0.14);" title="Open Main Batch Folder on Drive">
+              ☁️ Main Batch Root Folder
+            </a>` : ''}
+          ${!detailsUrl && !testUrl && !mainFolderUrl ? `
+            <span style="font-size:12px; color:var(--muted); font-style:italic;">No Drive folders created yet. Upload photos/documents to generate folders on Google Drive.</span>
+          ` : ''}
         </div>
-        <button class="status-submit-btn" id="statusSubmitBtn"
-          onclick="submitStatusUpdate('${pId}', '${uid}')">
-          💾 Save Status Update
-        </button>
       </div>
     </div>`;
 
   display.style.display = '';
   selectedStatus = status === 'Pending' ? '' : status;
   if (selectedStatus && selectedStatus !== 'Pending') selectStatus(selectedStatus);
+
+  // Store active history batch details
+  currentAttachBatchId = pId;
+  currentAttachUniqueUid = uid;
+  currentAttachBatchName = pName;
+  currentAttachDriveUrl = detailsUrl || testUrl || mainFolderUrl;
+  pendingAttachments = [];
+  renderAttachPreviewList();
+
+  // Show attachment uploader (above) and status update (below)
+  const attachSection = $('historyAttachSection');
+  if (attachSection) attachSection.style.display = '';
+  const statusSection = $('historyStatusSection');
+  if (statusSection) statusSection.style.display = '';
+
+  const attachResult = $('attachUploadResult');
+  if (attachResult) { attachResult.style.display = 'none'; attachResult.innerHTML = ''; }
+  const statusResult = $('statusUpdateResult');
+  if (statusResult) { statusResult.style.display = 'none'; statusResult.innerHTML = ''; }
+  if ($('statusDescInput')) $('statusDescInput').value = stDesc || '';
+
   display.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
+
+let currentAttachUniqueUid = '';
 
 // ────────────────────────────────────────────────────────────────
 //  STATUS UPDATE HANDLERS
@@ -1174,14 +1325,28 @@ function selectStatus(val) {
   }
 }
 
+function submitStatusUpdateNow() {
+  submitStatusUpdate(currentAttachBatchId, currentAttachUniqueUid);
+}
+
 async function submitStatusUpdate(propellantId, uniqueUid) {
   if (!selectedStatus) {
     alert('Please select a status (Success / Failure / OK) first.');
     return;
   }
   const statusDesc = $('statusDescInput')?.value?.trim() || '';
+  if (!statusDesc) {
+    alert('Status Description is mandatory! Please enter details about the cook / burn test before saving status.');
+    $('statusDescInput')?.focus();
+    return;
+  }
   const btn = $('statusSubmitBtn');
+  const loader = $('statusUpdateLoadingArea');
+  const resEl = $('statusUpdateResult');
+
   if (btn) btn.disabled = true;
+  if (loader) loader.style.display = 'block';
+  if (resEl) resEl.style.display = 'none';
 
   try {
     const payload = {
@@ -1209,6 +1374,12 @@ async function submitStatusUpdate(propellantId, uniqueUid) {
     });
     localStorage.setItem(SK.history, JSON.stringify(hist));
 
+    if (resEl) {
+      resEl.style.display = 'block';
+      resEl.style.color = 'var(--success-color)';
+      resEl.innerHTML = `✅ Status updated successfully to "${selectedStatus}"!`;
+    }
+
     if (btn) {
       btn.textContent = '✅ Status Updated!';
       btn.style.background = 'var(--success-color)';
@@ -1216,27 +1387,53 @@ async function submitStatusUpdate(propellantId, uniqueUid) {
     }
 
     await loadHistoryList();
-    $('historySelect').value = propellantId;
-    await loadHistoryEntry();
+    if ($('historySelect')) $('historySelect').value = propellantId;
 
   } catch (err) {
     console.error('Status update error:', err);
-    alert('Failed to update status: ' + err.message);
+    if (resEl) {
+      resEl.style.display = 'block';
+      resEl.style.color = 'var(--error-color)';
+      resEl.innerHTML = `❌ Failed to update status: ${err.message}`;
+    }
+  } finally {
     if (btn) btn.disabled = false;
+    if (loader) loader.style.display = 'none';
   }
 }
 
 // ────────────────────────────────────────────────────────────────
 //  EDIT DETAILS POPUP MODAL HANDLERS
 // ────────────────────────────────────────────────────────────────
-function openEditModal(pId, uid, pName, ratio, cookTm, desc) {
-  $('editPropellantId').value = pId || '';
-  $('editUniqueUid').value = uid || '';
-  $('editPropName').value = pName || '';
-  $('editMixRatio').value = ratio || '';
-  $('editCookTime').value = cookTm || '';
-  $('editPropDesc').value = desc || '';
-  $('editModalTitle').textContent = `✏️ Edit Batch Details — ${pId}`;
+let activeHistoryEntry = null;
+
+function openEditModal() {
+  if (!activeHistoryEntry) return;
+  const e = activeHistoryEntry;
+  $('editPropellantId').value        = e.pId   || '';
+  $('editUniqueUid').value           = e.uid   || '';
+  $('editPropName').value            = e.pName || '';
+  $('editMixRatio').value            = e.ratio || '';
+  $('editCookTime').value            = e.cookTm || '';
+  $('editMotorInnerDia').value       = e.mInner || '';
+  $('editMotorOuterDia').value       = e.mOuter || '';
+  $('editMotorLength').value         = e.mLen   || '';
+  $('editMotorType').value           = e.mType  || '';
+  $('editMotorCasingMass').value     = e.mMass  || '';
+  $('editTotalAssemblyMass').value   = e.mTotMass || (e.totG + e.mMass) || '';
+  $('editPropDesc').value            = e.desc   || '';
+  $('editModalTitle').textContent    = `✏️ Edit Batch — ${e.pId}`;
+
+  // Auto-recalc total assembly mass when casing mass changes
+  const casingInput = $('editMotorCasingMass');
+  const totalInput  = $('editTotalAssemblyMass');
+  if (casingInput && totalInput) {
+    casingInput.oninput = () => {
+      const casing = parseFloat(casingInput.value) || 0;
+      const propG  = activeHistoryEntry ? (activeHistoryEntry.totG || 0) : 0;
+      totalInput.value = (propG + casing).toFixed(2);
+    };
+  }
 
   const modal = $('editModalOverlay');
   if (modal) modal.style.display = 'flex';
@@ -1253,6 +1450,13 @@ async function saveHistoryEdit() {
   const newName = $('editPropName').value.trim();
   const newRatio = $('editMixRatio').value.trim();
   const newCookTime = parseFloat($('editCookTime').value) || 0;
+  const newMotorInner = parseFloat($('editMotorInnerDia').value) || 0;
+  const newMotorOuter = parseFloat($('editMotorOuterDia').value) || 0;
+  const newMotorLength = parseFloat($('editMotorLength').value) || 0;
+  const newMotorType = $('editMotorType').value.trim();
+  const newCasingMass = parseFloat($('editMotorCasingMass').value) || 0;
+  const totG = activeHistoryEntry ? activeHistoryEntry.totG : 0;
+  const newTotalAssemblyMass = totG + newCasingMass;
   const newDesc = $('editPropDesc').value.trim();
   const btn = $('editSaveBtn');
 
@@ -1274,6 +1478,12 @@ async function saveHistoryEdit() {
         propellantName: newName,
         mixRatio: newRatio,
         cookTimeMinutes: newCookTime,
+        motorInnerDia: newMotorInner,
+        motorOuterDia: newMotorOuter,
+        motorLength: newMotorLength,
+        motorType: newMotorType,
+        motorCasingMass: newCasingMass,
+        totalAssemblyMass: newTotalAssemblyMass,
         description: newDesc
       })
     });
@@ -1286,6 +1496,12 @@ async function saveHistoryEdit() {
         h.name = newName;
         h.mixRatio = newRatio;
         h.cookTimeMinutes = newCookTime;
+        h.motorInnerDia = newMotorInner;
+        h.motorOuterDia = newMotorOuter;
+        h.motorLength = newMotorLength;
+        h.motorType = newMotorType;
+        h.motorCasingMass = newCasingMass;
+        h.totalAssemblyMass = newTotalAssemblyMass;
         h.description = newDesc;
       }
       return h;
@@ -1301,6 +1517,7 @@ async function saveHistoryEdit() {
   } catch (err) {
     console.error('Edit save error:', err);
     alert('Failed to save changes: ' + err.message);
+  } finally {
     if (btn) btn.disabled = false;
   }
 }
@@ -1372,7 +1589,8 @@ $('propellantType')?.addEventListener('change', () => { handleTypeChange(); save
 $('mixRatio')?.addEventListener('change', () => { handleRatioChange(); saveFormState(); });
 
 ['propellantName', 'chem1Name', 'chem1Pct', 'chem2Name', 'chem2Pct', 'catalystPct',
-  'totalGrams', 'cookTime', 'description'].forEach(id => {
+  'totalGrams', 'cookTime', 'description',
+  'motorInnerDia', 'motorOuterDia', 'motorLength', 'motorType', 'motorCasingMass'].forEach(id => {
     const el = $(id);
     if (el) {
       el.addEventListener('input', () => { updatePreview(); saveFormState(); });
@@ -1390,3 +1608,233 @@ document.addEventListener('DOMContentLoaded', () => {
   loadHistoryList();
   updatePreview();
 });
+
+// ────────────────────────────────────────────────────────────────
+//  HISTORY ATTACHMENT UPLOAD
+// ────────────────────────────────────────────────────────────────
+let pendingAttachments = []; // Array of { id, name, type, dataUrl, size }
+let currentAttachBatchId = '';
+let currentAttachBatchName = '';
+let currentAttachDriveUrl = '';
+
+function handleAttachmentSelect(event) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+  addAttachmentFiles(Array.from(files));
+  event.target.value = '';
+}
+
+function handleAttachDragOver(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dz = $('attachDropZone');
+  if (dz) dz.classList.add('drag-over');
+}
+
+function handleAttachDragLeave(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dz = $('attachDropZone');
+  if (dz) dz.classList.remove('drag-over');
+}
+
+function handleAttachDrop(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dz = $('attachDropZone');
+  if (dz) dz.classList.remove('drag-over');
+  const files = event.dataTransfer && event.dataTransfer.files;
+  if (!files || files.length === 0) return;
+  addAttachmentFiles(Array.from(files));
+}
+
+async function addAttachmentFiles(files) {
+  for (const file of files) {
+    await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        pendingAttachments.push({
+          id: 'att_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+          name: file.name,
+          type: file.type || 'application/octet-stream',
+          size: file.size,
+          dataUrl: e.target.result
+        });
+        renderAttachPreviewList();
+        resolve();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+}
+
+function removeAttachment(attId) {
+  pendingAttachments = pendingAttachments.filter(a => a.id !== attId);
+  renderAttachPreviewList();
+}
+
+function getFileIcon(name, type) {
+  const ext = name.split('.').pop().toLowerCase();
+  if (['xls', 'xlsx', 'xlsm', 'csv'].includes(ext)) return '📊';
+  if (['pdf'].includes(ext)) return '📄';
+  if (['doc', 'docx', 'txt', 'rtf'].includes(ext)) return '📝';
+  if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) return '🖼️';
+  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return '🗜️';
+  if (['mp4', 'avi', 'mov', 'mkv'].includes(ext)) return '🎬';
+  if (['mp3', 'wav', 'aac'].includes(ext)) return '🎵';
+  if (['py', 'js', 'ts', 'html', 'css', 'json', 'xml', 'gs'].includes(ext)) return '💻';
+  if (['ppt', 'pptx'].includes(ext)) return '📊';
+  return '📎';
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderAttachPreviewList() {
+  const container = $('attachPreviewList');
+  const placeholder = $('attachPlaceholder');
+  const badge = $('uploadAttachBtn');
+  if (!container) return;
+
+  if (pendingAttachments.length === 0) {
+    container.style.display = 'none';
+    if (placeholder) placeholder.style.display = 'block';
+    if (badge) badge.textContent = '☁️ Upload to Drive';
+    return;
+  }
+
+  container.style.display = 'block';
+  if (placeholder) placeholder.style.display = 'none';
+  if (badge) badge.textContent = `☁️ Upload ${pendingAttachments.length} File${pendingAttachments.length > 1 ? 's' : ''} to Drive`;
+
+  container.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+      <div>
+        <div style="font-size:14px; font-weight:700; color:var(--text);">
+          📸 Selected Files (${pendingAttachments.length})
+        </div>
+        <div style="font-size:11px; color:var(--success-color); font-weight:600; margin-top:2px;">
+          ✔ Saved in Drive folder for this batch
+        </div>
+      </div>
+      <button type="button" onclick="pendingAttachments=[]; renderAttachPreviewList();"
+              style="padding:4px 10px; border-radius:6px; background:rgba(231,76,60,0.15); color:var(--error-color); border:1px solid var(--error-color); font-size:12px; font-weight:600; cursor:pointer;">
+        Clear All
+      </button>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:10px;">
+      ${pendingAttachments.map((att, idx) => {
+    const isImage = att.type.startsWith('image/') || (att.dataUrl && att.dataUrl.startsWith('data:image/'));
+    return `
+          <div style="position:relative; width:110px; height:110px; border-radius:12px; border:2px solid var(--accent); overflow:hidden; background:#071220; box-shadow:0 4px 14px rgba(0,0,0,0.4); flex-shrink:0;">
+            ${isImage ? `
+              <img src="${att.dataUrl}" alt="${att.name}" style="width:100%; height:100%; object-fit:cover; display:block;">
+            ` : `
+              <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px; text-align:center; box-sizing:border-box;">
+                <span style="font-size:32px; margin-bottom:4px;">${getFileIcon(att.name, att.type)}</span>
+                <span style="font-size:10px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:95px;" title="${att.name}">${att.name}</span>
+                <span style="font-size:9px; color:var(--muted); margin-top:2px;">${formatFileSize(att.size)}</span>
+              </div>
+            `}
+
+            <!-- Top Right Delete Red Button -->
+            <button type="button" onclick="removeAttachment('${att.id}')"
+                    title="Remove file"
+                    style="position:absolute; top:5px; right:5px; background:rgba(231,76,60,0.92); color:#fff; border:none; border-radius:50%; width:24px; height:24px; font-size:12px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.6); transition:transform 0.15s;"
+                    onmouseover="this.style.transform='scale(1.15)'"
+                    onmouseout="this.style.transform='scale(1)'">✕</button>
+
+            <!-- Bottom Left Index Badge -->
+            <div style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.8); color:var(--accent); font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; border:1px solid rgba(77,166,255,0.4);">
+              #${idx + 1}
+            </div>
+          </div>
+        `;
+  }).join('')}
+    </div>`;
+}
+
+async function uploadAttachmentsNow() {
+  if (!currentAttachBatchId) {
+    alert('Please load a batch from history first before uploading attachments.');
+    return;
+  }
+  if (pendingAttachments.length === 0) {
+    alert('No files selected. Please add files first.');
+    return;
+  }
+
+  const btn = $('uploadAttachBtn');
+  const loader = $('attachLoadingArea');
+  const resultEl = $('attachUploadResult');
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Uploading...'; }
+  if (loader) loader.style.display = 'block';
+  if (resultEl) resultEl.style.display = 'none';
+
+  try {
+    const payload = {
+      action: 'uploadAttachments',
+      propellantId: currentAttachBatchId,
+      propellantName: currentAttachBatchName,
+      attachments: pendingAttachments.map((att, idx) => ({
+        name: att.name,
+        type: att.type,
+        base64: att.dataUrl
+      }))
+    };
+
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      if (resultEl) {
+        resultEl.style.display = 'block';
+        resultEl.innerHTML = `
+          <div style="background:rgba(56,193,114,0.12); border:1px solid var(--success-color); border-radius:10px; padding:14px 16px;">
+            <div style="font-weight:700; color:var(--success-color); margin-bottom:8px;">
+              ✅ ${result.message || `${pendingAttachments.length} file(s) uploaded successfully!`}
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+              ${result.testFolderUrl || result.folderUrl ? `
+                <a href="${result.testFolderUrl || result.folderUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="border-color:var(--accent); color:var(--accent);">
+                  📂 Open "Propellant Test" Drive Folder
+                </a>` : ''}
+              ${result.mainFolderUrl ? `
+                <a href="${result.mainFolderUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="border-color:#ffc107; color:#ffc107;">
+                  ☁️ Open Main Batch Folder
+                </a>` : ''}
+            </div>
+          </div>`;
+      }
+      pendingAttachments = [];
+      renderAttachPreviewList();
+      await loadHistoryEntry();
+    } else {
+      throw new Error(result.error || result.message || 'Upload failed.');
+    }
+  } catch (err) {
+    console.error('Attachment upload error:', err);
+    if (resultEl) {
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = `
+        <div style="background:rgba(231,76,60,0.12); border:1px solid var(--error-color); border-radius:10px; padding:14px 16px; color:var(--error-color);">
+          ❌ Upload failed: ${err.message}
+        </div>`;
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = `☁️ Upload to Drive`; }
+    if (loader) loader.style.display = 'none';
+  }
+}
+

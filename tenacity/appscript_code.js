@@ -35,7 +35,15 @@ const MASTER_HEADERS = [
   'Total Grams (g)',
   'Cook Time (min)',
   'Description / Purpose',
+  'Motor Inner Dia (mm)',
+  'Motor Outer Dia (mm)',
+  'Motor Length (mm)',
+  'Motor Casing Type',
+  'Motor Casing Mass (g)',
+  'Total Assembly Mass (g)',
   'Drive Photo URL',
+  'Propellant Details Drive URL',
+  'Propellant Test Drive URL',
   'Status',
   'Status Description',
   'Status Updated At',
@@ -43,27 +51,77 @@ const MASTER_HEADERS = [
 ];
 
 /**
- * Upload multiple base64 encoded photos to a dedicated subfolder in Google Drive.
- * Creates a folder named `${propellantId} – ${propName}` inside the main folder.
- * Returns { folderUrl, fileUrls, primaryUrl }
+ * Get or create main batch folder and its two subfolders:
+ * 1. "Propellant Details" (for batch preparation photos)
+ * 2. "Propellant Test" (for history attachment uploads & burn reports)
+ */
+function getOrCreateBatchSubfolders(propellantId, propName) {
+  const parentFolder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
+  const folderName = `${propellantId} – ${propName}`.substring(0, 100);
+
+  let batchFolder = null;
+  const it = parentFolder.getFoldersByName(folderName);
+  if (it.hasNext()) {
+    batchFolder = it.next();
+  } else {
+    // Try partial match by propellantId prefix
+    const allIt = parentFolder.getFolders();
+    while (allIt.hasNext()) {
+      const f = allIt.next();
+      if (f.getName().startsWith(propellantId)) {
+        batchFolder = f;
+        break;
+      }
+    }
+  }
+
+  if (!batchFolder) {
+    batchFolder = parentFolder.createFolder(folderName);
+    try { batchFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (e) {}
+  }
+
+  // Subfolder 1: Propellant Details
+  let detailsFolder = null;
+  const dIt = batchFolder.getFoldersByName('Propellant Details');
+  if (dIt.hasNext()) {
+    detailsFolder = dIt.next();
+  } else {
+    detailsFolder = batchFolder.createFolder('Propellant Details');
+    try { detailsFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (e) {}
+  }
+
+  // Subfolder 2: Propellant Test
+  let testFolder = null;
+  const tIt = batchFolder.getFoldersByName('Propellant Test');
+  if (tIt.hasNext()) {
+    testFolder = tIt.next();
+  } else {
+    testFolder = batchFolder.createFolder('Propellant Test');
+    try { testFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (e) {}
+  }
+
+  return {
+    mainFolder: batchFolder,
+    mainUrl: batchFolder.getUrl(),
+    detailsFolder: detailsFolder,
+    detailsUrl: detailsFolder.getUrl(),
+    testFolder: testFolder,
+    testUrl: testFolder.getUrl()
+  };
+}
+
+/**
+ * Upload multiple base64 encoded photos to "Propellant Details" subfolder.
+ * Returns { mainUrl, detailsUrl, testUrl, fileUrls, primaryUrl }
  */
 function uploadImagesToBatchFolder(imagesList, propellantId, propName) {
   if (!imagesList || !Array.isArray(imagesList) || imagesList.length === 0) {
-    return { folderUrl: '', fileUrls: [], primaryUrl: '' };
+    return { mainUrl: '', detailsUrl: '', testUrl: '', fileUrls: [], primaryUrl: '' };
   }
 
   try {
-    const parentFolder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
-    const folderName = `${propellantId} – ${propName}`.substring(0, 100);
-
-    // Create dedicated batch subfolder
-    const batchFolder = parentFolder.createFolder(folderName);
-    try {
-      batchFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    } catch (shareNotice) {
-      Logger.log('Folder share notice: ' + shareNotice.toString());
-    }
-
+    const subfolders = getOrCreateBatchSubfolders(propellantId, propName);
+    const targetFolder = subfolders.detailsFolder;
     const fileUrls = [];
 
     imagesList.forEach((imgItem, idx) => {
@@ -89,7 +147,7 @@ function uploadImagesToBatchFolder(imagesList, propellantId, propName) {
           : `${propellantId}_photo_${idx + 1}.jpg`;
 
         const blob = Utilities.newBlob(bytes, contentType, fileName);
-        const file = batchFolder.createFile(blob);
+        const file = targetFolder.createFile(blob);
         try {
           file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
         } catch (fe) {}
@@ -99,17 +157,16 @@ function uploadImagesToBatchFolder(imagesList, propellantId, propName) {
       }
     });
 
-    const folderUrl = batchFolder.getUrl();
-    const primaryUrl = fileUrls.length > 0 ? fileUrls[0] : folderUrl;
-
     return {
-      folderUrl: folderUrl,
+      mainUrl: subfolders.mainUrl,
+      detailsUrl: subfolders.detailsUrl,
+      testUrl: subfolders.testUrl,
       fileUrls: fileUrls,
-      primaryUrl: primaryUrl
+      primaryUrl: fileUrls.length > 0 ? fileUrls[0] : subfolders.detailsUrl
     };
   } catch (err) {
     Logger.log('Drive folder creation error: ' + err.toString());
-    return { folderUrl: '', fileUrls: [], primaryUrl: '' };
+    return { mainUrl: '', detailsUrl: '', testUrl: '', fileUrls: [], primaryUrl: '' };
   }
 }
 
@@ -217,9 +274,10 @@ function doPost(e) {
 
     const action = params.action;
 
-    if (action === 'submit')        return handleSubmit(ss, params);
-    if (action === 'updateStatus')  return handleUpdateStatus(ss, params);
-    if (action === 'updateDetails') return handleUpdateDetails(ss, params);
+    if (action === 'submit')             return handleSubmit(ss, params);
+    if (action === 'updateStatus')        return handleUpdateStatus(ss, params);
+    if (action === 'updateDetails')       return handleUpdateDetails(ss, params);
+    if (action === 'uploadAttachments')   return handleUploadAttachments(ss, params);
 
     return jsonResponse({ success: false, error: 'Unknown action: ' + action });
   } catch (err) {
@@ -305,15 +363,22 @@ function handleSubmit(ss, params) {
     imagesToUpload = [params.imageBase64];
   }
 
-  let driveResult = { folderUrl: '', fileUrls: [], primaryUrl: '' };
+  let driveResult = { mainUrl: '', detailsUrl: '', testUrl: '', fileUrls: [], primaryUrl: '' };
   if (imagesToUpload.length > 0) {
     driveResult = uploadImagesToBatchFolder(imagesToUpload, propellantId, propName);
+  } else {
+    const subfolders = getOrCreateBatchSubfolders(propellantId, propName);
+    driveResult.mainUrl = subfolders.mainUrl;
+    driveResult.detailsUrl = subfolders.detailsUrl;
+    driveResult.testUrl = subfolders.testUrl;
   }
 
-  // Use dedicated folder URL (or primary photo URL) for sheet & Master Log
-  const drivePhotoUrl = driveResult.folderUrl || driveResult.primaryUrl || '';
+  // Use dedicated folder URL for sheet & Master Log
+  const drivePhotoUrl = driveResult.detailsUrl || driveResult.primaryUrl || driveResult.mainUrl || '';
   params.drivePhotoUrl = drivePhotoUrl;
-  params.driveFolderUrl = driveResult.folderUrl;
+  params.driveFolderUrl = driveResult.mainUrl;
+  params.detailsDriveUrl = driveResult.detailsUrl;
+  params.testDriveUrl = driveResult.testUrl;
 
   const verticalData = buildVerticalData(params);
   newSheet.getRange(2, 1, verticalData.length, 2).setValues(verticalData);
@@ -344,7 +409,15 @@ function handleSubmit(ss, params) {
     Number(params.totalGrams) || 0,
     Number(params.cookTimeMinutes) || 0,
     String(params.description || ''),
+    Number(params.motorInnerDia) || 0,
+    Number(params.motorOuterDia) || 0,
+    Number(params.motorLength) || 0,
+    String(params.motorType || ''),
+    Number(params.motorCasingMass) || 0,
+    Number(params.totalAssemblyMass) || 0,
     drivePhotoUrl,
+    driveResult.detailsUrl || drivePhotoUrl,
+    driveResult.testUrl || '',
     'Pending',
     '',
     '',
@@ -358,9 +431,115 @@ function handleSubmit(ss, params) {
     uniqueUid: uniqueUid,
     sheetName: sheetName,
     drivePhotoUrl: drivePhotoUrl,
-    driveFolderUrl: driveResult.folderUrl,
+    detailsFolderUrl: driveResult.detailsUrl,
+    testFolderUrl: driveResult.testUrl,
+    mainFolderUrl: driveResult.mainUrl,
+    driveFolderUrl: driveResult.mainUrl,
     photoCount: driveResult.fileUrls.length
   });
+}
+
+/**
+ * Upload attachments (any format: Excel, PDF, images, etc.) into the
+ * "Propellant Test" batch Drive subfolder.
+ */
+function handleUploadAttachments(ss, params) {
+  const propellantId = (params.propellantId || '').trim();
+  const propName     = (params.propellantName || propellantId).trim();
+  const attachments  = params.attachments;
+
+  if (!propellantId) {
+    return jsonResponse({ success: false, error: 'propellantId is required.' });
+  }
+  if (!attachments || !Array.isArray(attachments) || attachments.length === 0) {
+    return jsonResponse({ success: false, error: 'No attachments provided.' });
+  }
+
+  try {
+    const subfolders = getOrCreateBatchSubfolders(propellantId, propName);
+    const targetFolder = subfolders.testFolder;
+
+    const uploadedUrls = [];
+    attachments.forEach((att, idx) => {
+      try {
+        let base64Data = att.base64 || att.dataUrl || '';
+        if (!base64Data) return;
+
+        let cleanBase64 = base64Data.trim();
+        let contentType = att.type || 'application/octet-stream';
+
+        if (cleanBase64.indexOf(';base64,') !== -1) {
+          const parts = cleanBase64.split(';base64,');
+          const meta = parts[0];
+          cleanBase64 = parts[1];
+          const match = meta.match(/data:([^;]+)/);
+          if (match) contentType = match[1];
+        }
+
+        cleanBase64 = cleanBase64.replace(/\s+/g, '+');
+        const bytes = Utilities.base64Decode(cleanBase64);
+        const fileName = att.name || `test_doc_${idx + 1}`;
+        const blob = Utilities.newBlob(bytes, contentType, fileName);
+        const file = targetFolder.createFile(blob);
+        try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (e) {}
+        uploadedUrls.push(file.getUrl());
+      } catch (fe) {
+        Logger.log(`Attachment #${idx + 1} error: ` + fe.toString());
+      }
+    });
+
+    // Update dedicated sheet & master log with testUrl
+    const targetSheet = findSheetByPropellantId(ss, propellantId);
+    if (targetSheet) {
+      const data = targetSheet.getDataRange().getValues();
+      if (data.length > 0) {
+        const firstCell = String(data[0][0]).trim().toLowerCase();
+        if (firstCell === 'parameter / field' || firstCell === 'parameter' || firstCell === 'propellant id') {
+          let found = false;
+          for (let i = 1; i < data.length; i++) {
+            if (String(data[i][0]).trim() === 'Propellant Test Drive URL') {
+              targetSheet.getRange(i + 1, 2).setValue(subfolders.testUrl);
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            targetSheet.appendRow(['Propellant Test Drive URL', subfolders.testUrl]);
+          }
+        }
+      }
+    }
+
+    const master = ss.getSheetByName(MASTER_SHEET_NAME);
+    if (master) {
+      const mData = master.getDataRange().getValues();
+      if (mData.length > 0) {
+        const mHeaders = mData[0].map(h => String(h).trim());
+        let testCol = mHeaders.indexOf('Propellant Test Drive URL') + 1;
+        if (testCol > 0) {
+          for (let i = 1; i < mData.length; i++) {
+            if (String(mData[i][0]).trim() === propellantId) {
+              master.getRange(i + 1, testCol).setValue(subfolders.testUrl);
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return jsonResponse({
+      success: true,
+      message: `${uploadedUrls.length} of ${attachments.length} file(s) uploaded to "Propellant Test" Drive folder!`,
+      testFolderUrl: subfolders.testUrl,
+      detailsFolderUrl: subfolders.detailsUrl,
+      mainFolderUrl: subfolders.mainUrl,
+      folderUrl: subfolders.testUrl,
+      fileCount: uploadedUrls.length
+    });
+  } catch (err) {
+    Logger.log('handleUploadAttachments error: ' + err.toString());
+    return jsonResponse({ success: false, error: err.message });
+  }
 }
 
 /** Update the status (Success / Failure / OK) of an existing batch in BOTH sheets. */
@@ -571,6 +750,14 @@ function handleUpdateDetails(ss, params) {
   const newCookTime  = (params.cookTimeMinutes|| '').trim();
   const newDesc      = (params.description   || '').trim();
 
+  // Motor Casing parameters
+  const mInnerDia   = Number(params.motorInnerDia) || 0;
+  const mOuterDia   = Number(params.motorOuterDia) || 0;
+  const mLength     = Number(params.motorLength) || 0;
+  const mType       = (params.motorType || '').trim();
+  const mCasingMass = Number(params.motorCasingMass) || 0;
+  const mTotMass    = Number(params.totalAssemblyMass) || 0;
+
   if (!propellantId) {
     return jsonResponse({ success: false, error: 'propellantId is required.' });
   }
@@ -592,6 +779,12 @@ function handleUpdateDetails(ss, params) {
           if (key === 'Mix Ratio')             sheet.getRange(i + 1, 2).setValue(newRatio);
           if (key === 'Cook Time (min)')       sheet.getRange(i + 1, 2).setValue(newCookTime);
           if (key === 'Description / Purpose') sheet.getRange(i + 1, 2).setValue(newDesc);
+          if (key === 'Motor Inner Dia (mm)')    sheet.getRange(i + 1, 2).setValue(mInnerDia);
+          if (key === 'Motor Outer Dia (mm)')    sheet.getRange(i + 1, 2).setValue(mOuterDia);
+          if (key === 'Motor Length (mm)')       sheet.getRange(i + 1, 2).setValue(mLength);
+          if (key === 'Motor Casing Type')      sheet.getRange(i + 1, 2).setValue(mType);
+          if (key === 'Motor Casing Mass (g)')   sheet.getRange(i + 1, 2).setValue(mCasingMass);
+          if (key === 'Total Assembly Mass (g)') sheet.getRange(i + 1, 2).setValue(mTotMass);
         }
       } else {
         // Horizontal Sheet
@@ -600,10 +793,23 @@ function handleUpdateDetails(ss, params) {
         const rCol = headers.indexOf('Mix Ratio') + 1;
         const cCol = headers.indexOf('Cook Time (min)') + 1;
         const dCol = headers.indexOf('Description / Purpose') + 1;
+        const inCol = headers.indexOf('Motor Inner Dia (mm)') + 1;
+        const outCol = headers.indexOf('Motor Outer Dia (mm)') + 1;
+        const lenCol = headers.indexOf('Motor Length (mm)') + 1;
+        const typeCol = headers.indexOf('Motor Casing Type') + 1;
+        const massCol = headers.indexOf('Motor Casing Mass (g)') + 1;
+        const totCol = headers.indexOf('Total Assembly Mass (g)') + 1;
+
         if (nCol > 0) sheet.getRange(2, nCol).setValue(newName);
         if (rCol > 0) sheet.getRange(2, rCol).setValue(newRatio);
         if (cCol > 0) sheet.getRange(2, cCol).setValue(newCookTime);
         if (dCol > 0) sheet.getRange(2, dCol).setValue(newDesc);
+        if (inCol > 0) sheet.getRange(2, inCol).setValue(mInnerDia);
+        if (outCol > 0) sheet.getRange(2, outCol).setValue(mOuterDia);
+        if (lenCol > 0) sheet.getRange(2, lenCol).setValue(mLength);
+        if (typeCol > 0) sheet.getRange(2, typeCol).setValue(mType);
+        if (massCol > 0) sheet.getRange(2, massCol).setValue(mCasingMass);
+        if (totCol > 0) sheet.getRange(2, totCol).setValue(mTotMass);
       }
     }
   }
@@ -614,10 +820,16 @@ function handleUpdateDetails(ss, params) {
     const mData = master.getDataRange().getValues();
     if (mData.length > 0) {
       const mHeaders = mData[0].map(h => String(h).trim());
-      const mNameCol = mHeaders.indexOf('Propellant Name') + 1 || 3;
-      const mRatioCol = mHeaders.indexOf('Mix Ratio') + 1 || 6;
-      const mCookCol = mHeaders.indexOf('Cook Time (min)') + 1 || 18;
-      const mDescCol = mHeaders.indexOf('Description / Purpose') + 1 || 19;
+      const mNameCol = mHeaders.indexOf('Propellant Name') + 1;
+      const mRatioCol = mHeaders.indexOf('Mix Ratio') + 1;
+      const mCookCol = mHeaders.indexOf('Cook Time (min)') + 1;
+      const mDescCol = mHeaders.indexOf('Description / Purpose') + 1;
+      const mInCol   = mHeaders.indexOf('Motor Inner Dia (mm)') + 1;
+      const mOutCol  = mHeaders.indexOf('Motor Outer Dia (mm)') + 1;
+      const mLenCol  = mHeaders.indexOf('Motor Length (mm)') + 1;
+      const mTypeCol = mHeaders.indexOf('Motor Casing Type') + 1;
+      const mMassCol = mHeaders.indexOf('Motor Casing Mass (g)') + 1;
+      const mTotCol  = mHeaders.indexOf('Total Assembly Mass (g)') + 1;
 
       for (let i = 1; i < mData.length; i++) {
         if (String(mData[i][0]).trim() === propellantId) {
@@ -625,6 +837,12 @@ function handleUpdateDetails(ss, params) {
           if (mRatioCol > 0) master.getRange(i + 1, mRatioCol).setValue(newRatio);
           if (mCookCol > 0)  master.getRange(i + 1, mCookCol).setValue(newCookTime);
           if (mDescCol > 0)  master.getRange(i + 1, mDescCol).setValue(newDesc);
+          if (mInCol > 0)    master.getRange(i + 1, mInCol).setValue(mInnerDia);
+          if (mOutCol > 0)   master.getRange(i + 1, mOutCol).setValue(mOuterDia);
+          if (mLenCol > 0)   master.getRange(i + 1, mLenCol).setValue(mLength);
+          if (mTypeCol > 0)  master.getRange(i + 1, mTypeCol).setValue(mType);
+          if (mMassCol > 0)  master.getRange(i + 1, mMassCol).setValue(mCasingMass);
+          if (mTotCol > 0)   master.getRange(i + 1, mTotCol).setValue(mTotMass);
           break;
         }
       }
@@ -659,6 +877,14 @@ function buildVerticalData(p) {
     ['Total Grams (g)',        Number(p.totalGrams)      || 0],
     ['Cook Time (min)',        Number(p.cookTimeMinutes) || 0],
     ['Description / Purpose',  String(p.description      || '')],
+    // ── Motor Casing (Optional) ──
+    ['Motor Inner Dia (mm)',    Number(p.motorInnerDia)   || 0],
+    ['Motor Outer Dia (mm)',    Number(p.motorOuterDia)   || 0],
+    ['Motor Length (mm)',       Number(p.motorLength)     || 0],
+    ['Motor Casing Type',      String(p.motorType        || '')],
+    ['Motor Casing Mass (g)',   Number(p.motorCasingMass) || 0],
+    ['Total Assembly Mass (g)', Number(p.totalAssemblyMass) || 0],
+    // ── Drive / Status ──
     ['Drive Photo URL',        String(p.drivePhotoUrl    || '')],
     ['Status',                 'Pending'],
     ['Status Description',     ''],
