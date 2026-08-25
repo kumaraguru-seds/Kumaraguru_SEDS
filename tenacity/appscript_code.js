@@ -623,15 +623,69 @@ function handleGetAll(ss) {
   const subCol   = headers.indexOf('submitted at');
   const sheetCol = headers.indexOf('sheet tab name') >= 0 ? headers.indexOf('sheet tab name') : headers.indexOf('sheet name');
   let statCol  = headers.indexOf('status');
-  if (statCol < 0) statCol = 6; // Col G (0-indexed 6) fallback
+  if (statCol < 0) statCol = 6;
 
-  const photoCol = headers.indexOf('drive photo url');
+  const photoCol       = headers.indexOf('drive photo url');
+  const detailsUrlCol  = headers.indexOf('propellant details drive url');
+  const testUrlCol     = headers.indexOf('propellant test drive url');
+
+  // Helper: read a vertical key-value sheet and return a map
+  function readSheetKV(sheet) {
+    const kv = {};
+    const d = sheet.getDataRange().getValues();
+    const firstCell = d.length > 0 ? String(d[0][0]).trim().toLowerCase() : '';
+    const isVertical = firstCell === 'parameter / field' || firstCell === 'parameter' || firstCell === 'propellant id';
+    if (isVertical) {
+      for (let j = 1; j < d.length; j++) {
+        const k = String(d[j][0]).trim().toLowerCase();
+        if (k) kv[k] = d[j][1];
+      }
+    }
+    return kv;
+  }
+
+  // Helper: convert any date value to ISO string
+  function toISO(val) {
+    if (!val) return '';
+    if (val instanceof Date) return val.toISOString();
+    const s = String(val).trim();
+    if (!s) return '';
+    const parsed = new Date(s);
+    return isNaN(parsed.getTime()) ? '' : parsed.toISOString();
+  }
+
+  // Helper: is this string a valid ISO-like date (not a status word)?
+  function looksLikeDate(s) {
+    if (!s) return false;
+    return /^\d{4}-\d{2}-\d{2}/.test(s) || /^[A-Z][a-z]{2} \d{2}/.test(s);
+  }
 
   const data = [];
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     const pid = idCol >= 0 ? r[idCol] : r[0];
-    if (!pid) continue; // skip empty rows
+    if (!pid) continue;
+
+    // Read submittedAt from master log
+    let submittedAt = toISO(subCol >= 0 ? r[subCol] : r[3]);
+
+    // Read status from master log
+    let status = statCol >= 0 ? String(r[statCol] || '').trim() : '';
+    // Detect corruption: status looks like a date → it's wrong
+    if (!status || looksLikeDate(status)) status = '';
+
+    // If either field is missing/corrupted, backfill from individual sheet tab
+    if (!submittedAt || !status) {
+      try {
+        const tab = findSheetByPropellantId(ss, String(pid));
+        if (tab) {
+          const kv = readSheetKV(tab);
+          if (!submittedAt) submittedAt = toISO(kv['submitted at'] || kv['recorded at'] || '');
+          if (!status)      status      = String(kv['status'] || '').trim() || 'Pending';
+        }
+      } catch(e) {}
+    }
+    if (!status) status = 'Pending';
 
     data.push({
       propellantId:  String(pid),
@@ -639,18 +693,12 @@ function handleGetAll(ss) {
       name:          nameCol >= 0 ? String(r[nameCol]) : String(r[2] || ''),
       propellantName: nameCol >= 0 ? String(r[nameCol]) : String(r[2] || ''),
       type:          typeCol >= 0 ? String(r[typeCol]) : String(r[4] || r[3] || ''),
-      submittedAt:   (function() {
-        const raw = subCol >= 0 ? r[subCol] : r[3];
-        if (!raw) return '';
-        if (raw instanceof Date) return raw.toISOString();
-        const s = String(raw).trim();
-        // Try to parse as date and re-emit as ISO
-        const parsed = new Date(s);
-        return isNaN(parsed.getTime()) ? s : parsed.toISOString();
-      })(),
+      submittedAt,
       sheetName:     sheetCol >= 0 ? String(r[sheetCol]) : String(r[5] || ''),
-      status:        statCol >= 0 ? String(r[statCol] || 'Pending') : 'Pending',
-      drivePhotoUrl: photoCol >= 0 ? String(r[photoCol] || '') : ''
+      status,
+      drivePhotoUrl:    photoCol >= 0 ? String(r[photoCol] || '') : '',
+      detailsDriveUrl:  detailsUrlCol >= 0 ? String(r[detailsUrlCol] || '') : '',
+      testDriveUrl:     testUrlCol >= 0 ? String(r[testUrlCol] || '') : ''
     });
   }
 

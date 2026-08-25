@@ -8,7 +8,7 @@
 // ────────────────────────────────────────────────────────────────
 //  CONFIG  — Paste your deployed Apps Script URL below
 // ────────────────────────────────────────────────────────────────
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyFkdkxJ_IaIMFVsKIpnV_OqIHgtOyTOiTNSvb2_Y9Lc9Ov77ncqTI650vJN8mChiaSw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIMD-X_G635OGPF5L1ZnhwBzH52W8eLad177UXFJvBLpj38YrrsKSD5FxOHGxQUSB8sg/exec';
 
 // ────────────────────────────────────────────────────────────────
 //  PROPELLANT PRESETS
@@ -1018,7 +1018,7 @@ async function loadHistoryList() {
 
   sel.innerHTML = '<option value="">— Select a Propellant Batch —</option>' +
     allData.map(d => {
-      const id   = d['Propellant ID'] || d.propellantId || '';
+      const id = d['Propellant ID'] || d.propellantId || '';
       const name = d['Propellant Name'] || d.propellantName || d.name || '';
       const stat = d['Status'] || d.status || 'Pending';
       const rawDate = d.submittedAt || d['Submitted At'] || d.recordedAt || d['Recorded At'] || '';
@@ -1027,14 +1027,14 @@ async function loadHistoryList() {
         try {
           const dt = new Date(rawDate);
           if (!isNaN(dt.getTime())) {
-            const day  = String(dt.getDate()).padStart(2, '0');
-            const mon  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()];
-            const yr   = dt.getFullYear();
-            const hr   = String(dt.getHours()).padStart(2, '0');
-            const min  = String(dt.getMinutes()).padStart(2, '0');
-            datePart   = ` | ${day}-${mon}-${yr} ${hr}:${min}`;
+            const day = String(dt.getDate()).padStart(2, '0');
+            const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dt.getMonth()];
+            const yr = dt.getFullYear();
+            const hr = String(dt.getHours()).padStart(2, '0');
+            const min = String(dt.getMinutes()).padStart(2, '0');
+            datePart = ` | ${day}-${mon}-${yr} ${hr}:${min}`;
           }
-        } catch(e) {}
+        } catch (e) { }
       }
       return `<option value="${id}">${id}${name ? ' – ' + name : ''} [${stat}]${datePart}</option>`;
     }).join('');
@@ -1116,9 +1116,9 @@ async function loadHistoryEntry() {
   const mMass = parseFloat(data['Motor Casing Mass (g)'] !== undefined ? data['Motor Casing Mass (g)'] : data.motorCasingMass) || 0;
   const mTotMass = parseFloat(data['Total Assembly Mass (g)'] !== undefined ? data['Total Assembly Mass (g)'] : data.totalAssemblyMass) || (totG + mMass);
 
-  const status  = data['Status'] || data.status || 'Pending';
-  const stDesc  = data['Status Description'] || data.statusDescription || '';
-  const stAt    = data['Status Updated At'] || data.statusUpdatedAt || '';
+  const status = data['Status'] || data.status || 'Pending';
+  const stDesc = data['Status Description'] || data.statusDescription || '';
+  const stAt = data['Status Updated At'] || data.statusUpdatedAt || '';
   const rawSubmAt = data['Submitted At'] || data.submittedAt || data['Recorded At'] || data.recordedAt || '';
   let submAt = rawSubmAt;
   if (rawSubmAt) {
@@ -1126,16 +1126,16 @@ async function loadHistoryEntry() {
       const dt = new Date(rawSubmAt);
       if (!isNaN(dt.getTime())) {
         const day = String(dt.getDate()).padStart(2, '0');
-        const mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()];
-        const yr  = dt.getFullYear();
-        const hr  = String(dt.getHours()).padStart(2, '0');
+        const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dt.getMonth()];
+        const yr = dt.getFullYear();
+        const hr = String(dt.getHours()).padStart(2, '0');
         const min = String(dt.getMinutes()).padStart(2, '0');
         submAt = `${day}-${mon}-${yr} ${hr}:${min}`;
       }
-    } catch(e) {}
+    } catch (e) { }
   }
-  const detailsUrl   = data['Propellant Details Drive URL'] || data.detailsDriveUrl || data['Drive Photo URL'] || data.drivePhotoUrl || data.photoUrl || '';
-  const testUrl      = data['Propellant Test Drive URL'] || data.testDriveUrl || '';
+  const detailsUrl = data['Propellant Details Drive URL'] || data.detailsDriveUrl || data['Drive Photo URL'] || data.drivePhotoUrl || data.photoUrl || '';
+  const testUrl = data['Propellant Test Drive URL'] || data.testDriveUrl || '';
   const mainFolderUrl = data['Main Batch Drive Folder URL'] || data.driveFolderUrl || '';
 
   activeHistoryEntry = {
@@ -1271,25 +1271,30 @@ async function loadHistoryEntry() {
 
       <!-- ☁️ GOOGLE DRIVE STORAGE LINKS BELOW DESCRIPTION -->
       <div style="background:rgba(77,166,255,0.06); border:1px solid rgba(77,166,255,0.25); border-radius:12px; padding:16px 18px; margin-top:16px; margin-bottom:18px;">
-        <div style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+        <div style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
           ☁️ Batch Google Drive Storage Folders
         </div>
-        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
           ${detailsUrl ? `
-            <a href="${detailsUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px;" title="Open Propellant Details Folder on Drive">
-              📁 Propellant Details Drive Folder
-            </a>` : ''}
+            <a href="${detailsUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn"
+               style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px;"
+               title="Open Propellant Details Folder on Drive">
+              📁 Propellant Details Folder
+            </a>` : `
+            <span style="font-size:12px; color:var(--muted); font-style:italic; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px dashed rgba(255,255,255,0.1);">📁 No Details Folder Yet</span>`}
           ${testUrl ? `
-            <a href="${testUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px; border-color:var(--accent); color:var(--accent); background:rgba(77,166,255,0.14);" title="Open Propellant Test Folder on Drive">
-              📂 Propellant Test & Reports Drive Folder
-            </a>` : ''}
+            <a href="${testUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn"
+               style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px; border-color:#38c172; color:#38c172; background:rgba(56,193,114,0.1);"
+               title="Open Propellant Test & Reports Folder on Drive">
+              📂 Propellant Test Folder
+            </a>` : `
+            <span style="font-size:12px; color:var(--muted); font-style:italic; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px dashed rgba(255,255,255,0.1);">📂 No Test Folder Yet</span>`}
           ${mainFolderUrl && mainFolderUrl !== detailsUrl && mainFolderUrl !== testUrl ? `
-            <a href="${mainFolderUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn" style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px; border-color:#ffc107; color:#ffc107; background:rgba(255,193,7,0.14);" title="Open Main Batch Folder on Drive">
-              ☁️ Main Batch Root Folder
+            <a href="${mainFolderUrl}" target="_blank" rel="noopener noreferrer" class="view-photo-btn"
+               style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px; border-color:#ffc107; color:#ffc107; background:rgba(255,193,7,0.1);"
+               title="Open Main Batch Root Folder on Drive">
+              ☁️ Main Batch Root
             </a>` : ''}
-          ${!detailsUrl && !testUrl && !mainFolderUrl ? `
-            <span style="font-size:12px; color:var(--muted); font-style:italic;">No Drive folders created yet. Upload photos/documents to generate folders on Google Drive.</span>
-          ` : ''}
         </div>
       </div>
     </div>`;
@@ -1319,6 +1324,17 @@ async function loadHistoryEntry() {
   if ($('statusDescInput')) $('statusDescInput').value = stDesc || '';
 
   display.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // ── Progressive date update: stamp the dropdown option with the loaded date ──
+  if (submAt) {
+    const sel = $('historySelect');
+    if (sel && sel.selectedIndex >= 0) {
+      const opt = sel.options[sel.selectedIndex];
+      if (opt && opt.value && !opt.textContent.includes(' | ')) {
+        opt.textContent += ` | ${submAt}`;
+      }
+    }
+  }
 }
 
 let currentAttachUniqueUid = '';
@@ -1422,27 +1438,27 @@ let activeHistoryEntry = null;
 function openEditModal() {
   if (!activeHistoryEntry) return;
   const e = activeHistoryEntry;
-  $('editPropellantId').value        = e.pId   || '';
-  $('editUniqueUid').value           = e.uid   || '';
-  $('editPropName').value            = e.pName || '';
-  $('editMixRatio').value            = e.ratio || '';
-  $('editCookTime').value            = e.cookTm || '';
-  $('editMotorInnerDia').value       = e.mInner || '';
-  $('editMotorOuterDia').value       = e.mOuter || '';
-  $('editMotorLength').value         = e.mLen   || '';
-  $('editMotorType').value           = e.mType  || '';
-  $('editMotorCasingMass').value     = e.mMass  || '';
-  $('editTotalAssemblyMass').value   = e.mTotMass || (e.totG + e.mMass) || '';
-  $('editPropDesc').value            = e.desc   || '';
-  $('editModalTitle').textContent    = `✏️ Edit Batch — ${e.pId}`;
+  $('editPropellantId').value = e.pId || '';
+  $('editUniqueUid').value = e.uid || '';
+  $('editPropName').value = e.pName || '';
+  $('editMixRatio').value = e.ratio || '';
+  $('editCookTime').value = e.cookTm || '';
+  $('editMotorInnerDia').value = e.mInner || '';
+  $('editMotorOuterDia').value = e.mOuter || '';
+  $('editMotorLength').value = e.mLen || '';
+  $('editMotorType').value = e.mType || '';
+  $('editMotorCasingMass').value = e.mMass || '';
+  $('editTotalAssemblyMass').value = e.mTotMass || (e.totG + e.mMass) || '';
+  $('editPropDesc').value = e.desc || '';
+  $('editModalTitle').textContent = `✏️ Edit Batch — ${e.pId}`;
 
   // Auto-recalc total assembly mass when casing mass changes
   const casingInput = $('editMotorCasingMass');
-  const totalInput  = $('editTotalAssemblyMass');
+  const totalInput = $('editTotalAssemblyMass');
   if (casingInput && totalInput) {
     casingInput.oninput = () => {
       const casing = parseFloat(casingInput.value) || 0;
-      const propG  = activeHistoryEntry ? (activeHistoryEntry.totG || 0) : 0;
+      const propG = activeHistoryEntry ? (activeHistoryEntry.totG || 0) : 0;
       totalInput.value = (propG + casing).toFixed(2);
     };
   }
