@@ -8,7 +8,7 @@
 // ────────────────────────────────────────────────────────────────
 //  CONFIG  — Paste your deployed Apps Script URL below
 // ────────────────────────────────────────────────────────────────
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIMD-X_G635OGPF5L1ZnhwBzH52W8eLad177UXFJvBLpj38YrrsKSD5FxOHGxQUSB8sg/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSjxHJhh0uomdElKku8ljD9y_6f9AeCWJFsRVLByqXOqTMeQeXDJEC7e7a2MKdUFEz0g/exec';
 
 // ────────────────────────────────────────────────────────────────
 //  PROPELLANT PRESETS
@@ -869,7 +869,10 @@ document.getElementById('propellantForm').addEventListener('submit', async funct
       status: 'Pending',
       totalGrams: totalG,
       cookTimeMinutes: cookTime,
-      drivePhotoUrl: result.drivePhotoUrl || result.driveFolderUrl || ''
+      drivePhotoUrl: result.drivePhotoUrl || result.driveFolderUrl || '',
+      detailsDriveUrl: result.detailsDriveUrl || result.drivePhotoUrl || '',
+      testDriveUrl: result.testDriveUrl || '',
+      driveFolderUrl: result.driveFolderUrl || ''
     });
 
     const state = loadFormState() || {};
@@ -1016,28 +1019,66 @@ async function loadHistoryList() {
     return;
   }
 
+  // ── Format a raw date string/object into "DD-Mon-YYYY HH:MM" ──────────────
+  function fmtDate(raw) {
+    if (!raw) return '';
+    try {
+      const dt = new Date(raw);
+      if (isNaN(dt.getTime())) return '';
+      const day = String(dt.getDate()).padStart(2, '0');
+      const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dt.getMonth()];
+      const yr = dt.getFullYear();
+      const hr = String(dt.getHours()).padStart(2, '0');
+      const min = String(dt.getMinutes()).padStart(2, '0');
+      return `${day}-${mon}-${yr} ${hr}:${min}`;
+    } catch (e) { return ''; }
+  }
+
+  // ── Load date cache from localStorage ───────────────────────────────────
+  let dateCache = {};
+  try { dateCache = JSON.parse(localStorage.getItem('_tenacity_date_cache') || '{}'); } catch (e) { }
+
   sel.innerHTML = '<option value="">— Select a Propellant Batch —</option>' +
     allData.map(d => {
       const id = d['Propellant ID'] || d.propellantId || '';
       const name = d['Propellant Name'] || d.propellantName || d.name || '';
       const stat = d['Status'] || d.status || 'Pending';
+      // Try live data first, then fall back to localStorage date cache
       const rawDate = d.submittedAt || d['Submitted At'] || d.recordedAt || d['Recorded At'] || '';
-      let datePart = '';
-      if (rawDate) {
+      const datePart = fmtDate(rawDate) || (dateCache[id] ? `| ${dateCache[id]}` : '');
+      return `<option value="${id}">${id}${name ? ' – ' + name : ''} [${stat}]${datePart ? ' ' + datePart : ''}</option>`;
+    }).join('');
+
+  // ── Background: fetch missing dates for all entries & cache them ──────────
+  const missingIds = allData
+    .map(d => d['Propellant ID'] || d.propellantId || '')
+    .filter(id => id && !fmtDate(
+      allData.find(d => (d['Propellant ID'] || d.propellantId) === id)?.submittedAt
+    ) && !dateCache[id]);
+
+  if (missingIds.length > 0) {
+    (async () => {
+      for (const pid of missingIds) {
         try {
-          const dt = new Date(rawDate);
-          if (!isNaN(dt.getTime())) {
-            const day = String(dt.getDate()).padStart(2, '0');
-            const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dt.getMonth()];
-            const yr = dt.getFullYear();
-            const hr = String(dt.getHours()).padStart(2, '0');
-            const min = String(dt.getMinutes()).padStart(2, '0');
-            datePart = ` | ${day}-${mon}-${yr} ${hr}:${min}`;
+          const res = await fetch(`${APPS_SCRIPT_URL}?action=getOne&propellantId=${encodeURIComponent(pid)}`);
+          const result = await res.json();
+          if (!result.success || !result.data) continue;
+          const raw = result.data['Submitted At'] || result.data.submittedAt ||
+            result.data['Recorded At'] || result.data.recordedAt || '';
+          const fmt = fmtDate(raw);
+          if (!fmt) continue;
+          // Cache it
+          dateCache[pid] = fmt;
+          try { localStorage.setItem('_tenacity_date_cache', JSON.stringify(dateCache)); } catch (e) { }
+          // Update the dropdown option live
+          const optEl = sel.querySelector(`option[value="${CSS.escape(pid)}"]`);
+          if (optEl && !optEl.textContent.includes(' | ')) {
+            optEl.textContent += ` | ${fmt}`;
           }
         } catch (e) { }
       }
-      return `<option value="${id}">${id}${name ? ' – ' + name : ''} [${stat}]${datePart}</option>`;
-    }).join('');
+    })();
+  }
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -1325,13 +1366,20 @@ async function loadHistoryEntry() {
 
   display.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-  // ── Progressive date update: stamp the dropdown option with the loaded date ──
+  // ── Progressive date update: stamp the dropdown option + persist to cache ──
   if (submAt) {
     const sel = $('historySelect');
     if (sel && sel.selectedIndex >= 0) {
       const opt = sel.options[sel.selectedIndex];
-      if (opt && opt.value && !opt.textContent.includes(' | ')) {
-        opt.textContent += ` | ${submAt}`;
+      if (opt && opt.value) {
+        // Update dropdown text
+        if (!opt.textContent.includes(' | ')) opt.textContent += ` | ${submAt}`;
+        // Persist to date cache so it shows on next page load
+        try {
+          const cache = JSON.parse(localStorage.getItem('_tenacity_date_cache') || '{}');
+          cache[opt.value] = submAt;
+          localStorage.setItem('_tenacity_date_cache', JSON.stringify(cache));
+        } catch (e) { }
       }
     }
   }

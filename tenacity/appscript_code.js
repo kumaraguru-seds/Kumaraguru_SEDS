@@ -742,6 +742,41 @@ function handleGetOne(ss, propellantId) {
     }
   }
 
+  // ── Supplement missing Drive URLs from master log ─────────────────────────
+  // Individual sheet tabs written before Drive URL columns were added won't have
+  // these fields — so we backfill them from the master log row.
+  const needsDetails = !result['Propellant Details Drive URL'];
+  const needsTest    = !result['Propellant Test Drive URL'];
+  const needsPhoto   = !result['Drive Photo URL'];
+
+  if (needsDetails || needsTest || needsPhoto) {
+    try {
+      const masterSheet = ensureMasterHeaders(ss);
+      const mRows = masterSheet.getDataRange().getValues();
+      if (mRows.length > 1) {
+        const mHeaders = mRows[0].map(h => String(h).trim().toLowerCase());
+        const mIdCol       = mHeaders.indexOf('propellant id');
+        const mDetailsCol  = mHeaders.indexOf('propellant details drive url');
+        const mTestCol     = mHeaders.indexOf('propellant test drive url');
+        const mPhotoCol    = mHeaders.indexOf('drive photo url');
+        const target       = String(propellantId).trim().toLowerCase();
+
+        for (let i = 1; i < mRows.length; i++) {
+          const rowId = String(mRows[i][mIdCol >= 0 ? mIdCol : 0]).trim().toLowerCase();
+          if (rowId === target) {
+            if (needsDetails && mDetailsCol >= 0 && mRows[i][mDetailsCol])
+              result['Propellant Details Drive URL'] = mRows[i][mDetailsCol];
+            if (needsTest && mTestCol >= 0 && mRows[i][mTestCol])
+              result['Propellant Test Drive URL'] = mRows[i][mTestCol];
+            if (needsPhoto && mPhotoCol >= 0 && mRows[i][mPhotoCol])
+              result['Drive Photo URL'] = mRows[i][mPhotoCol];
+            break;
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
   return jsonResponse({ success: true, data: result });
 }
 
