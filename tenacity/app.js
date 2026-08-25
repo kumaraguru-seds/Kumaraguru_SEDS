@@ -969,10 +969,22 @@ async function loadHistoryList() {
     console.warn('Could not fetch remote history:', e);
   }
 
+  // Merge: supplement remote entries with local data for any missing fields (e.g. submittedAt)
   const localData = getLocalHistory();
   const remoteIds = new Set(remoteData.map(d => d.propellantId));
+  const localMap = new Map(localData.map(d => [d.propellantId, d]));
+  const mergedRemote = remoteData.map(d => {
+    const loc = localMap.get(d.propellantId);
+    if (!loc) return d;
+    // Local fills in missing fields; remote wins for status, name, etc.
+    return {
+      submittedAt: d.submittedAt || loc.submittedAt || loc.recordedAt || '',
+      ...loc,
+      ...d
+    };
+  });
   const localOnly = localData.filter(d => !remoteIds.has(d.propellantId));
-  const allData = [...remoteData, ...localOnly];
+  const allData = [...mergedRemote, ...localOnly];
   window.cachedHistoryData = allData;
 
   // Auto-synchronize counter with highest batch ID in the database

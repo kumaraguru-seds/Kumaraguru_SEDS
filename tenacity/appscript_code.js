@@ -634,14 +634,22 @@ function handleGetAll(ss) {
     if (!pid) continue; // skip empty rows
 
     data.push({
-      propellantId: String(pid),
-      uniqueUid:    uidCol >= 0 ? String(r[uidCol]) : String(r[1] || ''),
-      name:         nameCol >= 0 ? String(r[nameCol]) : String(r[2] || ''),
+      propellantId:  String(pid),
+      uniqueUid:     uidCol >= 0 ? String(r[uidCol]) : String(r[1] || ''),
+      name:          nameCol >= 0 ? String(r[nameCol]) : String(r[2] || ''),
       propellantName: nameCol >= 0 ? String(r[nameCol]) : String(r[2] || ''),
-      type:         typeCol >= 0 ? String(r[typeCol]) : String(r[4] || r[3] || ''),
-      submittedAt:  subCol >= 0 ? String(r[subCol]) : String(r[3] || ''),
-      sheetName:    sheetCol >= 0 ? String(r[sheetCol]) : String(r[5] || ''),
-      status:       statCol >= 0 ? String(r[statCol] || 'Pending') : 'Pending',
+      type:          typeCol >= 0 ? String(r[typeCol]) : String(r[4] || r[3] || ''),
+      submittedAt:   (function() {
+        const raw = subCol >= 0 ? r[subCol] : r[3];
+        if (!raw) return '';
+        if (raw instanceof Date) return raw.toISOString();
+        const s = String(raw).trim();
+        // Try to parse as date and re-emit as ISO
+        const parsed = new Date(s);
+        return isNaN(parsed.getTime()) ? s : parsed.toISOString();
+      })(),
+      sheetName:     sheetCol >= 0 ? String(r[sheetCol]) : String(r[5] || ''),
+      status:        statCol >= 0 ? String(r[statCol] || 'Pending') : 'Pending',
       drivePhotoUrl: photoCol >= 0 ? String(r[photoCol] || '') : ''
     });
   }
