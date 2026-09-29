@@ -1,25 +1,96 @@
-# Turn the Rewrite Engine on
-RewriteEngine On
+# ====================================================================
+# Apache Configuration for Kumaraguru SEDS (https://kumaraguruseds.com/)
+# Performance, Caching, Clean URLs & SEO Best Practices
+# ====================================================================
 
-# 1. HANDLE REQUESTS FOR CLEAN URLS (The Core Rule)
-# If a user requests a path like /media/ or /events/, this rule maps it to the .html file.
+# Enable FollowSymLinks
+Options +FollowSymLinks -MultiViews
 
-# Check that the requested path (e.g., 'media') is NOT a real file and NOT a real directory
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
 
-# Check if the requested file WITHOUT the trailing slash, plus .html, exists (e.g., 'media.html')
-RewriteCond %{REQUEST_FILENAME}\.html -f
+  # 1. Trailing slash cleanup for non-directories
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)/$ /$1 [L,R=301]
 
-# Internally rewrite the clean path (e.g., /media or /media/) to its .html version (e.g., media.html)
-RewriteRule ^([^\.]+)$ $1.html [L]
+  # 2. Clean URLs: internally rewrite extensionless URL to .html if file exists
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}\.html -f
+  RewriteRule ^([^\.]+)$ $1.html [L]
 
-# 2. OPTIONAL: HANDLE TRAILING SLASHES (The Directory-Style Cleanup)
-# This rule specifically maps requests that end in a slash (e.g., /media/) 
-# back to the version without the slash (e.g., /media) for the first rule to catch.
-RewriteRule ^([^/]+)/$ $1 [L]
+  # 3. Prevent direct access to .html by redirecting browser to clean URL
+  RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
+  RewriteCond %{REQUEST_URI} !^/google1ae718e510e1575d\.html$ [NC]
+  RewriteRule ^([^.]+)\.html$ /$1 [R=301,L,NC]
+</IfModule>
 
-# 3. OPTIONAL: REDIRECT /filename.html TO /filename (For SEO/Clean-up)
-# If a user or bot visits the old, ugly URL, permanently redirect them to the clean URL.
-RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
-RewriteRule ^[^/]+\.html$ /%1 [R=301,L,NC]
+# ====================================================================
+# Gzip / Deflate Compression (Speed & Core Web Vitals)
+# ====================================================================
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE application/xhtml+xml
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+  AddOutputFilterByType DEFLATE font/opentype
+  AddOutputFilterByType DEFLATE font/ttf
+  AddOutputFilterByType DEFLATE font/eot
+  AddOutputFilterByType DEFLATE font/otf
+</IfModule>
+
+# ====================================================================
+# Browser Caching Headers (mod_expires)
+# ====================================================================
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 month"
+
+  # HTML & Data
+  ExpiresByType text/html "access plus 1 hour"
+  ExpiresByType application/json "access plus 0 seconds"
+  ExpiresByType application/xml "access plus 0 seconds"
+  ExpiresByType text/xml "access plus 0 seconds"
+
+  # Stylesheets & JavaScript
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType application/x-javascript "access plus 1 month"
+
+  # Media: Images, Icons, Audio, Video
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresByType video/mp4 "access plus 1 year"
+  ExpiresByType audio/mpeg "access plus 1 year"
+
+  # Web Fonts
+  ExpiresByType font/ttf "access plus 1 year"
+  ExpiresByType font/otf "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# ====================================================================
+# Security & SEO Headers
+# ====================================================================
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Custom 404 Error Document
+ErrorDocument 404 /404.html

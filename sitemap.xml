@@ -1,70 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<url>
-  <loc>https://kumaraguruseds.space/</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>1.00</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/Events.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/Kosmorena25.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/team_members_event.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/team_members_pr.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/team_members_admin.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/team_members_impm.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/team_members_media.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/team_members_finance.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/astronomy_team_members.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/Admin_Page.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/Ideathon.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://kumaraguruseds.space/Application_Form.html</loc>
-  <lastmod>2025-09-21T14:36:32+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
+  <!-- Homepage -->
+  <url>
+    <loc>https://kumaraguruseds.com/</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.00</priority>
+  </url>
+
+  <!-- Flagship Festival & Major Events -->
+  <url>
+    <loc>https://kumaraguruseds.com/Kosmorena25.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/Events.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/cosmos.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/Ideathon.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/kosmorena25_registration_links.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/yugam.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/Application_Form.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <!-- Team & Division Portfolios -->
+  <url>
+    <loc>https://kumaraguruseds.com/astronomy_team_members.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/team_members_event.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/team_members_pr.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/team_members_admin.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/team_members_impm.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/team_members_media.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/team_members_finance.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+
+  <!-- Interactive Projects & Engineering Tools -->
+  <url>
+    <loc>https://kumaraguruseds.com/tenacity/</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://kumaraguruseds.com/feedback.html</loc>
+    <lastmod>2026-09-29T19:20:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.50</priority>
+  </url>
 </urlset>

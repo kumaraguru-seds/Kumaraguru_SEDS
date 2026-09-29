@@ -1,4 +1,29 @@
+# Robots.txt for Kumaraguru SEDS (https://kumaraguruseds.com/)
+# Google Search Engine Optimization compliance
+
 User-agent: *
 Allow: /
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.webp$
+Allow: /*.mp4$
 
-Sitemap: https://kumaraguruseds.space/sitemap.xml
+# Disallow internal administrative, shortener and private utilities
+Disallow: /Admin_Page.html
+Disallow: /Search_query.html
+Disallow: /birthdayconfirmation.html
+Disallow: /alumni_birthday.html
+Disallow: /current_birthday.html
+Disallow: /birthday_form.html
+Disallow: /shorturl.html
+Disallow: /404.html
+Disallow: /seds_portal/
+Disallow: /links.json
+
+# Primary XML Sitemap location
+Sitemap: https://kumaraguruseds.com/sitemap.xml

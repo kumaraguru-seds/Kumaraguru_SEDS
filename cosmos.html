@@ -4,14 +4,76 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>COSMOS — 3D Solar System | Kumaraguru SEDS</title>
+    <title>COSMOS 3D Solar System Experience | Kumaraguru SEDS</title>
     <meta name="description"
-        content="Explore our Solar System in stunning 3D. An immersive interactive astronomy experience by Kumaraguru SEDS." />
+        content="Explore our Solar System in stunning 3D. An interactive, real-time astronomy simulation and planetarium by Kumaraguru SEDS." />
+    <meta name="keywords"
+        content="COSMOS 3D, Solar System simulator, Kumaraguru SEDS astronomy, 3D planets interactive, space exploration Three.js" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://kumaraguruseds.com/cosmos.html" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="icon" href="sedsb.png" type="image/png">
+    <link rel="apple-touch-icon" href="sedsb.png">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
         rel="stylesheet" />
+    <meta name="author" content="Kumaraguru SEDS">
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="Kumaraguru SEDS">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kumaraguruseds.com/cosmos.html">
+    <meta property="og:title" content="COSMOS 3D Solar System Experience | Kumaraguru SEDS">
+    <meta property="og:description"
+        content="Explore our Solar System in stunning interactive 3D. Real-time planetary orbits, surface views, and astronomical data.">
+    <meta property="og:image" content="https://kumaraguruseds.com/sedsb.png">
+    <meta property="og:image:alt" content="COSMOS 3D Solar System Simulator">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://kumaraguruseds.com/cosmos.html">
+    <meta name="twitter:title" content="COSMOS 3D Solar System Experience | Kumaraguru SEDS">
+    <meta name="twitter:description"
+        content="Explore our Solar System in stunning interactive 3D. Real-time planetary orbits, surface views, and astronomical data.">
+    <meta name="twitter:image" content="https://kumaraguruseds.com/sedsb.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "COSMOS 3D Solar System Explorer",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "url": "https://kumaraguruseds.com/cosmos.html",
+      "description": "An interactive 3D Solar System simulator developed by Kumaraguru SEDS.",
+      "browserRequirements": "Requires WebGL support",
+      "author": {
+        "@type": "Organization",
+        "name": "Kumaraguru SEDS",
+        "url": "https://kumaraguruseds.com/"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://kumaraguruseds.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "COSMOS 3D",
+          "item": "https://kumaraguruseds.com/cosmos.html"
+        }
+      ]
+    }
+    </script>
     <style>
         :root {
             --glass: rgba(8, 20, 40, 0.65);
@@ -134,6 +196,8 @@
         }
 
         .logo {
+            margin: 0;
+            line-height: 1.2;
             font-family: 'Space Mono', monospace;
             font-size: 19px;
             font-weight: 700;
@@ -598,7 +662,7 @@
     <div id="imsg"></div>
 
     <header id="hdr">
-        <div class="logo">COSMOS<span>SOLAR SYSTEM EXPLORER</span></div>
+        <h1 class="logo">COSMOS<span>SOLAR SYSTEM EXPLORER</span></h1>
         <div class="hr">
             <button class="hb" id="sbtn">&#x2315; SEARCH</button>
             <button class="hb" id="rbtn">&#x21BA; RESET</button>
